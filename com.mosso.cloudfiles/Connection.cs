@@ -1845,10 +1845,7 @@ namespace com.mosso.cloudfiles
 
         }
 
-        public void SetTTLOnPublicContainer(string containerName, int timeToLiveInSeconds)
-        {
-            throw new NotImplementedException();
-        }
+     
 
 
         /// <summary>
