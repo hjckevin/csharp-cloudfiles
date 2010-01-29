@@ -17,7 +17,7 @@ namespace com.mosso.cloudfiles.integration.tests
         public const string CONTAINER_NAME = "integration.tests.container.new";
          
         //Mosso accounts for authentication
-        public const string MOSSO_AUTH_URL = "https://api.mosso.com/auth";
+        public const string MOSSO_AUTH_URL = "https://auth.api.rackspacecloud.com/v1.0";
 
         //Response constants
         public const int NoContentResponse = 204;
