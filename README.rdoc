@@ -303,12 +303,15 @@ Code below is an example of what would go in your progress bar form:
     }
 
 See the Cloud Files Viewer demo for a more concrete example
-	
+
 == Authors
 
+Initial work by:	
 Jason Meridth <jason.meridth@rackspace.com> (armmer)
-
 Matt Dietz <matt.dietz@rackspace.com> (cerberus98)
+
+Subsequent work by:
+Ryan Svihla <ryan.svihla@rackspace.com> (rssvihla)
 
 == License
 
