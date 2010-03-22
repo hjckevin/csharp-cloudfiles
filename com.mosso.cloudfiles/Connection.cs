@@ -53,7 +53,7 @@ namespace com.mosso.cloudfiles
         private bool retry;
         private List<ProgressCallback> callbackFuncs;
         private readonly GenerateRequestByType _requestfactory;
-		
+		private bool _useServiceNet;
 		private bool isNotNullOrEmpty(params string[] strings){
 			foreach(var str in strings){
 				if(String.IsNullOrEmpty(str))
@@ -212,7 +212,10 @@ namespace com.mosso.cloudfiles
 
             if (getAuthenticationResponse.Status == HttpStatusCode.NoContent)
             {
-            		StorageUrl = getAuthenticationResponse.Headers[Constants.X_STORAGE_URL];
+            	StorageUrl = getAuthenticationResponse.Headers[Constants.X_STORAGE_URL];
+            	if(this._useServiceNet)
+            		StorageUrl = StorageUrl.MakeServiceNet();
+            	
                 AuthToken = getAuthenticationResponse.Headers[Constants.X_AUTH_TOKEN];
                 CdnManagementUrl = getAuthenticationResponse.Headers[Constants.X_CDN_MANAGEMENT_URL];
                 return;
@@ -290,19 +293,19 @@ namespace com.mosso.cloudfiles
 			
 		}
 		#endregion
-		public Connection(UserCredentials userCreds)
-        {
-            _requestfactory = new GenerateRequestByType();
+		public Connection(UserCredentials userCreds):this(userCreds, false){}
+		public Connection(UserCredentials userCreds, bool useServiceNet){
+			_useServiceNet = useServiceNet;
+			_requestfactory = new GenerateRequestByType();
             callbackFuncs = new List<ProgressCallback>();
             Log.EnsureInitialized();
-            AuthToken = "";
-            StorageUrl = "";
+            
             if (userCreds == null) throw new ArgumentNullException("userCredentials");
 
             _usercreds = userCreds;
                       
             VerifyAuthentication();
-        }
+		}
 		#region publicmethods
 		public Action<Exception> Nothing= (ex)=>{};
         public delegate void OperationCompleteCallback();
@@ -325,12 +328,12 @@ namespace com.mosso.cloudfiles
 
         public string StorageUrl
         {
-            get; set;
+            get; private set; 
         }
 
         public string AuthToken
         {
-            set; get;
+            private set; get;
         }
 
         

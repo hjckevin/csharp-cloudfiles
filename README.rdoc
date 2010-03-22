@@ -89,6 +89,12 @@ types are explicitly used in this example. The +var+ keyword could also be used 
 	var userCredentials = new UserCredentials("username", "api key");
 	var connection = new Connection(userCredentials);
 
+<b>Connect to SNet this will eliminate the bandwidth charges that would be associated with your requests otherwise. 
+Please keep in mind that you will still be charged for requests and storage.<b>
+	var userCredentials = new UserCredentials("username", "api key");
+	bool useServiceNet = true;
+	var connection = new Connection(userCredentials, useServiceNet);
+
 <b>Get the account information</b>
 	var accountInformation = connection.GetAccountInformation();
 

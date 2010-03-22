@@ -1,4 +1,9 @@
 = History
+== v1.4.2.2 (2010-3-23)
+== New Features
+ * Added support for servicenet.This will eliminate the bandwidth charges that would be associated with your requests otherwise. 
+Please keep in mind that you will still be charged for requests and storage.
+
 == v1.4.2.0 (2009-11-13)
 == Bugfixes
  * Removed some methods in the public api that were misleading and were not behaving well (namely setting ttl and logging on public containers)

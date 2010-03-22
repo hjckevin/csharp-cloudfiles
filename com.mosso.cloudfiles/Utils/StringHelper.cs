@@ -1,5 +1,6 @@
 using System;
 using System.Web;
+using com.mosso.cloudfiles.Exceptions;
 
 namespace com.mosso.cloudfiles.utils
 {
@@ -30,6 +31,11 @@ namespace com.mosso.cloudfiles.utils
         public static string StripSlashPrefix(this string path)
         {
             return path[0] == '/' ? path.Substring(1, path.Length - 1) : path;
+        }
+        public static string MakeServiceNet(this string str){
+        	if(!str.StartsWith("https://"))
+        		throw new InsecureUrlException("You tried to set your url of "+ str+" to http and not https");
+        	return "https://snet-" +str.Substring(8);
         }
     }
 }

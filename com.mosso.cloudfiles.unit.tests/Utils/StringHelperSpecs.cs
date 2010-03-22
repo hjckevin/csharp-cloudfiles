@@ -1,3 +1,4 @@
+using com.mosso.cloudfiles.Exceptions;
 using com.mosso.cloudfiles.utils;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
@@ -55,5 +56,30 @@ namespace com.mosso.cloudfiles.unit.tests.Utils.StringHelperSpecs
             Assert.That("dira/dirb/dirc/file.txt".StripSlashPrefix(), Is.EqualTo("dira/dirb/dirc/file.txt"));
             Assert.That("/abcdefg".StripSlashPrefix(), Is.EqualTo("abcdefg"));
         }
+    }
+    [TestFixture]
+    public class when_making_url_a_servicenet_url{
+    	
+    	[Test]
+    	public void should_add_ssnetdash()
+    	{
+    	var baseurl = "https://host.clouddrive.com/234432";
+    	Assert.That(baseurl.MakeServiceNet(), Is.EqualTo("https://snet-host.clouddrive.com/234432"));
+    	}
+    }
+    [TestFixture]
+    public class when_making_url_a_servicenet_url_and_http_is_used_instead_of_https{
+      	[Test]
+      	public void should_add_ssnetdash(){
+    		try
+    		{
+    		var baseurl = "http://host.clouddrive.com/234432";
+    		baseurl.MakeServiceNet();
+    		Assert.Fail();
+    		}
+    		catch(InsecureUrlException ex){
+    			Assert.That(ex.Message, Is.EqualTo("You tried to set your url of http://host.clouddrive.com/234432 to http and not https"));
+    		}
+      	}
     }
 }

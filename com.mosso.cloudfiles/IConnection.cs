@@ -46,12 +46,12 @@ namespace com.mosso.cloudfiles
         /// <summary>
         /// The storage url used to interact with cloud files
         /// </summary>
-        string StorageUrl { get;  set; }
+        string StorageUrl { get;  }
 
         /// <summary>
         /// the session based token used to ensure the user was authenticated
         /// </summary>
-        string AuthToken { get;  set; }
+        string AuthToken { get;  }
 
 
         void SetDetailsOnPublicContainer(string publiccontainer, bool loggingenabled, int ttl, string referreracl, string useragentacl );
