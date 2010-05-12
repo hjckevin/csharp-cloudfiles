@@ -142,7 +142,7 @@ Please keep in mind that you will still be charged for requests and storage.<b>
 	connection.PutStorageItem("container name", file.Open(FileMode.Open), "RemoteFileName.txt", metadata);
 
 <b>Make path explicitly with auto-creation of "directory" structure</b>
-	connection.MakePath("/dir1/dir2/dir3/dir4");
+	connection.MakePath("containerName", "/subdir1/subdir2/subdir3/subdir4");
 
 <b>List all the items in a container</b>
 	var containerItemList = connection.GetContainerItemList("container name");
@@ -313,13 +313,13 @@ See the Cloud Files Viewer demo for a more concrete example
 == Authors
 
 Initial work by:	
-Jason Meridth <jason.meridth@rackspace.com> (armmer)
-Matt Dietz <matt.dietz@rackspace.com> (cerberus98)
+Jason Meridth 
+Matt Dietz 
 
 Subsequent work by:
-Ryan Svihla <ryan.svihla@rackspace.com> (rssvihla)
+Ryan Svihla 
 
 == License
 
 See COPYING for license information.
-Copyright (c) 2009, Rackspace US, Inc.
+Copyright (c) 2010, Rackspace US, Inc.
