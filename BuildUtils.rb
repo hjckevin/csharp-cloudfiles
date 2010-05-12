@@ -1,7 +1,7 @@
 require 'rubygems'
 
 require 'erb'
-require 'activesupport'
+require 'active_support'
 require 'find'
 require 'zip/zip'
 require 'fileutils'
