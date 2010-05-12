@@ -313,8 +313,7 @@ See the Cloud Files Viewer demo for a more concrete example
 == Authors
 
 Initial work by:	
-Jason Meridth 
-Matt Dietz 
+Jason Meridth and Matt Dietz 
 
 Subsequent work by:
 Ryan Svihla 
