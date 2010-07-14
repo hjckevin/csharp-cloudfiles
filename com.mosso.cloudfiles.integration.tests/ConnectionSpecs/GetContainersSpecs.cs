@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using com.mosso.cloudfiles.exceptions;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
@@ -12,10 +10,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainersSp
         [Test]
         public void Should_return_a_list_of_containers()
         {
-            
-            using (new tests.TestHelper(authToken, storageUrl))
+            using (new TestHelper(authToken, storageUrl))
             {
-                List<string> containerList = connection.GetContainers();
+                var containerList = connection.GetContainers();
                 Assert.That(containerList.Count, Is.GreaterThan(0));
             }
         }
@@ -24,6 +21,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainersSp
     [TestFixture]
     public class When_retrieving_a_list_of_containers_with_connection_and_the_account_has_no_containers : TestBase
     {
+        [Test, Ignore("Only works if account has no pre-existing containers")]
         [ExpectedException(typeof (NoContainersFoundException))]
         public void Should_throw_no_containers_found_exception()
         {

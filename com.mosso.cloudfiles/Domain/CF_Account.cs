@@ -110,8 +110,7 @@ namespace com.mosso.cloudfiles.domain
 
         public IContainer GetContainer(string containerName)
         {
-            CloudFilesGetContainer(containerName);
-            return containers.Find(x => x.Name == containerName);
+            return CloudFilesGetContainer(containerName);
         }
 
         protected virtual string CloudFileAccountInformationJson()
@@ -155,9 +154,11 @@ namespace com.mosso.cloudfiles.domain
             connection.DeleteContainer(containerName);
         }
 
-        protected virtual void CloudFilesGetContainer(string containerName)
+        protected virtual IContainer CloudFilesGetContainer(string containerName)
         {
-            throw new NotImplementedException();
+            var containerExists = connection.GetContainers().Contains(containerName);
+            if(!containerExists) throw new ContainerNotFoundException("Container " + containerName + " not found");
+            return new CF_Container(connection, containerName);
         }
     }
 }

@@ -165,14 +165,11 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.AccountSpecs
                 throw new ContainerNotFoundException();
         }
 
-        protected override void CloudFilesGetContainer(string containerName)
+        protected override IContainer CloudFilesGetContainer(string containerName)
         {
-            IContainer container = containers.Find(x => x.Name == containerName);
-            if (container != null)
-            {
-                containers.Remove(container);
-                containers.Add(new CF_Container(null, containerName));                
-            }
+            var container = containers.Find(x => x.Name == containerName);
+            if (container == null) throw new ContainerNotFoundException();
+            return new CF_Container(null, containerName);
         }
 
         public bool ValidatingExistingContainer { get; set; }

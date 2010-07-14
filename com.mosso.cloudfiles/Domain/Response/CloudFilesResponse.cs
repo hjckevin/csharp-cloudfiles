@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using System.Net.Mime;
 using com.mosso.cloudfiles.domain.response.Interfaces;
 using com.mosso.cloudfiles.utils;
 
@@ -18,13 +17,11 @@ namespace com.mosso.cloudfiles.domain.response
     public class CloudFilesResponse : ICloudFilesResponse
     {
         private readonly HttpWebResponse _webResponse;
-        private IList<string> _contentbody = new List<string>();
-        private MemoryStream memstream = new MemoryStream( );
+        private readonly IList<string> _contentbody = new List<string>();
+        private readonly MemoryStream memstream = new MemoryStream( );
         private Stream Getstream()
         {
             memstream.Seek(0, 0);
-        //    var copystream = new MemoryStream();
-         //   CopyToMemory(memstream, copystream);
             return memstream;
         }
         public CloudFilesResponse(HttpWebResponse webResponse)
@@ -36,9 +33,9 @@ namespace com.mosso.cloudfiles.domain.response
             {
                 GetBody(Getstream());
             }
-            catch
+            catch (Exception ex)
             {
-                
+                Log.Error(ex, ex.Message);
             }
             
         }
@@ -54,7 +51,7 @@ namespace com.mosso.cloudfiles.domain.response
 
         private void CopyToMemory(Stream input, Stream output)
         {
-            byte[] buffer = new byte[32768];
+            var buffer = new byte[32768];
             while (true)
             {
                 int read = input.Read(buffer, 0, buffer.Length);
@@ -72,7 +69,7 @@ namespace com.mosso.cloudfiles.domain.response
              
             using(var reader = new StreamReader(stream))
             {
-                var line = "";
+                string line;
                 while((line = reader.ReadLine())!= null)
                 {
                     _contentbody.Add(line);

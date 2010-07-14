@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
-using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.domain.request;
-using com.mosso.cloudfiles.domain.response;
 using com.mosso.cloudfiles.domain.response.Interfaces;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
@@ -17,7 +15,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         public void Should_return_ok_if_the_object_exists()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try
@@ -40,7 +38,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         public void Should_return_ok_if_the_object_exists_and_valid_content_type_of_image_gif()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try
@@ -64,7 +62,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         public void Should_return_ok_if_the_object_exists_and_valid_content_type_of_image_jpeg()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try
@@ -101,7 +99,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
                 catch (WebException ex)
                 {
                     exceptionWasThrown = true;
-                    HttpStatusCode code = ((HttpWebResponse) ex.Response).StatusCode;
+                    var code = ((HttpWebResponse) ex.Response).StatusCode;
                     Assert.That(code, Is.EqualTo(HttpStatusCode.NotFound));
                     if (getStorageItemResponse != null)getStorageItemResponse.Dispose();
                 }
@@ -119,15 +117,15 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
 
         protected override void SetUp()
         {
-            requestHeaderFields = new Dictionary<RequestHeaderFields, string>();
-            requestHeaderFields.Add(RequestHeaderFields.IfMatch, DUMMY_ETAG);
+            requestHeaderFields = new Dictionary<RequestHeaderFields, string> 
+            {{RequestHeaderFields.IfMatch, DUMMY_ETAG}};
         }
 
         [Test]
         public void Should_return_ok_if_the_item_exists()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try
@@ -155,15 +153,15 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
 
         protected override void SetUp()
         {
-            requestHeaderFields = new Dictionary<RequestHeaderFields, string>();
-            requestHeaderFields.Add(RequestHeaderFields.IfNoneMatch, DUMMY_ETAG);
+            requestHeaderFields = new Dictionary<RequestHeaderFields, string> 
+            {{RequestHeaderFields.IfNoneMatch, DUMMY_ETAG}};
         }
 
         [Test]
         public void Should_return_ok_if_the_item_exists()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try
@@ -195,10 +193,10 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         {
             
 
-            requestHeaderFields = new Dictionary<RequestHeaderFields, string>();
-            requestHeaderFields.Add(RequestHeaderFields.IfModifiedSince, futureDateTime.ToString());
+            requestHeaderFields = new Dictionary<RequestHeaderFields, string> 
+            {{RequestHeaderFields.IfModifiedSince, futureDateTime.ToString()}};
 
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 var exceptionWasThrown = false;
@@ -229,10 +227,10 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         {
 
 
-            requestHeaderFields = new Dictionary<RequestHeaderFields, string>();
-            requestHeaderFields.Add(RequestHeaderFields.IfModifiedSince, pastDateTime.ToString());
+            requestHeaderFields = new Dictionary<RequestHeaderFields, string> 
+            {{RequestHeaderFields.IfModifiedSince, pastDateTime.ToString()}};
 
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try
@@ -258,10 +256,10 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         {
             
 
-            requestHeaderFields = new Dictionary<RequestHeaderFields, string>();
-            requestHeaderFields.Add(RequestHeaderFields.IfModifiedSince, pastDateTime.ToString());
+            requestHeaderFields = new Dictionary<RequestHeaderFields, string> 
+            {{RequestHeaderFields.IfModifiedSince, pastDateTime.ToString()}};
 
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try
@@ -293,10 +291,10 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         {
             
 
-            requestHeaderFields = new Dictionary<RequestHeaderFields, string>();
-            requestHeaderFields.Add(RequestHeaderFields.IfUnmodifiedSince, futureDateTime.ToString());
+            requestHeaderFields = new Dictionary<RequestHeaderFields, string> 
+            {{RequestHeaderFields.IfUnmodifiedSince, futureDateTime.ToString()}};
 
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try
@@ -315,15 +313,14 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         }
 
         [Test]
-        [Ignore("Not throwing 412 when file has been modified")]
         public void Should_return_412_precondition_failed_if_the_item_exists_and_has_been_modified_since_designated_time()
         {
             
 
-            requestHeaderFields = new Dictionary<RequestHeaderFields, string>();
-            requestHeaderFields.Add(RequestHeaderFields.IfUnmodifiedSince, pastDateTime.ToString());
+            requestHeaderFields = new Dictionary<RequestHeaderFields, string> 
+            {{RequestHeaderFields.IfUnmodifiedSince, pastDateTime.ToString()}};
 
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 var exceptionWasThrown = false;
@@ -369,7 +366,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         {
             
             requestHeaderFields.Add(RequestHeaderFields.Range, "0-5");
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try
@@ -394,7 +391,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         {
             
             requestHeaderFields.Add(RequestHeaderFields.Range, "10-");
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try
@@ -419,7 +416,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemSpecs
         {
             
             requestHeaderFields.Add(RequestHeaderFields.Range, "-8");
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 ICloudFilesResponse getStorageItemResponse = null;
                 try

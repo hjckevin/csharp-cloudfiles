@@ -1,8 +1,12 @@
-= Mosso Cloud Files
+= Rackspace Cloud Files CSharp API
 
 == Description
 
-This is a .NET/C# interface into the {Rackspace}[http://rackspace.com/] {Mosso Cloud Files}[http://www.mosso.com/cloudfiles.jsp] service. Cloud Files is reliable, scalable and affordable web-based storage hosting for backing up and archiving all your static content.  Cloud Files is the first and only cloud service that leverages a tier one CDN provider to create such an easy and complete storage-to-delivery solution for media content.
+This is a .NET/C# interface into the {Rackspace CloudFiles}[http://www.rackspacecloud.com/cloud_hosting_products/files] service. Cloud Files is a reliable, scalable and affordable web-based storage hosting for backing up and archiving all your static content.  Cloud Files is the first and only cloud service that leverages a tier one CDN provider to create such an easy and complete storage-to-delivery solution for media content.
+
+== Creating Issues
+
+Please read the {wiki}[http://wiki.github.com/rackspace/csharp-cloudfiles/] about what information is best to help people fix your issues, then create an issue on the {issues tab}[http://github.com/rackspace/csharp-cloudfiles/issues].
 
 == Getting dll and using in your project
 
@@ -24,7 +28,7 @@ Reference them from your application.  Look at the examples below once you done 
 
 == Getting source, compiling, and using in your project
 
-After you've either installed {msysgit}[http://code.google.com/p/msysgit/downloads/list] or {cygwin}[http://www.cygwin.com/setup.exe] and chosen the git-core package, you can clone this github repository:
+Follow the instructions {here}[http://help.github.com/win-git-installation/] to install msysgit (Git for Windows users) and the instructions {here}[http://help.github.com/msysgit-key-setup/] on how to get your ssh keys setup for using Github.
 
 	git clone git://github.com/rackspace/csharp-cloudfiles.git
 
@@ -310,13 +314,9 @@ Code below is an example of what would go in your progress bar form:
 
 See the Cloud Files Viewer demo for a more concrete example
 
-== Authors
+== Committers
 
-Initial work by:	
-Jason Meridth and Matt Dietz 
-
-Subsequent work by:
-Ryan Svihla 
+{Contributors}[http://github.com/rackspace/csharp-cloudfiles/contributors]
 
 == License
 

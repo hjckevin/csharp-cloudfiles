@@ -76,19 +76,21 @@ end
 
 desc "Console Runner For Specmaker"
 task :spec => :compile do
-	 sh "lib\\specmaker\\spec-runner.exe #{UNIT_TESTS_DIR}\\com.mosso.cloudfiles.unit.tests.dll " 
+  sh "lib\\specmaker\\spec-runner.exe #{UNIT_TESTS_DIR}\\com.mosso.cloudfiles.unit.tests.dll " 
 end
 
 desc "Runs integration tests"
 task :integration_test => :compile do
-  if ENV['CRED_FILE_LOC'] != nil
-        puts "copying file from #{ENV['CRED_FILE_LOC']} to #{INTEGRATION_TESTS_CONFIG_FILE}"
-  File.copy(ENV['CRED_FILE_LOC'], INTEGRATION_TESTS_CONFIG_FILE)
+
+  puts "ENVIRONMENT VARIABLE: #{ENV['CRED_FILE_LOC']}"
+  if ENV['CRED_FILE_LOC']
+    puts "copying file from #{ENV['CRED_FILE_LOC']} to #{INTEGRATION_TESTS_CONFIG_FILE}"
+	File.copy(ENV['CRED_FILE_LOC'], INTEGRATION_TESTS_CONFIG_FILE)
   end
   
   if !File.exists?(INTEGRATION_TESTS_CONFIG_FILE)
-      puts "Credentials.config file does not exist.  Please run 'rake create_credentials_config'"
-      return
+    puts "Credentials.config file does not exist.  Please run 'rake create_credentials_config'"
+    exit
   end
   
   puts "Running integration tests"

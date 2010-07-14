@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Text.RegularExpressions;
 using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.response;
@@ -36,8 +37,8 @@ namespace com.mosso.cloudfiles.integration.tests.domain.AuthenticationRequestSpe
         {
             var response = factory.Submit(request, null);
             Assert.That(response.Headers[Constants.XStorageUrl].Length, Is.GreaterThan(0));
-            Uri storageUri = new Uri(response.Headers[Constants.XStorageUrl]);
-            Assert.That(storageUri.AbsolutePath, Is.EqualTo("/v1/MossoCloudFS_" + STORAGE_TOKEN));
+            var storageUri = new Uri(response.Headers[Constants.XStorageUrl]);
+            Assert.That(Regex.Match(storageUri.AbsolutePath, "/v1/MossoCloudFS_.*").Success, Is.True);
         }
 
         [Test]

@@ -10,13 +10,13 @@ namespace com.mosso.cloudfiles
 	{
 		
 		public static StartMessage ByLoggingMessage(string startmessage){
-			return new StartMessage(startmessage){
-				
-			};
+			return new StartMessage(startmessage);
 		}
 	}
 	public class StartMessage 
 	{
+        private readonly string _startmessage;
+
 		public Execution ThenDoing(Action action)
 		{
 				return new Execution(action, _startmessage);
@@ -25,7 +25,6 @@ namespace com.mosso.cloudfiles
 		{
 				return new Execution<R>(action, _startmessage);
 		}
-		private string _startmessage;
 		
 		public  StartMessage(string startmessage)
 		{
@@ -37,8 +36,8 @@ namespace com.mosso.cloudfiles
 	
 	
 	public class Execution<R>{
-		private Func<R> _action;
-		private string _startmessage;
+		private readonly Func<R> _action;
+		private readonly string _startmessage;
 		
 		public Error<R,T> AndIfErrorThrownIs<T>() where T: Exception
 		{
@@ -52,8 +51,8 @@ namespace com.mosso.cloudfiles
 	}
 	public class Execution
 	{
-		private Action _action;
-		private string _startmessage;
+		private readonly Action _action;
+		private readonly string _startmessage;
 		
 		public Error<T> AndIfErrorThrownIs<T>() where T: Exception
 		{
@@ -67,32 +66,33 @@ namespace com.mosso.cloudfiles
 				
 	}
 	public class Error<R,T> where T: Exception
-	{	
+	{
+        private readonly Func<R> _startaction;
+        private readonly string _startmessage;
+		
 		public ErrorAction<R,T> Do(Action<T> erroraction)
 		{
 			return new ErrorAction<R,T>(_startaction, _startmessage, erroraction);
 		}
 		
-		private Func<R> _startaction;
-		private string _startmessage;
-		
 		public Error(Func<R> startaction, string startmessage)
 		{
 			_startaction = startaction;
-			_startmessage = startmessage;
-		}
+			_startmessage = startmessage;	
+        }
 	}
+
 	public class Error<T> where T: Exception
-	{	
+    {
+        private readonly Action _startaction;
+        private readonly string _startmessage;
+		
 		public ErrorAction<T> Do(Action<T> erroraction)
 		{
 			return new ErrorAction<T>(_startaction, _startmessage, erroraction);
 		}
 		
-		private Action _startaction;
-		private string _startmessage;
-		
-		public Error(Action startaction, string startmessage)
+        public Error(Action startaction, string startmessage)
 		{
 			_startaction = startaction;
 			_startmessage = startmessage;
@@ -100,9 +100,10 @@ namespace com.mosso.cloudfiles
 	}
 	public class ErrorAction<R,T> where T: Exception{
 		
-		private Func<R> _startaction;
-		private Action<T> _erroraction;
-		private string _startmessage;
+		private readonly Func<R> _startaction;
+		private readonly Action<T> _erroraction;
+		private readonly string _startmessage;
+
 		public ErrorMessage<R,T> AndLogError(string errormessage) 
 		{
 			return new ErrorMessage<R,T>(_startaction, _startmessage, _erroraction, errormessage);
@@ -115,9 +116,10 @@ namespace com.mosso.cloudfiles
 	}
 	public class ErrorAction<T> where T: Exception{
 		
-		private Action _startaction;
-		private Action<T> _erroraction;
-		private string _startmessage;
+		private readonly Action _startaction;
+		private readonly Action<T> _erroraction;
+		private readonly string _startmessage;
+
 		public ErrorMessage<T> AndLogError(string errormessage) 
 		{
 			return new ErrorMessage<T>(_startaction, _startmessage, _erroraction, errormessage);
@@ -130,10 +132,10 @@ namespace com.mosso.cloudfiles
 	}
 	public class ErrorMessage<R,T>  where T: Exception
 	{
-		private Func<R> _startaction;
-		private Action<T> _erroraction;
-		private string _startmessage;
-		private string _errormessage;
+		private readonly Func<R> _startaction;
+		private readonly Action<T> _erroraction;
+		private readonly string _startmessage;
+		private readonly string _errormessage;
 		
 		public R Now()
 		{
@@ -161,10 +163,10 @@ namespace com.mosso.cloudfiles
 		
 	public class ErrorMessage<T>  where T: Exception
 	{
-		private Action _startaction;
-		private Action<T> _erroraction;
-		private string _startmessage;
-		private string _errormessage;
+		private readonly Action _startaction;
+		private readonly Action<T> _erroraction;
+		private readonly string _startmessage;
+		private readonly string _errormessage;
 		
 		public void Now()
 		{

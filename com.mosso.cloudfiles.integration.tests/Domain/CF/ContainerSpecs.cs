@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.utils;
 using NUnit.Framework;
@@ -41,12 +42,11 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.ContainerSpecs
     public class When_making_a_container_public : ContainerIntegrationTestBase
     {
         [Test]
-        [Ignore("cdn scheme changed, need to double check with CF team")]
         public void Should_obtain_a_public_url()
         {
             container.MarkAsPublic();
 
-            Assert.That(container.PublicUrl.ToString().Contains("cdn.cloudfiles.rackspacecloud.com/"), Is.True);
+            Assert.That(Regex.Match(container.PublicUrl.ToString(),"(cdn|ltd).cloudfiles.rackspacecloud.com").Success, Is.True, "Public Url was " + container.PublicUrl);
         }
     }
 

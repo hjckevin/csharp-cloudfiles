@@ -3,8 +3,6 @@
 ///
 
 using System;
-using System.Collections.Specialized;
-using System.Web;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using com.mosso.cloudfiles.exceptions;
 using com.mosso.cloudfiles.utils;

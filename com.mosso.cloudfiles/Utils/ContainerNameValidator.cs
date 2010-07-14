@@ -1,5 +1,3 @@
-using System.Text.RegularExpressions;
-
 namespace com.mosso.cloudfiles.utils
 {
     public class ContainerNameValidator

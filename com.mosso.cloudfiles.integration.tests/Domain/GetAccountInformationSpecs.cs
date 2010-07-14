@@ -124,7 +124,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetAccountSpecs
     [TestFixture]
     public class When_querying_for_account_in_json_format_and_no_containers_exist : TestBase
     {
-        [Test]
+        [Test, Ignore("Only works if account has no pre-existing containers")]
         public void should_return_empty_brackets_and_ok_status_200()
         {
             var getAccountInformationJson = new GetAccountInformationSerialized(storageUrl,  Format.JSON);
@@ -188,7 +188,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetAccountSpecs
     [TestFixture]
     public class When_querying_for_account_in_xml_format_and_no_container_exists : TestBase
     {
-        [Test]
+        [Test, Ignore("Only works if account has no pre-existing containers")]
         public void should_return_account_name_and_ok_status_200()
         {
             var accountInformationXml = new GetAccountInformationSerialized(storageUrl, Format.XML);

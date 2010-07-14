@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Web;
-using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.domain.request;
-using com.mosso.cloudfiles.domain.response;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
 
@@ -18,7 +16,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_return_created_as_status_when_the_file_does_not_already_exist()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemName, Constants.StorageItemName);
 
@@ -35,7 +33,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_set_content_type_of_jpg_for_local_file_upload()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemNameJpg, Constants.StorageItemNameJpg);
 
@@ -53,12 +51,10 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_still_come_back_as_pdf_even_when_sent_up_as_octet_stream()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var file = new FileInfo(Constants.StorageItemNamePdf);
-                var metadata = new Dictionary<string, string>();
-                metadata.Add("Source", "1");
-                metadata.Add("Note", "2");
+                var metadata = new Dictionary<string, string> {{"Source", "1"}, {"Note", "2"}};
                 const string DUMMY_FILE_NAME = "HAHAHA";
 
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, DUMMY_FILE_NAME, file.Open(FileMode.Open), metadata);
@@ -83,7 +79,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_set_content_type_of_gif_for_local_file_upload()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemNameGif, Constants.StorageItemNameGif);
 
@@ -101,7 +97,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_set_content_type_of_jpg_for_stream_upload()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var fileStream = new FileStream(Constants.StorageItemNameJpg, FileMode.Open);
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemNameJpg, fileStream);
@@ -120,7 +116,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_set_content_type_of_gif_for_stream_upload()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var fileStream = new FileStream(Constants.StorageItemNameGif, FileMode.Open);
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemNameGif, fileStream);
@@ -141,7 +137,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_return_created_when_etag_is_not_supplied_because_it_is_optional()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemName, Constants.StorageItemName);
                 
@@ -161,7 +157,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_return_created_when_a_stream_is_passed_instead_of_a_file_name()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var fs = new FileStream(Constants.StorageItemName, FileMode.Open);
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemName, fs, null);
@@ -177,7 +173,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_return_created_when_content_length_is_not_supplied_because_it_is_optional()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemName, Constants.StorageItemName);
                 var uri = putStorageItem.CreateUri();
@@ -201,7 +197,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_return_created_when_content_type_is_not_supplied_because_it_is_optional()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemName, Constants.StorageItemName);
                
@@ -255,11 +251,11 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
         public void Should_return_created_as_status()
         {
 
-            Dictionary<string, string> metadata = new Dictionary<string, string>
+            var metadata = new Dictionary<string, string>
                                                       {
                                                           {Constants.MetadataKey, Constants.MetadataValue}
                                                       };
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemName, Constants.StorageItemName, metadata);
 

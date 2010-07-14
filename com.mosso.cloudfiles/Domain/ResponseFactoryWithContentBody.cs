@@ -2,11 +2,8 @@
 /// See COPYING file for licensing information
 ///
 
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net;
-using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using com.mosso.cloudfiles.domain.response;
 using com.mosso.cloudfiles.domain.response.Interfaces;
@@ -43,8 +40,8 @@ namespace com.mosso.cloudfiles.domain
             Stream responseStream;
             WebHeaderCollection headerCollection = GetHeaderCollection(request, out statusCode, out responseStream);
 
-            var response = new CloudFilesResponseWithContentBody()
-                             {
+            var response = new CloudFilesResponseWithContentBody
+                               {
                                  Headers = headerCollection,
                                  Status = statusCode,
                                  ContentStream = responseStream
@@ -73,8 +70,8 @@ namespace com.mosso.cloudfiles.domain
             Stream responseStream;
             WebHeaderCollection headerCollection = GetHeaderCollection(request, out statusCode, out responseStream);
 
-            var response = new GetStorageItemResponse()
-            {
+            var response = new GetStorageItemResponse
+                               {
                 Headers = headerCollection,
                 Status = statusCode,
                 ContentStream = responseStream

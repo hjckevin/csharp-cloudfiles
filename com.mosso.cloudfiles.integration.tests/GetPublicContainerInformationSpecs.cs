@@ -37,9 +37,11 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetPublicContai
         [ExpectedException(typeof(ContainerNotFoundException))]
         public void Should_throw_an_container_not_found_exception()
         {
-            Assert.Ignore("the get public containers method is still returning the private container, talk to lowell");
-            connection.GetPublicContainerInformation(Constants.CONTAINER_NAME);
+            //TODO: Follow-up with CDN developer to verify why this is returning
+            //TODO: the private container information with the same name
 
+            Assert.Ignore("READ TODO");
+            connection.GetPublicContainerInformation(Constants.CONTAINER_NAME);
             Assert.Fail("Should not get container information for an non-existant container");
         }
     }
@@ -52,7 +54,10 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetPublicContai
         [ExpectedException(typeof(ContainerNotFoundException))]
         public void Should_throw_an_container_not_found_exception()
         {
-            Assert.Ignore("the get public containers method is still returning the private container, talk to lowell");
+            //TODO: Follow-up with CDN developer to verify why this is returning
+            //TODO: the private container information with the same name
+
+            Assert.Ignore("READ TODO");
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);

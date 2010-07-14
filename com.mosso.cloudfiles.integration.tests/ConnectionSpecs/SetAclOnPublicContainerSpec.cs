@@ -1,3 +1,4 @@
+using System;
 using System.Xml;
 using com.mosso.cloudfiles.domain;
 using NUnit.Framework;
@@ -19,7 +20,6 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
                 connection.SetDetailsOnPublicContainer(Constants.CONTAINER_NAME, false, 7200, "Mozilla", "testdomain.com");
                 connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
                 account = connection.GetAccountInformation();
-
             }
             finally
             {
@@ -28,8 +28,6 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }
         }
-
-
     }
 
     [TestFixture]
@@ -39,19 +37,16 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
 
         protected override void SetUp()
         {
-
             connection.CreateContainer(Constants.CONTAINER_NAME);
             connection.MarkContainerAsPublic(Constants.CONTAINER_NAME);
-            connection.SetDetailsOnPublicContainer(Constants.CONTAINER_NAME, false, 7200,  "testdomain.com","Mozilla");
+            connection.SetDetailsOnPublicContainer(Constants.CONTAINER_NAME, false, 7200, "testdomain.com", "Mozilla");
 
             try
             {
-              
                 jsonReturnValue = connection.GetPublicAccountInformationJSON();
             }
             finally
             {
-                
                 connection.MarkContainerAsPrivate(Constants.CONTAINER_NAME);
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }
@@ -61,19 +56,13 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
         [Test]
         public void should_get_user_agent_acl()
         {
-
-
             StringAssert.Contains("\"referrer_acl\":\"testdomain.com\"", jsonReturnValue);
-
-
-
         }
+
         [Test]
         public void should_get__referrer_acl()
         {
-
-
-            StringAssert.Contains("\"useragent_acl\":\"Mozilla\"",jsonReturnValue );
+            StringAssert.Contains("\"useragent_acl\":\"Mozilla\"", jsonReturnValue);
         }
     }
 
@@ -91,35 +80,25 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
 
             try
             {
-              
                 xmlReturnValue = connection.GetPublicAccountInformationXML();
-
             }
             finally
             {
-                
                 connection.MarkContainerAsPrivate(Constants.CONTAINER_NAME);
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }
-
         }
 
 
         [Test]
         public void should_get_user_agent_acl()
         {
-
-
             StringAssert.Contains("<referrer_acl>testdomain.com</referrer_acl>", xmlReturnValue.InnerXml);
-
-
-
         }
+
         [Test]
         public void should_get__referrer_acl()
         {
-
-
             StringAssert.Contains("<useragent_acl>Mozilla</useragent_acl>", xmlReturnValue.InnerXml);
         }
     }

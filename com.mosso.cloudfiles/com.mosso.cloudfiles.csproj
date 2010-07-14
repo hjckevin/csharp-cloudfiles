@@ -76,7 +76,6 @@
   <ItemGroup>
     <Compile Include="Domain\Request\GetPublicContainerInformationSerialized.cs" />
     <Compile Include="Domain\Request\PutStorageDirectory.cs" />
-    <Compile Include="Domain\Request\SetAclOnPublicContainer.cs" />
     <Compile Include="Domain\Request\SetLoggingToContainerRequest.cs" />
     <Compile Include="Domain\Request\Interfaces\IAddToWebRequest.cs" />
     <Compile Include="Domain\Request\Interfaces\ICloudFilesRequest.cs" />

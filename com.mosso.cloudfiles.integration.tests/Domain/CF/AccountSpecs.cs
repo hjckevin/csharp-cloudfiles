@@ -1,3 +1,5 @@
+using System;
+using System.Text.RegularExpressions;
 using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.exceptions;
 using NUnit.Framework;
@@ -37,6 +39,8 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.AccountSpecs
                 Assert.That(account.ContainerExists(Constants.CONTAINER_NAME), Is.True);
                 Assert.That(account.ContainerCount, Is.EqualTo(originalContainerCount + 1));
                 Assert.That(account.BytesUsed, Is.EqualTo(originalBytesUsed + 0));
+                var container = account.GetContainer(Constants.CONTAINER_NAME);
+                Assert.That(typeof(CF_Container), Is.EqualTo(container.GetType()));
             }
             finally
             {
@@ -150,9 +154,8 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.AccountSpecs
             try
             {
                 account.CreateContainer(Constants.CONTAINER_NAME);
-                var expectedJson = "[{\"name\": \"" + Constants.CONTAINER_NAME + "\", \"count\": 0, \"bytes\": 0}]";
-
-                Assert.That(account.JSON, Is.EqualTo(expectedJson));
+                var expectedJson = "{\"name\": \"" + Constants.CONTAINER_NAME + "\", \"count\": 0, \"bytes\": 0}";
+                Assert.That(Regex.Match(account.JSON, ".*"+expectedJson+".*").Success, Is.True);
             }
             finally
             {
@@ -166,7 +169,7 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.AccountSpecs
     [TestFixture]
     public class When_getting_a_json_serialized_version_of_an_account_and_no_containers_exist : AccountIntegrationTestBase
     {
-        [Test]
+        [Test, Ignore("Only works if account has no pre-existing containers")]
         public void should_return_json_string_emptry_brackets()
         {
             var expectedJson = "[]";
@@ -184,9 +187,9 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.AccountSpecs
             try
             {
                 account.CreateContainer(Constants.CONTAINER_NAME);
-                var expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><account name=\"MossoCloudFS_5d8f3dca-7eb9-4453-aa79-2eea1b980353\"><container><name>" + Constants.CONTAINER_NAME + "</name><count>0</count><bytes>0</bytes></container></account>";
+                var expectedXml = "<container><name>" + Constants.CONTAINER_NAME + "</name><count>0</count><bytes>0</bytes></container>";
 
-                Assert.That(account.XML.InnerXml, Is.EqualTo(expectedXml));
+                Assert.That(account.XML.InnerXml.Contains(expectedXml), Is.True);
             }
             finally
             {
@@ -199,12 +202,12 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.AccountSpecs
     [TestFixture]
     public class When_getting_a_xml_serialized_version_of_an_account_and_no_containers_exist : AccountIntegrationTestBase
     {
-        [Test]
+        [Test, Ignore("Only works if account has no pre-existing containers")]
         public void should_return_xml_document_with_account_name()
         {
-            var expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><account name=\"MossoCloudFS_5d8f3dca-7eb9-4453-aa79-2eea1b980353\"></account>";
-
-            Assert.That(account.XML.InnerXml, Is.EqualTo(expectedXml));
+            Console.WriteLine(account.XML.InnerXml);
+            var pattern = "^<?xml version=\"1.0\" encoding=\"UTF-8\"?><account name=\\.*\"></account>$";
+            Assert.That(Regex.Match(account.XML.InnerXml, pattern).Success, Is.True);
         }
     }
 }

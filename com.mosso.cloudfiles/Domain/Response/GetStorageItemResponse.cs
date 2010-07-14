@@ -89,11 +89,11 @@ namespace com.mosso.cloudfiles.domain.response
 
         private void StoreFile(string filename)
         {
-            FileStream fs = new FileStream(filename, FileMode.Create);
+            var fs = new FileStream(filename, FileMode.Create);
 
-            byte[] buffer = new byte[4096];
+            var buffer = new byte[4096];
 
-            int amt = 0;
+            int amt;
             while ((amt = contentStream.Read(buffer, 0, buffer.Length)) != 0)
             {
                 fs.Write(buffer, 0, amt);

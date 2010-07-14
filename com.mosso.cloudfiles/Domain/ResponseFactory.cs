@@ -2,14 +2,9 @@
 /// See COPYING file for licensing information
 ///
 
-using System;
-using System.Net;
 using System.Text;
-using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.request.Interfaces;
-using com.mosso.cloudfiles.domain.response;
 using com.mosso.cloudfiles.domain.response.Interfaces;
-using com.mosso.cloudfiles.exceptions;
 using com.mosso.cloudfiles.utils;
 
 namespace com.mosso.cloudfiles.domain
@@ -59,7 +54,7 @@ namespace com.mosso.cloudfiles.domain
 
         private string OutputRequestInformation(ICloudFilesRequest request)
         {
-            StringBuilder output = new StringBuilder();
+            var output = new StringBuilder();
             output.Append("\n");
             output.Append("REQUEST");
             output.Append("\n");
@@ -84,7 +79,7 @@ namespace com.mosso.cloudfiles.domain
 
         private string OutputResponseInformation(ICloudFilesResponse response)
         {
-            StringBuilder output = new StringBuilder();
+            var output = new StringBuilder();
             output.Append("\n");
             output.Append("RESPONSE:");
             output.Append("\n");

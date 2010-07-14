@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Net;
 using System.Web;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using com.mosso.cloudfiles.domain.response.Interfaces;

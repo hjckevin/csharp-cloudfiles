@@ -24,7 +24,10 @@ namespace com.mosso.cloudfiles.domain.request
         /// <param name="cdnManagementUrl">The CDN URL</param>
         /// <param name="containerName">The name of the container to update the details for</param>
         /// <param name="isCdnEnabled">Sets whether or not specified container is available on the CDN</param>
-        /// <param name="timeToLiveInSeconds"></param>
+        /// <param name="isLoggingEnabled">sets whether or not logging is enabled</param>
+        /// <param name="timeToLiveInSeconds">the time limit for the container to be public</param>
+        /// <param name="agentacl"></param>
+        /// <param name="refacl"></param>
         public SetPublicContainerDetails(string cdnManagementUrl, string containerName,  bool isCdnEnabled,bool isLoggingEnabled ,int timeToLiveInSeconds, string agentacl, string refacl)
         {
   

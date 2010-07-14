@@ -11,7 +11,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.SetPublicContai
         public void Should_occur_without_error()
         {
             var containerList = connection.GetPublicContainers();
-            Assert.That(containerList.Count, Is.EqualTo(0));
+            Assert.That(containerList.Contains(Constants.CONTAINER_NAME), Is.False);
             connection.MarkContainerAsPrivate(Constants.CONTAINER_NAME);
         }
     }
@@ -47,10 +47,13 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.SetPublicContai
                 Assert.That(cdnUrl, Is.Not.Null);
                 Assert.That(cdnUrl.ToString().Length, Is.GreaterThan(0));
 
+                var publicContainers = connection.GetPublicContainers();
+                Assert.That(publicContainers.Contains(Constants.CONTAINER_NAME), Is.True, "Container was not added to public containers list");
+
                 connection.MarkContainerAsPrivate(Constants.CONTAINER_NAME);
 
-                var publicContainers = connection.GetPublicContainers();
-                Assert.That(publicContainers.Contains(Constants.CONTAINER_NAME), Is.False);
+                publicContainers = connection.GetPublicContainers();
+                Assert.That(publicContainers.Contains(Constants.CONTAINER_NAME), Is.False, "Container was not removed from public containers list");
             }
             finally
             {

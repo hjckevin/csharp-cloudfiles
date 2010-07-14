@@ -4,11 +4,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Security.Cryptography;
-using System.Text;
-using System.Web;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using com.mosso.cloudfiles.exceptions;
 using com.mosso.cloudfiles.utils;
@@ -24,9 +20,9 @@ namespace com.mosso.cloudfiles.domain.request
         private readonly string _storageUrl;
         private readonly string _containerName;
         private readonly string _remoteStorageItemName;
-        private Stream filetosend;
+        private readonly Stream filetosend;
         private readonly Dictionary<string, string> _metadata;
-        private string _fileUrl;
+        private readonly string _fileUrl;
         private Dictionary<string, string> _mimetypes;
 
 
@@ -124,7 +120,7 @@ namespace com.mosso.cloudfiles.domain.request
             if (!ObjectNameValidator.Validate(remoteStorageItemName)) throw new StorageItemNameException();
 
             _fileUrl = CleanUpFilePath(localFilePath);
-            this.filetosend = new FileStream(_fileUrl, FileMode.Open); //added by ryan as stop gap
+            filetosend = new FileStream(_fileUrl, FileMode.Open); //added by ryan as stop gap
 
             BuildMimeTypeDict();
 
@@ -618,7 +614,7 @@ namespace com.mosso.cloudfiles.domain.request
         {
             var extension = Path.GetExtension(filename).ToLower();
 
-            string mimetype = "";
+            string mimetype;
             _mimetypes.TryGetValue(extension,out mimetype);
             return mimetype ?? "application/octet-stream";
         }
@@ -653,7 +649,7 @@ namespace com.mosso.cloudfiles.domain.request
 
             request.AllowWriteStreamBuffering = false;
 
-            request.ContentType = this.ContentType();
+            request.ContentType = ContentType();
             request.SetContent(filetosend, Progress);
         }
 

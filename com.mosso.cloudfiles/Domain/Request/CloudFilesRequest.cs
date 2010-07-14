@@ -3,15 +3,11 @@
 ///
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using com.mosso.cloudfiles.domain.response;
 using com.mosso.cloudfiles.domain.response.Interfaces;
@@ -30,12 +26,12 @@ namespace com.mosso.cloudfiles.domain.request
 
         public void SetContent(Stream stream, Connection.ProgressCallback progress)
         {
-            this.ContentStream = stream;
-            this.ContentLength = stream.Length;
-            this.Progress = progress;
+            ContentStream = stream;
+            ContentLength = stream.Length;
+            Progress = progress;
 
-            this.ETag = StringifyMD5(new MD5CryptoServiceProvider().ComputeHash(this.ContentStream));
-            this.ContentStream.Seek(0, 0);
+            ETag = StringifyMD5(new MD5CryptoServiceProvider().ComputeHash(ContentStream));
+            ContentStream.Seek(0, 0);
 
         }
         public Stream ContentStream
@@ -70,8 +66,8 @@ namespace com.mosso.cloudfiles.domain.request
         {
             if (request == null) throw new ArgumentNullException();
 
-            this._httpWebRequest = request;
-            this._proxyCredentials = proxyCredentials;
+            _httpWebRequest = request;
+            _proxyCredentials = proxyCredentials;
         }
 
         /// <summary>
@@ -120,15 +116,15 @@ namespace com.mosso.cloudfiles.domain.request
 
         public Uri RequestUri
         {
-            get { return this._httpWebRequest.RequestUri; }
+            get { return _httpWebRequest.RequestUri; }
         }
 
 
 
         public string Method
         {
-            get { return this._httpWebRequest.Method; }
-            set { this._httpWebRequest.Method = value; }
+            get { return _httpWebRequest.Method; }
+            set { _httpWebRequest.Method = value; }
         }
 
         public WebHeaderCollection Headers
@@ -194,16 +190,16 @@ namespace com.mosso.cloudfiles.domain.request
         private void HandleRangeHeader(HttpWebRequest webrequest)
         {
 
-            if (this.RangeFrom != 0 && this.RangeTo == 0)
-                webrequest.AddRange("bytes", this.RangeFrom);
-            else if (this.RangeFrom == 0 && this.RangeTo != 0)
-                webrequest.AddRange("bytes", this.RangeTo);
-            else if (this.RangeFrom != 0 && this.RangeTo != 0)
-                webrequest.AddRange("bytes", this.RangeFrom, this.RangeTo);
+            if (RangeFrom != 0 && RangeTo == 0)
+                webrequest.AddRange("bytes", RangeFrom);
+            else if (RangeFrom == 0 && RangeTo != 0)
+                webrequest.AddRange("bytes", RangeTo);
+            else if (RangeFrom != 0 && RangeTo != 0)
+                webrequest.AddRange("bytes", RangeFrom, RangeTo);
         }
 
 
-        private void HandleProxyCredentialsFor(HttpWebRequest httpWebRequest)
+        private void HandleProxyCredentialsFor(WebRequest httpWebRequest)
         {
             if (_proxyCredentials == null) return;
 
@@ -213,21 +209,21 @@ namespace com.mosso.cloudfiles.domain.request
                 loProxy.Credentials = new NetworkCredential(_proxyCredentials.ProxyUsername, _proxyCredentials.ProxyPassword, _proxyCredentials.ProxyDomain);
             httpWebRequest.Proxy = loProxy;
         }
-        private void AttachBodyToWebRequest(HttpWebRequest request)
+        private void AttachBodyToWebRequest(WebRequest request)
         {
             using (var webstream = request.GetRequestStream())
             {
-                byte[] buffer = new byte[Constants.CHUNK_SIZE];
+                var buffer = new byte[Constants.CHUNK_SIZE];
 
-                var amt = 0;
+                int amt;
                 while ((amt = ContentStream.Read(buffer, 0, buffer.Length)) != 0)
                 {
                     webstream.Write(buffer, 0, amt);
 
                     //Fire the progress event
-                    if (this.Progress != null)
+                    if (Progress != null)
                     {
-                        this.Progress(amt);
+                        Progress(amt);
                     }
                 }
 
@@ -236,9 +232,9 @@ namespace com.mosso.cloudfiles.domain.request
             }
 
         }
-        private static string StringifyMD5(byte[] bytes)
+        private static string StringifyMD5(IEnumerable<byte> bytes)
         {
-            StringBuilder result = new StringBuilder();
+            var result = new StringBuilder();
             foreach (byte b in bytes)
                 result.AppendFormat("{0:x2}", b);
             return result.ToString();

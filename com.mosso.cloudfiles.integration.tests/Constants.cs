@@ -40,6 +40,7 @@ namespace com.mosso.cloudfiles.integration.tests
         public const string StorageItemName = "TestStorageItem.txt";
         public const string StorageItemNameGif = "TestStorageItem.gif";
         public const string StorageItemNameJpg = "TestStorageItem.jpg";
+        public const int StorageItemJpgByteSize = 105542;
         public const string StorageItemNamePdf = "TestStorageItem.pdf";
         public const string HeadStorageItemName = "HeadStorageItem.txt";
         public const string EmptyStorageObjectName = "";

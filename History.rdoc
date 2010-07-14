@@ -1,4 +1,13 @@
 = History
+== v1.4.2.4 (2010-7-16)
+== Bugfixes
+ * Reinstated the ability to make containers public
+ * Code cleanup
+
+== v1.4.2.3 (2010-5-12)
+== Bugfixes
+ * added office 2007 mimetypes since some browsers were downloading them as zip files 
+
 == v1.4.2.2 (2010-3-23)
 == New Features
  * Added support for servicenet.This will eliminate the bandwidth charges that would be associated with your requests otherwise. 

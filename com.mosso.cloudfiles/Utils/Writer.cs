@@ -11,8 +11,8 @@ namespace com.mosso.cloudfiles.utils
 
         public static void WriteTo(this Stream source, Stream target, int bufferLength)
         {
-            byte[] buffer = new byte[bufferLength];
-            int bytesRead = 0;
+            var buffer = new byte[bufferLength];
+            int bytesRead;
 
             do
             {

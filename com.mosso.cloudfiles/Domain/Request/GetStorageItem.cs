@@ -55,7 +55,7 @@ namespace com.mosso.cloudfiles.domain.request
         private readonly string _storageUrl;
         private readonly string _containerName;
         private readonly string _storageItemName;
-        private Dictionary<RequestHeaderFields, string> _requestHeaderFields;
+        private readonly Dictionary<RequestHeaderFields, string> _requestHeaderFields;
          
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace com.mosso.cloudfiles.domain.request
         /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
         /// <exception cref="ContainerNameException">Thrown when the container name length exceeds the maximum container length allowed</exception>
         public GetStorageItem(string storageUrl, string containerName, string storageItemName) :
-            this(storageUrl, containerName, storageItemName, (Dictionary<RequestHeaderFields, string>) null)
+            this(storageUrl, containerName, storageItemName, null)
         {
         }
 
@@ -98,7 +98,7 @@ namespace com.mosso.cloudfiles.domain.request
           
         }
 
-        private void AddRequestFieldHeadersToRequestHeaders(Dictionary<RequestHeaderFields, string> requestHeaderFields,
+        private void AddRequestFieldHeadersToRequestHeaders(ICollection<KeyValuePair<RequestHeaderFields, string>> requestHeaderFields,
             ICloudFilesRequest request)
         {
             if (requestHeaderFields == null || requestHeaderFields.Count == 0) return;
@@ -114,7 +114,7 @@ namespace com.mosso.cloudfiles.domain.request
                 }
                 if (item.Key == RequestHeaderFields.IfModifiedSince)
                 {
-                    request.IfModifiedSince = ParserDateTimeHttpHeader(item.Value); ;
+                    request.IfModifiedSince = ParserDateTimeHttpHeader(item.Value);
                     continue;
                 }
                 if (item.Key == RequestHeaderFields.Range)
@@ -135,7 +135,7 @@ namespace com.mosso.cloudfiles.domain.request
 
         private void VerifyAndSplitRangeHeader(ICloudFilesRequest request, string value)
         {
-            Regex r = new Regex("^[0-9]*[-][0-9]*$");
+            var r = new Regex("^[0-9]*[-][0-9]*$");
             if (!r.IsMatch(value))
                 throw new InvalidRangeHeaderException(
                     "The range must be of the format integer-integer where either integer field is optional. ");

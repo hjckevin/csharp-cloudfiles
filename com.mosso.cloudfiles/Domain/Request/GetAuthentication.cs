@@ -3,7 +3,6 @@
 ///
 
 using System;
-using System.Net;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using com.mosso.cloudfiles.utils;
 

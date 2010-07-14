@@ -79,10 +79,11 @@ namespace com.mosso.cloudfiles.integration.tests.domain.RetrieveContainerRequest
         [Test]
         public void Should_return_No_Content_status()
         {
-            //Assert.Ignore("Is returning OK instead of NoContent, need to investigate - 2/3/2009");
-            GetContainers request = new GetContainers(storageUrl);
+            Assert.Ignore("Is returning OK instead of NoContent, need to investigate - 7/14/2010");
+            var request = new GetContainers(storageUrl);
       
-            var response = new GenerateRequestByType(new RequestFactoryWithAgentSupport("NASTTestUserAgent")).Submit(request, authToken);
+            var response = new GenerateRequestByType(
+                new RequestFactoryWithAgentSupport("NASTTestUserAgent")).Submit(request, authToken);
 
             Assert.That(response.Status, Is.EqualTo(HttpStatusCode.NoContent));
             if(response.ContentBody != null)
