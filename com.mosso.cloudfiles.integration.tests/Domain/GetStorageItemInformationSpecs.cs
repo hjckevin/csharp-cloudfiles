@@ -1,8 +1,6 @@
 using System;
 using System.Net;
-using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.domain.request;
-using com.mosso.cloudfiles.domain.response;
 using com.mosso.cloudfiles.exceptions;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
@@ -13,10 +11,10 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemInformatio
     public class When_getting_information_on_a_storage_item : TestBase
     {
         [Test]
-        public void Should_get_204_No_Content_when_item_exists()
+        public void Should_get_200_OK_or_204_No_Content_when_item_exists()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 try
                 {
@@ -26,7 +24,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemInformatio
                     var getStorageItemInformation = new GetStorageItemInformation(storageUrl, Constants.CONTAINER_NAME, Constants.HeadStorageItemName);
                     var getStorageItemInformationResponse = new GenerateRequestByType().Submit(
                         getStorageItemInformation, authToken);
-                    Assert.That(getStorageItemInformationResponse.Status, Is.EqualTo(HttpStatusCode.NoContent));
+                    Assert.That(getStorageItemInformationResponse.Status == HttpStatusCode.OK || getStorageItemInformationResponse.Status == HttpStatusCode.NoContent, Is.True);
 
                     var metadata = getStorageItemInformationResponse.Metadata;
                     Assert.That(metadata["Test"], Is.EqualTo("test"));

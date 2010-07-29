@@ -44,9 +44,9 @@ namespace com.mosso.cloudfiles.domain.response
         {
             return (_webResponse.ContentType.Contains("application/json") ||
                 _webResponse.ContentType=="application/xml"||
-                    _webResponse.ContentType == "application/xml; charset=utf-8" ||
-                    _webResponse.ContentType.Contains("text/plain") && _webResponse.ContentLength == -1) ||
-                   _webResponse.ContentType == "text/plain; charset=UTF-8";
+                _webResponse.ContentType == "application/xml; charset=utf-8" ||
+                _webResponse.ContentType.Contains("text/plain") && _webResponse.ContentLength == -1) ||
+                _webResponse.ContentType.Contains("text/plain");
         }
 
         private void CopyToMemory(Stream input, Stream output)
@@ -66,15 +66,15 @@ namespace com.mosso.cloudfiles.domain.response
         }
         private void GetBody(Stream stream)
         {
-             
-            using(var reader = new StreamReader(stream))
+
+            var reader = new StreamReader(stream);
+            
+            string line;
+            while((line = reader.ReadLine())!= null)
             {
-                string line;
-                while((line = reader.ReadLine())!= null)
-                {
-                    _contentbody.Add(line);
-                }
+                _contentbody.Add(line);
             }
+            
         }
         /// <summary>
         /// A property representing the HTTP Status code returned from cloudfiles

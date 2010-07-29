@@ -103,8 +103,8 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
             Assert.That(objectNames[0], Is.EqualTo(Constants.STORAGE_ITEM_NAME));
             Assert.That(objectNames[1], Is.EqualTo(Constants.HEAD_STORAGE_ITEM_NAME));
 
-            Dictionary<GetItemListParameters, string> parameters = new Dictionary<GetItemListParameters, string>();
-            parameters.Add(GetItemListParameters.Limit, "1");
+            var parameters = new Dictionary<GetItemListParameters, string> 
+            {{GetItemListParameters.Limit, "1"}};
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.STORAGE_ITEM_NAME));
@@ -128,8 +128,8 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
             Assert.That(objectNames[0], Is.EqualTo(Constants.STORAGE_ITEM_NAME));
             Assert.That(objectNames[1], Is.EqualTo(Constants.HEAD_STORAGE_ITEM_NAME));
 
-            Dictionary<GetItemListParameters, string> parameters = new Dictionary<GetItemListParameters, string>();
-            parameters.Add(GetItemListParameters.Marker, "1");
+            var parameters = new Dictionary<GetItemListParameters, string> 
+            {{GetItemListParameters.Marker, "1"}};
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.HEAD_STORAGE_ITEM_NAME));
@@ -153,8 +153,8 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
             Assert.That(objectNames[0], Is.EqualTo(Constants.STORAGE_ITEM_NAME));
             Assert.That(objectNames[1], Is.EqualTo(Constants.HEAD_STORAGE_ITEM_NAME));
 
-            Dictionary<GetItemListParameters, string> parameters = new Dictionary<GetItemListParameters, string>();
-            parameters.Add(GetItemListParameters.Prefix, "h");
+            var parameters = new Dictionary<GetItemListParameters, string> 
+            {{GetItemListParameters.Prefix, "h"}};
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.HEAD_STORAGE_ITEM_NAME));
@@ -203,7 +203,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
         {
             var container = new MockCFContainer("testcontainername");
             container.AddObject("test_object_1");
-            var expectedJson = "[{\"name\":\"test_object_1\",\"hash\":\"4281c348eaf83e70ddce0e07221c3d28\",\"bytes\":14,\"content_type\":\"application\\/octet-stream\",\"last_modified\":\"2009-02-03T05:26:32.612278\"}]";
+            const string expectedJson = "[{\"name\":[ ]?\"test_object_1\",[ ]?\"hash\":[ ]?\"4281c348eaf83e70ddce0e07221c3d28\",[ ]?\"bytes\":[ ]?14,[ ]?\"content_type\":[ ]?\"application\\/octet-stream\",[ ]?\"last_modified\":[ ]?\"2009-02-03T05:26:32.612278\"}]";
 
             Assert.That(container.JSON, Is.EqualTo(expectedJson));
         }
@@ -216,8 +216,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
         public void should_return_json_string_emptry_brackets()
         {
             var container  = new MockCFContainer("testcontainername");
-            var expectedJson = "[]";
-
+            const string expectedJson = "[]";
             Assert.That(container.JSON, Is.EqualTo(expectedJson));
         }
     }
@@ -230,7 +229,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
         {
             var container = new MockCFContainer("testcontainername");
             container.AddObject("object");
-            var expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><container name=\"testcontainername\"><object><name>object</name><hash>4281c348eaf83e70ddce0e07221c3d28</hash><bytes>14</bytes><content_type>application/octet-stream</content_type><last_modified>2009-02-03T05:26:32.612278</last_modified></object></container>";
+            const string expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><container name=\"testcontainername\"><object><name>object</name><hash>4281c348eaf83e70ddce0e07221c3d28</hash><bytes>14</bytes><content_type>application/octet-stream</content_type><last_modified>2009-02-03T05:26:32.612278</last_modified></object></container>";
 
             Assert.That(container.XML.InnerXml, Is.EqualTo(expectedXml));
         }
@@ -243,7 +242,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
         public void should_return_xml_document_with_xxxxx()
         {
             var container = new MockCFContainer("testcontainername");
-            var expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><container name=\"testcontainername\"></container>";
+            const string expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><container name=\"testcontainername\"></container>";
 
             Assert.That(container.XML.InnerXml, Is.EqualTo(expectedXml));
         }
@@ -274,7 +273,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
 		[SetUp]
 		public void setup()
 		{
-			base.context();
+			context();
 			mockconnection.Setup(x=>x.GetStorageItemInformation(It.IsAny<string>(), It.IsAny<string>())).
 				Returns(new StorageItemInformation(new WebHeaderCollection()));
 			hasobject = objectInContainerExists();
@@ -297,7 +296,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
 		[SetUp]
 		public void setup()
 		{
-			base.context();	
+			context();	
 			mockconnection.Setup(x=>x.GetStorageItemInformation(fakecontainer, "object")).Throws<ContainerNameException>();
 			
 		}
@@ -313,7 +312,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
 		[SetUp]
 		public void setup()
 		{
-			base.context();	
+			context();	
 			mockconnection.Setup(x=>x.GetStorageItemInformation(fakecontainer, "object")).Throws<StorageItemNameException>();
 			
 		}
@@ -331,7 +330,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
 		[SetUp]
 		public void setup()
 		{
-			base.context();	
+			context();	
 			mockconnection.Setup(x=>x.GetStorageItemInformation(fakecontainer, "object")).Throws<StorageItemNotFoundException>();
 			
 		}
@@ -384,7 +383,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
 
         protected override string[] CloudFilesGetContainer(Dictionary<GetItemListParameters, string> parameters)
         {
-            List<string> objectNames = new List<string>();
+            var objectNames = new List<string>();
             string limit = parameters.ContainsKey(GetItemListParameters.Limit) ? parameters[GetItemListParameters.Limit] : null;
             string offset = parameters.ContainsKey(GetItemListParameters.Marker) ? parameters[GetItemListParameters.Marker] : null;
             string prefix = parameters.ContainsKey(GetItemListParameters.Prefix) ? parameters[GetItemListParameters.Prefix] : null;
@@ -412,14 +411,14 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
         protected override string CloudFileContainerInformationJson()
         {
             if (objects.Count > 0)
-                return "[{\"name\":\"test_object_1\",\"hash\":\"4281c348eaf83e70ddce0e07221c3d28\",\"bytes\":14,\"content_type\":\"application\\/octet-stream\",\"last_modified\":\"2009-02-03T05:26:32.612278\"}]";
+                return "[{\"name\":[ ]?\"test_object_1\",[ ]?\"hash\":[ ]?\"4281c348eaf83e70ddce0e07221c3d28\",[ ]?\"bytes\":[ ]?14,[ ]?\"content_type\":[ ]?\"application\\/octet-stream\",[ ]?\"last_modified\":[ ]?\"2009-02-03T05:26:32.612278\"}]";
 
             return "[]";
         }
 
         protected override XmlDocument CloudFileContainerInformationXml()
         {
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             if (objects.Count > 0)
             {
                 xmlDocument.LoadXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?><container name=\"testcontainername\"><object><name>object</name><hash>4281c348eaf83e70ddce0e07221c3d28</hash><bytes>14</bytes><content_type>application/octet-stream</content_type><last_modified>2009-02-03T05:26:32.612278</last_modified></object></container>");

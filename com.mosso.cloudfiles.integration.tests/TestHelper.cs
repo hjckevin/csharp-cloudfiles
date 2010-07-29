@@ -48,7 +48,8 @@ namespace com.mosso.cloudfiles.integration.tests
             var postStorageItemResponse = new GenerateRequestByType().Submit(setStorageItemMetaInformation, authToken);
             Assert.That(postStorageItemResponse.Status, Is.EqualTo(HttpStatusCode.Accepted));
             Assert.That(postStorageItemResponse.Headers["Content-Type"].Contains("text/plain"), Is.True);
-            Assert.That(postStorageItemResponse.Headers["Content-Length"], Is.EqualTo("0"));
+            var contentLength = postStorageItemResponse.Headers["Content-Length"];
+            Assert.That(contentLength == "58" || contentLength == "0", Is.True);
         }
 
         public void AddMetadataToItem()

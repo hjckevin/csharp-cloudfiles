@@ -1,4 +1,9 @@
 = History
+== v1.4.2.5 (2010-7-29)
+== Bugfixes
+ * Fixed CloudFilesResponse to allow text/plain contentbody
+ * Refactored tests to handle old CloudFiles system and new CloudFiles system
+
 == v1.4.2.4 (2010-7-16)
 == Bugfixes
  * Reinstated the ability to make containers public

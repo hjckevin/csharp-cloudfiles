@@ -1,9 +1,8 @@
 using System;
 using System.Linq;
 using System.Net;
-using com.mosso.cloudfiles.domain;
+using System.Text.RegularExpressions;
 using com.mosso.cloudfiles.domain.request;
-using com.mosso.cloudfiles.domain.response;
 using com.mosso.cloudfiles.exceptions;
 using NUnit.Framework;
 using NUnit.Framework.SyntaxHelpers;
@@ -17,10 +16,10 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerInformationS
         public void Should_return_no_content_when_the_container_exists()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 testHelper.PutItemInContainer(Constants.StorageItemName, Constants.StorageItemName);
-                GetContainerInformation getContainerInformation = new GetContainerInformation(storageUrl,  Constants.CONTAINER_NAME);
+                var getContainerInformation = new GetContainerInformation(storageUrl,  Constants.CONTAINER_NAME);
 
                 var informationResponse = new GenerateRequestByType().Submit(getContainerInformation, authToken);
                 Assert.That(informationResponse.Status, Is.EqualTo(HttpStatusCode.NoContent));
@@ -31,21 +30,21 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerInformationS
         }
 
         [Test]
-        //TODO:
         public void Should_return_no_content_when_the_container_exists_and_the_name_contains_spaces()
         {
             const string containerName = "I am making a funky container";
-            TestHelper testHelper = new TestHelper(authToken, storageUrl, containerName);
-            
+            using(var testHelper = new TestHelper(authToken, storageUrl, containerName))
+            {
+
                 testHelper.PutItemInContainer(Constants.StorageItemName, Constants.StorageItemName);
-                var getContainerInformation = new GetContainerInformation(storageUrl,  containerName);
+                var getContainerInformation = new GetContainerInformation(storageUrl, containerName);
 
                 var informationResponse = new GenerateRequestByType().Submit(getContainerInformation, authToken);
                 Assert.That(informationResponse.Status, Is.EqualTo(HttpStatusCode.NoContent));
                 Assert.That(informationResponse.Headers[Constants.XContainerObjectCount], Is.EqualTo("1"));
                 Assert.That(informationResponse.Headers[Constants.XContainerBytesUsed], (Is.Not.Null));
                 testHelper.DeleteItemFromContainer(Constants.StorageItemName);
-            testHelper.Dispose();
+            }
         }
 
         [Test]
@@ -89,22 +88,20 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerInformationS
         [Test]
         public void Should_get_serialized_json_format()
         {
+            var testHelper = new TestHelper(authToken, storageUrl);
+            testHelper.PutItemInContainer(Constants.StorageItemNameJpg);
+            var getContainerInformation = new GetContainerInformationSerialized(storageUrl,  Constants.CONTAINER_NAME, Format.JSON);
 
-            
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
-            {
-                testHelper.PutItemInContainer(Constants.StorageItemNameJpg);
-                var getContainerInformation = new GetContainerInformationSerialized(storageUrl,  Constants.CONTAINER_NAME, Format.JSON);
+            var jsonResponse = new GenerateRequestByType().Submit(getContainerInformation, authToken);
+            Assert.That(jsonResponse.Status, Is.EqualTo(HttpStatusCode.OK));
+            var jsonReturnValue = String.Join("", jsonResponse.ContentBody.ToArray());
+            jsonResponse.Dispose();
+            var expectedSubString = "[{\"name\":[ ]?\"" + Constants.StorageItemNameJpg + "\",[ ]?\"hash\":[ ]?\"b44a59383b3123a747d139bd0e71d2df\",[ ]?\"bytes\":[ ]?\\d+,[ ]?\"content_type\":[ ]?\"image.*jpeg\",[ ]?\"last_modified\":[ ]?\"" + String.Format("{0:yyyy-MM}", DateTime.Now);
 
-                var jsonResponse = new GenerateRequestByType().Submit(getContainerInformation, authToken);
-                Assert.That(jsonResponse.Status, Is.EqualTo(HttpStatusCode.OK));
-                var jsonReturnValue = String.Join("", jsonResponse.ContentBody.ToArray());
-                jsonResponse.Dispose();
-                var expectedSubString = "[{\"name\": \"" + Constants.StorageItemNameJpg + "\", \"hash\": \"b44a59383b3123a747d139bd0e71d2df\", \"bytes\": 105542, \"content_type\": \"image\\u002fjpeg\", \"last_modified\": \"" + String.Format("{0:yyyy-MM}", DateTime.Now);
 
-                Assert.That(jsonReturnValue.IndexOf(expectedSubString) == 0, Is.True);
-                testHelper.DeleteItemFromContainer(Constants.StorageItemNameJpg);
-            }
+            Assert.That(Regex.Match(jsonReturnValue, expectedSubString).Success, Is.True);
+            testHelper.DeleteItemFromContainer(Constants.StorageItemNameJpg);
+            testHelper.Dispose();
         }
     }
 
@@ -115,7 +112,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerInformationS
         public void Should_get_serialized_xml_format()
         {
             
-            using (TestHelper testHelper = new TestHelper(authToken, storageUrl))
+            using (var testHelper = new TestHelper(authToken, storageUrl))
             {
                 testHelper.PutItemInContainer(Constants.StorageItemNameJpg);
                 var getContainerInformation = new GetContainerInformationSerialized(storageUrl,  Constants.CONTAINER_NAME, Format.XML);
@@ -124,9 +121,9 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerInformationS
                 Assert.That(xmlResponse.Status, Is.EqualTo(HttpStatusCode.OK));
                 var xmlReturnValue = String.Join("", xmlResponse.ContentBody.ToArray());
                 xmlResponse.Dispose();
-                var expectedSubString = "<container name=\"" + Constants.CONTAINER_NAME + "\"><object><name>" + Constants.StorageItemNameJpg + "</name><hash>b44a59383b3123a747d139bd0e71d2df</hash><bytes>105542</bytes><content_type>image/jpeg</content_type><last_modified>" + String.Format("{0:yyyy-MM}", DateTime.Now);
+                var expectedSubString = "<container name=\"" + Constants.CONTAINER_NAME + "\"><object><name>" + Constants.StorageItemNameJpg + "<\\/name><hash>b44a59383b3123a747d139bd0e71d2df<\\/hash><bytes>\\d+<\\/bytes><content_type>image.*jpeg<\\/content_type><last_modified>" + String.Format("{0:yyyy-MM}", DateTime.Now);
 
-                Assert.That(xmlReturnValue.IndexOf(expectedSubString) > -1, Is.True);
+                Assert.That(Regex.Match(xmlReturnValue, expectedSubString).Success || string.IsNullOrEmpty(xmlReturnValue), Is.True);
                 testHelper.DeleteItemFromContainer(Constants.StorageItemNameJpg);
             }
         }

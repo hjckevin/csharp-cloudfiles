@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Net;
 using System.Reflection;
 using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.exceptions;
@@ -28,7 +27,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.PutStorageItemS
         [ExpectedException(typeof(ContainerNotFoundException))]
         public void Should_throw_an_exception_when_the_container_does_not_exist()
         {
-            connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
+            connection.PutStorageItem(Constants.CONTAINER_NAME+new Guid(), Constants.StorageItemName);
         }
 
         [Test]
@@ -138,9 +137,8 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.PutStorageItemS
             try
             {
                 var file = new FileInfo(Constants.StorageItemNamePdf);
-                var metadata = new Dictionary<string, string>();
-                metadata.Add("Source", "1");
-                metadata.Add("Note", "2");
+                var metadata = new Dictionary<string, string> 
+                {{"Source", "1"}, {"Note", "2"}};
 
                 connection.PutStorageItem(Constants.CONTAINER_NAME, file.Open(FileMode.Open), file.Name, metadata);
                 storageItem = connection.GetStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNamePdf);
@@ -169,7 +167,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.PutStorageItemS
             StorageItem storageItem = null;
             try
             {
-                Dictionary<string, string> metadata = new Dictionary<string, string>
+                var metadata = new Dictionary<string, string>
                                                       {
                                                           {Constants.MetadataKey, Constants.MetadataValue}
                                                       };
@@ -197,7 +195,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.PutStorageItemS
             try
             {
                 var file = new FileInfo(Constants.StorageItemNameJpg);
-                Dictionary<string, string> metadata = new Dictionary<string, string>
+                var metadata = new Dictionary<string, string>
                                                       {
                                                           {Constants.MetadataKey, Constants.MetadataValue}
                                                       };
@@ -242,10 +240,8 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.PutStorageItemS
                 //Sleep to make sure we receive the message
                 Thread.Sleep(5000);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e.ToString());
-                //Make sure to always clean up
                 connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }

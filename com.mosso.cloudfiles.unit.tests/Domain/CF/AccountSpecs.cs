@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using System.Xml;
 using com.mosso.cloudfiles.domain;
 using NUnit.Framework;
@@ -104,8 +105,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.AccountSpecs
         {
             var account = new MockCFAccount();
             account.CreateContainer("container");
-            var expectedJson = "[{\"name\": \"container\", \"count\": 0, \"bytes\": 0}]";
-
+            const string expectedJson = "[{\"name\":[ ]?\"container\",[ ]?\"count\":[ ]?0,[ ]?\"bytes\":[ ]?0}]";
             Assert.That(account.JSON, Is.EqualTo(expectedJson));
         }
     }
@@ -117,8 +117,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.AccountSpecs
         public void should_return_json_string_emptry_brackets()
         {
             var account = new MockCFAccount();
-            var expectedJson = "[]";
-
+            const string expectedJson = "[]";
             Assert.That(account.JSON, Is.EqualTo(expectedJson));
         }
     }
@@ -131,7 +130,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.AccountSpecs
         {
             var account = new MockCFAccount();
             account.CreateContainer("container");
-            var expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><account name=\"MossoCloudFS_5d8f3dca-7eb9-4453-aa79-2eea1b980353\"><container><name>container</name><count>0</count><bytes>0</bytes></container></account>";
+            const string expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><account name=\"MossoCloudFS_5d8f3dca-7eb9-4453-aa79-2eea1b980353\"><container><name>container</name><count>0</count><bytes>0</bytes></container></account>";
 
             Assert.That(account.XML.InnerXml, Is.EqualTo(expectedXml));
         }
@@ -144,7 +143,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.AccountSpecs
         public void should_return_xml_document_with_account_name()
         {
             var account = new MockCFAccount();
-            var expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><account name=\"MossoCloudFS_5d8f3dca-7eb9-4453-aa79-2eea1b980353\"></account>";
+            const string expectedXml = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><account name=\"MossoCloudFS_5d8f3dca-7eb9-4453-aa79-2eea1b980353\"></account>";
 
             Assert.That(account.XML.InnerXml, Is.EqualTo(expectedXml));
         }
@@ -187,15 +186,14 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.AccountSpecs
 
         protected override string CloudFileAccountInformationJson()
         {
-            if(containers.Count > 0) 
-                return "[{\"name\": \"container\", \"count\": 0, \"bytes\": 0}]";
-
-            return "[]";
+            return containers.Count > 0 ? 
+                "[{\"name\":[ ]?\"container\",[ ]?\"count\":[ ]?0,[ ]?\"bytes\":[ ]?0}]" 
+                : "[]";
         }
 
         protected override XmlDocument CloudFileAccountInformationXml()
         {
-            XmlDocument xmlDocument = new XmlDocument();
+            var xmlDocument = new XmlDocument();
             if (containers.Count > 0)
             {
                 xmlDocument.LoadXml("<?xml version=\"1.0\" encoding=\"UTF-8\"?><account name=\"MossoCloudFS_5d8f3dca-7eb9-4453-aa79-2eea1b980353\"><container><name>container</name><count>0</count><bytes>0</bytes></container></account>");

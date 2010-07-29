@@ -470,7 +470,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Putting storage item into container '"+ containerName + "' for user "+ _usercreds.Username)
                 .ThenDoing(() => putStorageItem(containerName, localFilePath, metadata))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForStorageItemError)
+                .Do(ex => determineReasonForStorageItemError(ex, true))
                 .AndLogError("Error putting storage item "+ localFilePath + " with metadata into container '"+ containerName + "' for user "+ _usercreds.Username)
                 .Now();
         }
@@ -819,7 +819,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Putting storage item stream into container '" + containerName + "' named " + remoteStorageItemName + " for user " + _usercreds.Username)
                 .ThenDoing(() => putStorageItem(containerName, storageStream, remoteStorageItemName, metadata))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForStorageItemError)
+                .Do(ex => determineReasonForStorageItemError(ex, true))
                 .AndLogError("Error putting storage item stream into container '" + containerName + "' named " + remoteStorageItemName + " for user " + _usercreds.Username)
                 .Now();
 
@@ -1559,11 +1559,15 @@ namespace com.mosso.cloudfiles
             return containerList.ToList();
         }
 
-        private void determineReasonForStorageItemError(WebException ex)
+        private void determineReasonForStorageItemError(WebException ex, bool onContainer)
         {
             var response = (HttpWebResponse)ex.Response;
             if (response != null && response.StatusCode == HttpStatusCode.NotFound)
+            {
+                if (onContainer)
+                    throw new ContainerNotFoundException("The requested container does not exist");
                 throw new StorageItemNotFoundException("The requested item does not exist");
+            }
             if (response != null && response.StatusCode == HttpStatusCode.Conflict)
                 throw new ContainerNotEmptyException("The container you are trying to delete is not empty");
             if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
@@ -1572,7 +1576,11 @@ namespace com.mosso.cloudfiles
                 throw new PreconditionFailedException(ex.Message);
             if (response != null && response.StatusCode == HttpStatusCode.BadRequest)
                 throw new ContainerNotFoundException("The requested container does not exist");
+        }
 
+        private void determineReasonForStorageItemError(WebException ex)
+        {
+            determineReasonForStorageItemError(ex, false);
         }
 
         private void determineReasonForContainerError(WebException ex)
