@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net;
+using System.Text.RegularExpressions;
 using com.mosso.cloudfiles.domain.response.Interfaces;
 using com.mosso.cloudfiles.utils;
 
@@ -44,7 +45,7 @@ namespace com.mosso.cloudfiles.domain.response
         {
             return (_webResponse.ContentType.Contains("application/json") ||
                 _webResponse.ContentType=="application/xml"||
-                _webResponse.ContentType == "application/xml; charset=utf-8" ||
+                Regex.Match(_webResponse.ContentType,@"^application\/xml; charset=utf-?8$").Success ||
                 _webResponse.ContentType.Contains("text/plain") && _webResponse.ContentLength == -1) ||
                 _webResponse.ContentType.Contains("text/plain");
         }

@@ -78,13 +78,13 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainerInf
 		 
 		protected override void  SetUp()
         {
-		    connection.CreateContainer(Constants.CONTAINER_NAME);
+            connection.CreateContainer(Constants.CONTAINER_NAME);
 
             try
             {
 				var dict = new Dictionary<string,string> 
                 {{"X-User-Agent-ACL", "Mozilla"}, {"X-Referrer-ACL", "testdomain.com"}};
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNameJpg, dict );
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNameJpg, dict);
                 xmlReturnValue = connection.GetContainerInformationXml(Constants.CONTAINER_NAME);
                
             }
@@ -98,10 +98,11 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainerInf
 		[Test]
 		public void should_have_serialized_xml()
 		{
-		
-		  		var expectedSubString = "<container name=\"" + Constants.CONTAINER_NAME + "\"><object><name>" + Constants.StorageItemNameJpg + "</name><hash>b44a59383b3123a747d139bd0e71d2df</hash><bytes>105542</bytes><content_type>image/jpeg</content_type><last_modified>" + String.Format("{0:yyyy-MM}", DateTime.Now);
 
-                Assert.That(Regex.Match(xmlReturnValue.InnerXml, expectedSubString).Success || string.IsNullOrEmpty(xmlReturnValue.InnerXml), Is.True);
+            var expectedSubString = "<container name=\"" + Constants.CONTAINER_NAME + "\"><object><name>" + Constants.StorageItemNameJpg + "</name><hash>b44a59383b3123a747d139bd0e71d2df</hash><bytes>105542</bytes><content_type>image/jpeg</content_type><last_modified>" + String.Format("{0:yyyy-MM}", DateTime.Now);
+
+		    Console.WriteLine(xmlReturnValue.InnerXml);
+            Assert.That(Regex.Match(xmlReturnValue.InnerXml, expectedSubString).Success, Is.True);
 		
 		}
 
