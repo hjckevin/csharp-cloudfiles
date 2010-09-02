@@ -89,7 +89,7 @@ namespace com.mosso.cloudfiles.domain.response
 
         private void StoreFile(string filename)
         {
-            var fs = new FileStream(filename, FileMode.Create);
+            var fs = new FileStream(filename, FileMode.Create, FileAccess.Read);
 
             var buffer = new byte[4096];
 

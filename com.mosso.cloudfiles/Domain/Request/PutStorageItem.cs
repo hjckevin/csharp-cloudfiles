@@ -120,7 +120,7 @@ namespace com.mosso.cloudfiles.domain.request
             if (!ObjectNameValidator.Validate(remoteStorageItemName)) throw new StorageItemNameException();
 
             _fileUrl = CleanUpFilePath(localFilePath);
-            filetosend = new FileStream(_fileUrl, FileMode.Open); //added by ryan as stop gap
+            filetosend = new FileStream(_fileUrl, FileMode.Open, FileAccess.Read);
 
             BuildMimeTypeDict();
 

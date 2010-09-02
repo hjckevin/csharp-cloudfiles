@@ -80,7 +80,7 @@ class IntegrationTestsCredentialsFilesBuilder
 		  
 	  erb = ERB.new(template, 0, "%<>")
 	  
-	  File.open("com.mosso.cloudfiles.integration.tests/Credentials.config", 'w') do |file|
+	  File.open("com.mosso.cloudfiles.integration.tests/bin/Debug/Credentials.config", 'w') do |file|
 		  file.puts erb.result(binding) 
 	  end
 	end

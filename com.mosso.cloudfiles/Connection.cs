@@ -46,19 +46,14 @@ namespace com.mosso.cloudfiles
     /// </example>
     public class Connection : IConnection
     {
-        private bool retry;
-        private readonly List<ProgressCallback> callbackFuncs;
+        private bool _retry;
+        private readonly List<ProgressCallback> _callbackFuncs;
         private readonly GenerateRequestByType _requestfactory;
         private readonly bool _useServiceNet;
 
         private bool isNotNullOrEmpty(params string[] strings)
         {
-            foreach (var str in strings)
-            {
-                if (String.IsNullOrEmpty(str))
-                    return false;
-            }
-            return true;
+            return strings.All(str => !String.IsNullOrEmpty(str));
         }
 
         protected string CdnManagementUrl;
@@ -84,7 +79,7 @@ namespace com.mosso.cloudfiles
         {
             _useServiceNet = useServiceNet;
             _requestfactory = new GenerateRequestByType();
-            callbackFuncs = new List<ProgressCallback>();
+            _callbackFuncs = new List<ProgressCallback>();
             Log.EnsureInitialized();
 
             if (userCreds == null) throw new ArgumentNullException("userCreds");
@@ -129,7 +124,7 @@ namespace com.mosso.cloudfiles
 
         public void AddProgressWatcher(ProgressCallback progressCallback)
         {
-            callbackFuncs.Add(progressCallback);
+            _callbackFuncs.Add(progressCallback);
         }
 
         /// <summary>
@@ -147,7 +142,7 @@ namespace com.mosso.cloudfiles
         {
             return StartProcess.
                 ByLoggingMessage("Getting account information for user " + _usercreds.Username)
-                .ThenDoing<AccountInformation>(buildAccount).
+                .ThenDoing<AccountInformation>(BuildAccount).
                 AndIfErrorThrownIs<Exception>().
                 Do(Nothing).
                 AndLogError("Error getting account information for user " + _usercreds.Username).
@@ -169,7 +164,7 @@ namespace com.mosso.cloudfiles
         {
             return StartProcess
                 .ByLoggingMessage("Getting account information (JSON format) for user " + _usercreds.Username)
-                .ThenDoing<string>(buildAccountJson)
+                .ThenDoing<string>(BuildAccountJson)
                 .AndIfErrorThrownIs<Exception>()
                 .Do(Nothing)
                 .AndLogError("Error getting account information (JSON format) for user " + _usercreds.Username)
@@ -191,7 +186,7 @@ namespace com.mosso.cloudfiles
         {
             return StartProcess
                 .ByLoggingMessage("Getting account information (XML format) for user " + _usercreds.Username)
-                .ThenDoing<XmlDocument>(buildAccountXml)
+                .ThenDoing<XmlDocument>(BuildAccountXml)
                 .AndIfErrorThrownIs<Exception>()
                 .Do(Nothing)
                 .AndLogError("Error getting account information (XML format) for user " + _usercreds.Username)
@@ -217,7 +212,7 @@ namespace com.mosso.cloudfiles
 
             StartProcess
                 .ByLoggingMessage("Creating container '" + containerName + "' for user " + _usercreds.Username)
-                .ThenDoing(() => containerCreation(containerName))
+                .ThenDoing(() => ContainerCreation(containerName))
                 .AndIfErrorThrownIs<Exception>()
                 .Do(Nothing)
                 .AndLogError("Error creating container '" + containerName + "' for user " + _usercreds.Username)
@@ -245,7 +240,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Deleting container '" + containerName + "' for user " + _usercreds.Username)
                 .ThenDoing(() => deleteContainer(containerName))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Error deleting container '" + containerName + "' for user " + _usercreds.Username)
                 .Now();
         }
@@ -266,7 +261,7 @@ namespace com.mosso.cloudfiles
         {
             return StartProcess
                 .ByLoggingMessage("Getting containers for user " + _usercreds.Username)
-                .ThenDoing<List<string>>(buildContainerList)
+                .ThenDoing<List<string>>(BuildContainerList)
                 .AndIfErrorThrownIs<Exception>()
                 .Do(Nothing)
                 .AndLogError("Error getting containers for user " + _usercreds.Username)
@@ -355,7 +350,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Getting container item list for container '"+ containerName + "' for user "+ _usercreds.Username)
                 .ThenDoing(() => getContainerItemList(containerName, parameters))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Error getting containers item list for container '"+ containerName + "' for user "+ _usercreds.Username)
                 .Now();
         }
@@ -382,7 +377,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Getting container information for container '"+ containerName + "' for user "+ _usercreds.Username)
                 .ThenDoing(() => getContainerInformation(containerName))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Error getting container information for container '"+ containerName + "' for user "+ _usercreds.Username)
                 .Now();
         }
@@ -410,7 +405,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Getting container information (JSON format) for container '"+ containerName + "' for user "+ _usercreds.Username)
                 .ThenDoing(() => getContainerInformationJson(containerName))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Error getting container information (JSON format) for container '"+ containerName + "' for user "+ _usercreds.Username)
                 .Now();
         }
@@ -437,7 +432,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Getting container information (XML format) for container '"+ containerName + "' for user "+ _usercreds.Username)
                 .ThenDoing(() => getContainerInformationXml(containerName))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Error getting container information (XML format) for container '"+ containerName + "' for user "+ _usercreds.Username)
                 .Now();
         }
@@ -470,7 +465,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Putting storage item into container '"+ containerName + "' for user "+ _usercreds.Username)
                 .ThenDoing(() => putStorageItem(containerName, localFilePath, metadata))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(ex => determineReasonForStorageItemError(ex, true))
+                .Do(ex => DetermineReasonForStorageItemError(ex, true))
                 .AndLogError("Error putting storage item "+ localFilePath + " with metadata into container '"+ containerName + "' for user "+ _usercreds.Username)
                 .Now();
         }
@@ -819,7 +814,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Putting storage item stream into container '" + containerName + "' named " + remoteStorageItemName + " for user " + _usercreds.Username)
                 .ThenDoing(() => putStorageItem(containerName, storageStream, remoteStorageItemName, metadata))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(ex => determineReasonForStorageItemError(ex, true))
+                .Do(ex => DetermineReasonForStorageItemError(ex, true))
                 .AndLogError("Error putting storage item stream into container '" + containerName + "' named " + remoteStorageItemName + " for user " + _usercreds.Username)
                 .Now();
 
@@ -848,7 +843,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Deleting storage item "+ storageItemName + " in container '"+ containerName + "' for user "+ _usercreds.Username)
                 .ThenDoing(() => deleteStorageItem(containerName, storageItemName))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForStorageItemError)
+                .Do(DetermineReasonForStorageItemError)
                 .AndLogError("Error deleting storage item "+ storageItemName + " in container '"+ containerName + "' for user "+ _usercreds.Username)
                 .Now();
         }
@@ -904,7 +899,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Getting storage item " + storageItemName + " with in container '" + containerName + "' for user " + _usercreds.Username)
                 .ThenDoing(() => getStorageItem(containerName, storageItemName, requestHeaderFields))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForStorageItemError)
+                .Do(DetermineReasonForStorageItemError)
                 .AndLogError("Error getting storage item " + storageItemName + " with request Header fields in container '" + containerName + "' for user " + _usercreds.Username)
                 .Now();
         }
@@ -1107,7 +1102,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Getting storage item "+ storageItemName + " in container '"+ containerName + "' for user "+ _usercreds.Username + " and name it "+ localFileName + " locally")
                 .ThenDoing(() => getStorageItem(containerName, storageItemName, localFileName, requestHeaderFields))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForStorageItemError)
+                .Do(DetermineReasonForStorageItemError)
                 .AndLogError("Error getting storage item "+ storageItemName + " with request Header fields in container '"+ containerName + "' for user "+ _usercreds.Username)
                 .Now();
         }
@@ -1140,7 +1135,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Setting storage item "+ storageItemName + " meta information for container '"+ containerName + "' for user")
                 .ThenDoing(() => setStorageItemMetaInformation(containerName, storageItemName, metadata))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForStorageItemError)
+                .Do(DetermineReasonForStorageItemError)
                 .AndLogError("Error setting metainformation for storage item "+ storageItemName + " in container '"+ containerName + "' for user "+ _usercreds.Username)
                 .Now();
         }
@@ -1169,7 +1164,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Getting storage item " + storageItemName + " information in container '" + containerName + "' for user")
                 .ThenDoing(() => getStorageItemInformation(containerName, storageItemName))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForStorageItemError)
+                .Do(DetermineReasonForStorageItemError)
                 .AndLogError("Error getting storage item " + storageItemName + " information in container '" + containerName + "' for user " + _usercreds.Username)
                 .Now();
         }
@@ -1191,7 +1186,7 @@ namespace com.mosso.cloudfiles
                 .ByLoggingMessage("Getting public containers for user " + _usercreds.Username)
                 .ThenDoing(() => getPublicContainers())
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Error getting public containers for user " + _usercreds.Username)
                 .Now();
         }
@@ -1218,7 +1213,7 @@ namespace com.mosso.cloudfiles
             return StartProcess.ByLoggingMessage("Marking container '"+ containerName + "' as public with TTL of "+ timeToLiveInSeconds + " seconds for user "+ _usercreds.Username)
                 .ThenDoing(() => markContainerAsPublic(containerName, timeToLiveInSeconds))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Error marking container '"+ containerName + "' as public with TTL of "+ timeToLiveInSeconds + " seconds for user "+ _usercreds.Username)
                 .Now();
         }
@@ -1261,7 +1256,7 @@ namespace com.mosso.cloudfiles
             StartProcess.ByLoggingMessage("Marking container "+ containerName + " as private for user "+ _usercreds.Username)
                 .ThenDoing(() => markContainerAsPrivate(containerName))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Error marking container "+ containerName + " as private for user "+ _usercreds.Username)
                 .Now();
         }
@@ -1288,7 +1283,7 @@ namespace com.mosso.cloudfiles
             return StartProcess.ByLoggingMessage("Getting public container " + containerName + " information for user " + _usercreds.Username)
                 .ThenDoing(() => getPublicContainerInformation(containerName))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Error getting public container "+ containerName + " information for user "+ _usercreds.Username)
                 .Now();
         }
@@ -1309,7 +1304,7 @@ namespace com.mosso.cloudfiles
             StartProcess.ByLoggingMessage("Adding logging to container named "+ publiccontainer + " for user "+ _usercreds.Username)
                 .ThenDoing(() => setDetailsOnPublicContainer(publiccontainer, loggingenabled, ttl, referreracl, useragentacl))
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Error setting logging on container named "+ publiccontainer + " for user "+ _usercreds.Username)
                 .Now();
         }
@@ -1330,7 +1325,7 @@ namespace com.mosso.cloudfiles
             return StartProcess.ByLoggingMessage("Retrieving account information for account " + CdnManagementUrl)
                 .ThenDoing(() => getPublicAccountInformationXML())
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Failed to get account information for account " + CdnManagementUrl)
                 .Now();
         }
@@ -1347,7 +1342,7 @@ namespace com.mosso.cloudfiles
             return StartProcess.ByLoggingMessage("Retrieving account information for account " + CdnManagementUrl)
                 .ThenDoing(() => getPublicAccountInformationJson())
                 .AndIfErrorThrownIs<WebException>()
-                .Do(determineReasonForContainerError)
+                .Do(DetermineReasonForContainerError)
                 .AndLogError("Failed to get account information for account " + CdnManagementUrl)
                 .Now();
         }
@@ -1407,7 +1402,7 @@ namespace com.mosso.cloudfiles
         {
             StartProcess.
                 ByLoggingMessage("Authenticating user " + _usercreds.Username).
-                ThenDoing(authenticateSequence).
+                ThenDoing(AuthenticateSequence).
                 AndIfErrorThrownIs<Exception>().
                 Do(Nothing).
                 AndLogError("Error authenticating user " + _usercreds.Username).
@@ -1419,12 +1414,12 @@ namespace com.mosso.cloudfiles
             return isNotNullOrEmpty(AuthToken, StorageUrl, CdnManagementUrl) && _usercreds != null;
         }
 
-        private string getContainerCDNUri(Container container)
+        private string GetContainerCdnUri(Container container)
         {
             try
             {
-                var public_container = GetPublicContainerInformation(container.Name);
-                return public_container == null ? "" : public_container.CdnUri;
+                var publicContainer = GetPublicContainerInformation(container.Name);
+                return publicContainer == null ? "" : publicContainer.CdnUri;
             }
             catch (ContainerNotFoundException)
             {
@@ -1443,19 +1438,15 @@ namespace com.mosso.cloudfiles
             }
         }
 
-        private Dictionary<string, string> getMetadata(IResponse getStorageItemResponse)
+        private Dictionary<string, string> GetMetadata(IResponse getStorageItemResponse)
         {
-            var metadata = new Dictionary<string, string>();
             var headers = getStorageItemResponse.Headers;
-            foreach (var key in headers.AllKeys)
-            {
-                if (key.IndexOf(Constants.META_DATA_HEADER) > -1)
-                    metadata.Add(key, headers[key]);
-            }
-            return metadata;
+            return headers.AllKeys
+                .Where(key => key.IndexOf(Constants.META_DATA_HEADER) > -1)
+                .ToDictionary(key => key, key => headers[key]);
         }
 
-        private void storeFile(string filename, Stream contentStream)
+        private void StoreFile(string filename, Stream contentStream)
         {
             using (var file = File.Create(filename))
             {
@@ -1463,7 +1454,7 @@ namespace com.mosso.cloudfiles
             }
         }
 
-        private string buildAccountJson()
+        private string BuildAccountJson()
         {
             string jsonResponse = "";
             var getAccountInformationJson = new GetAccountInformationSerialized(StorageUrl, Format.JSON);
@@ -1476,14 +1467,14 @@ namespace com.mosso.cloudfiles
             return jsonResponse;
         }
 
-        private AccountInformation buildAccount()
+        private AccountInformation BuildAccount()
         {
             var getAccountInformation = new GetAccountInformation(StorageUrl);
             var getAccountInformationResponse = _requestfactory.Submit(getAccountInformation, AuthToken);
             return new AccountInformation(getAccountInformationResponse.Headers[Constants.X_ACCOUNT_CONTAINER_COUNT], getAccountInformationResponse.Headers[Constants.X_ACCOUNT_BYTES_USED]);
         }
 
-        private void authenticateSequence()
+        private void AuthenticateSequence()
         {
             var getAuthentication = new GetAuthentication(_usercreds);
             var getAuthenticationResponse = _requestfactory.Submit(getAuthentication);
@@ -1500,15 +1491,15 @@ namespace com.mosso.cloudfiles
                 return;
             }
 
-            if (!retry && getAuthenticationResponse.Status == HttpStatusCode.Unauthorized)
+            if (!_retry && getAuthenticationResponse.Status == HttpStatusCode.Unauthorized)
             {
-                retry = true;
+                _retry = true;
                 Authenticate();
                 return;
             }
         }
 
-        private XmlDocument buildAccountXml()
+        private XmlDocument BuildAccountXml()
         {
             var accountInformationXml = new GetAccountInformationSerialized(StorageUrl, Format.XML);
             var getAccountInformationXmlResponse = _requestfactory.Submit(accountInformationXml, AuthToken);
@@ -1533,7 +1524,7 @@ namespace com.mosso.cloudfiles
             }
         }
 
-        private void containerCreation(string containername)
+        private void ContainerCreation(string containername)
         {
             var createContainer = new CreateContainer(StorageUrl, containername);
             var createContainerResponse = _requestfactory.Submit(createContainer, AuthToken);
@@ -1547,7 +1538,7 @@ namespace com.mosso.cloudfiles
             _requestfactory.Submit(deleteContainer, AuthToken, _usercreds.ProxyCredentials);
         }
 
-        private List<string> buildContainerList()
+        private List<string> BuildContainerList()
         {
             IList<string> containerList = new List<string>();
             var getContainers = new GetContainers(StorageUrl);
@@ -1559,7 +1550,7 @@ namespace com.mosso.cloudfiles
             return containerList.ToList();
         }
 
-        private void determineReasonForStorageItemError(WebException ex, bool onContainer)
+        private void DetermineReasonForStorageItemError(WebException ex, bool onContainer)
         {
             var response = (HttpWebResponse)ex.Response;
             if (response != null && response.StatusCode == HttpStatusCode.NotFound)
@@ -1578,12 +1569,12 @@ namespace com.mosso.cloudfiles
                 throw new ContainerNotFoundException("The requested container does not exist");
         }
 
-        private void determineReasonForStorageItemError(WebException ex)
+        private void DetermineReasonForStorageItemError(WebException ex)
         {
-            determineReasonForStorageItemError(ex, false);
+            DetermineReasonForStorageItemError(ex, false);
         }
 
-        private void determineReasonForContainerError(WebException ex)
+        private void DetermineReasonForContainerError(WebException ex)
         {
             var response = (HttpWebResponse)ex.Response;
             if (response != null && response.StatusCode == HttpStatusCode.NotFound)
@@ -1640,7 +1631,7 @@ namespace com.mosso.cloudfiles
                     getContainerInformationResponse.Headers[
                         Constants.X_CONTAINER_STORAGE_OBJECT_COUNT])
             };
-            var url = getContainerCDNUri(container);
+            var url = GetContainerCdnUri(container);
             if (!string.IsNullOrEmpty(url)) url += "/";
             container.CdnUri = url;
             return container;
@@ -1662,8 +1653,6 @@ namespace com.mosso.cloudfiles
             var xmlResponse = String.Join("", getSerializedResponse.ContentBody.ToArray());
             getSerializedResponse.Dispose();
 
-            if (xmlResponse == null) return new XmlDocument();
-
             var xmlDocument = new XmlDocument();
             try
             {
@@ -1682,7 +1671,7 @@ namespace com.mosso.cloudfiles
             var remoteName = Path.GetFileName(localFilePath);
             var localName = localFilePath.Replace("/", "\\");
             var putStorageItem = new PutStorageItem(StorageUrl, containerName, remoteName, localName, metadata);
-            foreach (var callback in callbackFuncs)
+            foreach (var callback in _callbackFuncs)
             {
                 putStorageItem.Progress += callback;
             }
@@ -1692,7 +1681,7 @@ namespace com.mosso.cloudfiles
         private void putStorageItem(string containerName, Stream storageStream, string remoteStorageItemName, Dictionary<string, string> metadata)
         {
             var putStorageItem = new PutStorageItem(StorageUrl, containerName, remoteStorageItemName, storageStream, metadata);
-            foreach (var callback in callbackFuncs)
+            foreach (var callback in _callbackFuncs)
             {
                 putStorageItem.Progress += callback;
             }
@@ -1722,8 +1711,6 @@ namespace com.mosso.cloudfiles
             var xmlResponse = String.Join("", getSerializedResponse.ContentBody.ToArray());
             getSerializedResponse.Dispose();
 
-            if (xmlResponse == null) return new XmlDocument();
-
             var xmlDocument = new XmlDocument();
             try
             {
@@ -1747,13 +1734,13 @@ namespace com.mosso.cloudfiles
         {
             var getStorageItem = new GetStorageItem(StorageUrl, containerName, storageItemName, requestHeaderFields);
             var getStorageItemResponse = _requestfactory.Submit(getStorageItem, AuthToken, _usercreds.ProxyCredentials);
-            foreach (var callback in callbackFuncs)
+            foreach (var callback in _callbackFuncs)
             {
                 getStorageItemResponse.Progress += callback;
             }
             var stream = getStorageItemResponse.GetResponseStream();
 
-            storeFile(localFileName, stream);
+            StoreFile(localFileName, stream);
         }
 
         private void deleteStorageItem(string containerName, string storageItemName)
@@ -1768,7 +1755,7 @@ namespace com.mosso.cloudfiles
             var getStorageItemResponse = _requestfactory.Submit(getStorageItem, AuthToken, _usercreds.ProxyCredentials);
 
 
-            var metadata = getMetadata(getStorageItemResponse);
+            var metadata = GetMetadata(getStorageItemResponse);
             var storageItem = new StorageItem(storageItemName, metadata, getStorageItemResponse.ContentType, getStorageItemResponse.GetResponseStream(), getStorageItemResponse.ContentLength, getStorageItemResponse.LastModified);
             //                getStorageItemResponse.Dispose();
             return storageItem;

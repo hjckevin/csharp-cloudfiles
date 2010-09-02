@@ -99,11 +99,8 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
             
             using (var testHelper = new TestHelper(authToken, storageUrl))
             {
-                var fileStream = new FileStream(Constants.StorageItemNameJpg, FileMode.Open);
+                var fileStream = new FileStream(Constants.StorageItemNameJpg, FileMode.Open, FileAccess.Read);
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemNameJpg, fileStream);
-
-             //   Assert.That(putStorageItem.ContentLength, Is.GreaterThan(0));
-           //     Assert.That(putStorageItem.ContentType, Is.EqualTo("image/jpeg"));
 
                 var response = new GenerateRequestByType().Submit(putStorageItem, authToken);
                 Assert.That(response.Status, Is.EqualTo(HttpStatusCode.Created));
@@ -118,11 +115,8 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
             
             using (var testHelper = new TestHelper(authToken, storageUrl))
             {
-                var fileStream = new FileStream(Constants.StorageItemNameGif, FileMode.Open);
+                var fileStream = new FileStream(Constants.StorageItemNameGif, FileMode.Open, FileAccess.Read);
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemNameGif, fileStream);
-
-            //    Assert.That(putStorageItem.ContentLength, Is.GreaterThan(0));
-              //  Assert.That(putStorageItem.ContentType, Is.EqualTo("image/gif"));
 
                 var response = new GenerateRequestByType().Submit(putStorageItem, authToken);
                 Assert.That(response.Status, Is.EqualTo(HttpStatusCode.Created));
@@ -159,7 +153,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
             
             using (var testHelper = new TestHelper(authToken, storageUrl))
             {
-                var fs = new FileStream(Constants.StorageItemName, FileMode.Open);
+                var fs = new FileStream(Constants.StorageItemName, FileMode.Open, FileAccess.Read);
                 var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemName, fs, null);
                 var response = new GenerateRequestByType().Submit(putStorageItem, authToken);
                 fs.Close();
@@ -183,8 +177,6 @@ namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
                 request.Headers.Add("X-Auth-Token", HttpUtility.UrlEncode(authToken));
                 var response= request.GetResponse();
                 
-
-              
                 Assert.That(response.Status, Is.EqualTo(HttpStatusCode.Created));
                 Assert.That(response.Headers[Constants.ETAG], Is.EqualTo(request.ETag));
                 testHelper.DeleteItemFromContainer();
