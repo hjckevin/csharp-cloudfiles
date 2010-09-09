@@ -4,7 +4,7 @@
 
 This is a .NET/C# interface into the {Rackspace CloudFiles}[http://www.rackspacecloud.com/cloud_hosting_products/files] service. Cloud Files is a reliable, scalable and affordable web-based storage hosting for backing up and archiving all your static content.  Cloud Files is the first and only cloud service that leverages a tier one CDN provider to create such an easy and complete storage-to-delivery solution for media content.
 
-== Creating Issues
+== *Creating Issues*
 
 Please read the {wiki}[http://wiki.github.com/rackspace/csharp-cloudfiles/] about what information is best to help people fix your issues, then create an issue on the {issues tab}[http://github.com/rackspace/csharp-cloudfiles/issues].
 
@@ -25,6 +25,14 @@ Reference them from your application.  Look at the examples below once you done 
 				log4net.dll
 		/src
 			...
+
+== Necessary prerequisites
+
+Running the tests requires Ruby and Rake to be installed.  We suggest you use the {Ruby Installer For Windows}[http://rubyinstaller.org/]. We currently use the 1.8.6 version.  After that is installed you will need to install the rake, rubyzip(v0.9.1), and activesupport(v2.3.5) gems.
+
+	gem install rake
+	gem install rubyzip -v 0.9.1
+	gem install activesupport -v 2.3.5
 
 == Getting source, compiling, and using in your project
 
@@ -62,12 +70,10 @@ Please reference the {log4net documentation}[http://logging.apache.org/log4net/r
 
 == Testing
 
-Running the tests requires Ruby and Rake to be installed.  We suggest you use the 
-{One-Click Ruby Installer}[http://rubyforge.org/projects/rubyinstaller/].  Once installed you need to create
-your integration tests credentials config file.
+Once installed you need to create your integration tests credentials config file.
 
 Run "rake create_credentials_config" from the project solution directory.  This will create a Credentials.config file in the
-com.mosso.cloudfiles.integration.tests project folder:
+com.mosso.cloudfiles.integration.tests project's bin/debug folder:
 
   <?xml version="1.0" encoding="utf-8"?>
   <credentials>
@@ -76,12 +82,6 @@ com.mosso.cloudfiles.integration.tests project folder:
   </credentials>
 
 Just replace the placeholder text.  This file *is not* under source control.  It is ignored by the .gitignore file.
-
-The unit tests are present but still being worked on.
-
-== Forums
-
-Please visit the {Mosso Forums}[https://manage.mosso.com/forum] if you have any questions.  Once you are logged in, scroll to cloud files category/grouping and then the .NET thread.
 
 == Examples
 
