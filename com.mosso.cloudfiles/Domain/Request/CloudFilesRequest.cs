@@ -206,10 +206,10 @@ namespace com.mosso.cloudfiles.domain.request
         }
 
         /// <summary>
-        /// Sets the content.
+        /// Sets the content from a stream into the request.
         /// </summary>
-        /// <param name="stream">The stream.</param>
-        /// <param name="progress">The progress.</param>
+        /// <param name="stream">The stream of content.</param>
+        /// <param name="progress">The progress callback to report on the amount of data that's been uploaded.</param>
         public void SetContent(Stream stream, Connection.ProgressCallback progress)
         {
             this.ContentStream = stream;
