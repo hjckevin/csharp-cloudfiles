@@ -1,16 +1,19 @@
-///
-/// See COPYING file for licensing information
-///
-
-using System;
-using com.mosso.cloudfiles.domain.request.Interfaces;
-using com.mosso.cloudfiles.exceptions;
-using com.mosso.cloudfiles.utils;
+//----------------------------------------------
+// See COPYING file for licensing information
+//----------------------------------------------
 
 namespace com.mosso.cloudfiles.domain.request
 {
+
+    #region Using
+    using System;
+    using com.mosso.cloudfiles.domain.request.Interfaces;
+    using com.mosso.cloudfiles.exceptions;
+    using com.mosso.cloudfiles.utils;
+    #endregion
+
     /// <summary>
-    /// CreateContainer
+    /// A class to represent creating a container in a web request
     /// </summary>
     public class CreateContainer : IAddToWebRequest
     {
@@ -18,31 +21,42 @@ namespace com.mosso.cloudfiles.domain.request
         private readonly string _containerName;
 
         /// <summary>
-        /// CreateContainer constructor
+        /// Initializes a new instance of the <see cref="CreateContainer"/> class.
         /// </summary>
-        /// <param name="storageUrl">the customer unique url to interact with cloudfiles</param>
-        /// <param name="containerName">the name of the container where the storage item is located</param>
+        /// <param name="storageUrl">The customer unique url to interact with cloudfiles</param>
+        /// <param name="containerName">The name of the container where the storage item is located</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the reference arguments are null</exception>
         /// <exception cref="ContainerNameException">Thrown when the container name is invalid</exception>
         /// <exception cref="StorageItemNameException">Thrown when the object name is invalid</exception>
         public CreateContainer(string storageUrl, string containerName)
         {
-       
-            if (string.IsNullOrEmpty(storageUrl)
-                || string.IsNullOrEmpty(containerName))
+            if (string.IsNullOrEmpty(storageUrl) || string.IsNullOrEmpty(containerName))
+            {
                 throw new ArgumentNullException();
+            }
 
-            if (!ContainerNameValidator.Validate(containerName)) throw new ContainerNameException();
+            if (!ContainerNameValidator.Validate(containerName))
+            {
+                throw new ContainerNameException();
+            }
 
-                _storageUrl = storageUrl;
+            _storageUrl = storageUrl;
             _containerName = containerName;
         }
 
+        /// <summary>
+        /// Creates the URI.
+        /// </summary>
+        /// <returns>A new URI for this container</returns>
         public Uri CreateUri()
         {
-            return  new Uri(_storageUrl + "/" + _containerName.Encode());
+            return new Uri(_storageUrl + "/" + _containerName.Encode());
         }
 
+        /// <summary>
+        /// Applies the appropiate method to the specified request.
+        /// </summary>
+        /// <param name="request">The request.</param>
         public void Apply(ICloudFilesRequest request)
         {
             request.Method = "PUT";
