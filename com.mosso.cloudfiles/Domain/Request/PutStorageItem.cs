@@ -684,7 +684,6 @@ namespace com.mosso.cloudfiles.domain.request
             }
 
             request.AllowWriteStreamBuffering = false;
-
             request.ContentType = ContentType();
             request.SetContent(fileToSend, Progress);
         }
