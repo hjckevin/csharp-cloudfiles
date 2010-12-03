@@ -1,6 +1,7 @@
 //----------------------------------------------
 // See COPYING file for licensing information
 //----------------------------------------------
+
 namespace com.mosso.cloudfiles.domain.request
 {
     #region Using

@@ -1,31 +1,35 @@
-///
-/// See COPYING file for licensing information
-///
-
-using System;
-using com.mosso.cloudfiles.domain.request.Interfaces;
-using com.mosso.cloudfiles.utils;
+//----------------------------------------------
+// See COPYING file for licensing information
+//----------------------------------------------
 
 namespace com.mosso.cloudfiles.domain.request
 {
+    #region Using
+    using System;
+    using com.mosso.cloudfiles.domain.request.Interfaces;
+    using com.mosso.cloudfiles.utils;
+    #endregion
+
+    /// <summary>
+    /// A class to represent marking a container public in a web request
+    /// </summary>
     public class MarkContainerAsPublic : IAddToWebRequest
     {
         private readonly string _cdnManagementUrl;
         private readonly string _containerName;
         private readonly int _timeToLiveInSeconds;
 
-
         /// <summary>
-        /// Adds this container to the list of containers to be served up publicly
+        /// Initializes a new instance of the <see cref="MarkContainerAsPublic"/> class to add this container to the list of containers to be served up publicly.
         /// </summary>
         /// <param name="cdnManagementUrl">The URL that will be used for accessing content from CloudFS</param>
         /// <param name="containerName">The name of the container to make public on the CDN</param>
-        public MarkContainerAsPublic(string cdnManagementUrl, string containerName):this(cdnManagementUrl, containerName, -200)
+        public MarkContainerAsPublic(string cdnManagementUrl, string containerName) : this(cdnManagementUrl, containerName, -200)
         {
         }
 
         /// <summary>
-        /// Adds this container to the list of containers to be served up publicly
+        /// Initializes a new instance of the <see cref="MarkContainerAsPublic"/> class to add this container to the list of containers to be served up publicly.
         /// </summary>
         /// <param name="cdnManagementUrl">The URL that will be used for accessing content from CloudFS</param>
         /// <param name="containerName">The name of the container to make public on the CDN</param>
@@ -34,19 +38,28 @@ namespace com.mosso.cloudfiles.domain.request
         {
             if (string.IsNullOrEmpty(cdnManagementUrl)
               || string.IsNullOrEmpty(containerName))
+            {
                 throw new ArgumentNullException();
+            }
 
             _cdnManagementUrl = cdnManagementUrl;
             _containerName = containerName;
             _timeToLiveInSeconds = timeToLiveInSeconds;
-            
         }
 
+        /// <summary>
+        /// Creates the corresponding URI for this request.
+        /// </summary>
+        /// <returns>A new URI</returns>
         public Uri CreateUri()
         {
             return new Uri(_cdnManagementUrl + "/" + _containerName.Encode());
         }
 
+        /// <summary>
+        /// Applies the appropiate method and headers to the specified request for this implementation.
+        /// </summary>
+        /// <param name="request">The request.</param>
         public void Apply(ICloudFilesRequest request)
         {
             request.Method = "PUT";
