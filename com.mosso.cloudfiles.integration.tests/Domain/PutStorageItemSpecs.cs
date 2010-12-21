@@ -5,7 +5,7 @@ using System.Net;
 using System.Web;
 using com.mosso.cloudfiles.domain.request;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 
 namespace com.mosso.cloudfiles.integration.tests.domain.PutStorageItemSpecs
 {

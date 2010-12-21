@@ -2,7 +2,7 @@ using System;
 using System.Xml;
 using com.mosso.cloudfiles.domain;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 
 namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
 {

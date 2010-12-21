@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Net;
 using com.mosso.cloudfiles.domain.request;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 using CreateContainer=com.mosso.cloudfiles.domain.request.CreateContainer;
 using DeleteStorageItem=com.mosso.cloudfiles.domain.request.DeleteStorageItem;
 using PutStorageItem=com.mosso.cloudfiles.domain.request.PutStorageItem;

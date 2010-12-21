@@ -1,4 +1,23 @@
 = History
+== v1.5.0.0 (2010-12-23)
+== Bugfixes
+ * fix misspelling of cloudfiles in assemblyinfo generation - product name
+== New Features
+ * upgraded project to .NET 4.0 and VS2010 (Closed gh-20)
+ * upgrade nunit to work with .NET 4.0
+ * removed docu due to no support for .NET 4.0, will replace soon
+ * fixed using statements due to namespace change in NUnit SyntaxHelpers
+ * add 2011 to COPYING and other files
+ * update readme to notify user that vs2010 and .net4.0 are necessary and update history file with correct information, last 3 version updates
+
+== v1.4.2.7 (2010-9-2)
+== Bugfixes
+ * Making sure FileStreams are read-only (Closed gh-13)
+
+== v1.4.2.6 (2010-8-23)
+== Bugfixes
+ * Use regex match for utf-8/utf8 in xml reponse content-type (Closed gh-12)
+
 == v1.4.2.5 (2010-7-29)
 == Bugfixes
  * Fixed CloudFilesResponse to allow text/plain contentbody

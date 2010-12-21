@@ -55,6 +55,7 @@ task :compile => [:clean, :version] do
     UNIT_TESTS_ORIGINAL_DLL_DIR => UNIT_TESTS_DIR
   }
   directories.each do |k, v|
+	rm_rf("#{k}/logs/")
     copy(Dir.glob(File.join(k, "*")), v)
   end
 end
@@ -69,14 +70,7 @@ desc "Runs unit tests"
 task :unit_test => :compile do
   puts "Running unit tests"
   runner = NUnitRunner.new :compilemode => COMPILE_TARGET, :source => UNIT_TESTS_DIR, :results => TEST_REPORTS_DIR
-  runner.executeTests ['com.mosso.cloudfiles.unit.tests']  
-  puts "Running Specifications" 
-  sh "lib\\specmaker\\spec-runner.exe #{UNIT_TESTS_DIR}\\com.mosso.cloudfiles.unit.tests.dll -report HTML #{TEST_REPORTS_DIR}" 
-end
-
-desc "Console Runner For Specmaker"
-task :spec => :compile do
-  sh "lib\\specmaker\\spec-runner.exe #{UNIT_TESTS_DIR}\\com.mosso.cloudfiles.unit.tests.dll " 
+  runner.executeTests ['com.mosso.cloudfiles.unit.tests']
 end
 
 desc "Runs integration tests"
@@ -85,7 +79,7 @@ task :integration_test => :compile do
   puts "ENVIRONMENT VARIABLE: #{ENV['CRED_FILE_LOC']}"
   if ENV['CRED_FILE_LOC']
     puts "copying file from #{ENV['CRED_FILE_LOC']} to #{INTEGRATION_TESTS_CONFIG_FILE}"
-	File.copy(ENV['CRED_FILE_LOC'], INTEGRATION_TESTS_CONFIG_FILE)
+	copy(ENV['CRED_FILE_LOC'], INTEGRATION_TESTS_CONFIG_FILE)
   end
   
   if !File.exists?(INTEGRATION_TESTS_CONFIG_FILE)
@@ -103,7 +97,7 @@ end
 ################
 
 desc "Creates the downloadable zip files"
-task :create_zips => [:clear_dist, :create_binary_zip, :create_source_zip, :create_doc_zip, :create_master_zip]
+task :create_zips => [:clear_dist, :create_binary_zip, :create_source_zip, :create_master_zip]
 
 desc "Clear built zips"
 task :clear_dist do
@@ -125,24 +119,9 @@ task :create_source_zip do
   create_zip("#{DEPLOY_SRC_DIR}/#{ZIP_FILE_PREFIX}-src-#{RELEASE_BUILD_NUMBER}.zip", Dir.pwd, /.gitignore|.git|build|dist|results|_ReSharper|bin|obj|.user|.suo|.resharper|.cache|Credentials.config/)
 end
 
-desc "Builds the API documentation and puts it in 'output'"
-task :build_docs do
-  puts "Creating docs"
-  docu("#{CONFIG_DIR}/com.mosso.cloudfiles.dll")
-end
-
-desc "Creates a zip of the API documentation"
-task :create_doc_zip => :build_docs do
-  puts "Creating docs zip"
-  Dir.mkdir DEPLOY_DOCS_DIR unless File.exists? DEPLOY_DOCS_DIR
-  create_zip("#{DEPLOY_DOCS_DIR}/#{ZIP_FILE_PREFIX}-doc-#{RELEASE_BUILD_NUMBER}.zip", 'output/')
-  FileUtils.rm_r('output') if File.exists? 'output'
-end
-
 desc "Create zip of binary, source, and doc zip files"
 task :create_master_zip do
   puts "Creating master zip"
   create_zip("#{DEPLOY_DIR}/#{ZIP_FILE_PREFIX}-#{RELEASE_BUILD_NUMBER}.zip", DEPLOY_BIN_DIR)
   create_zip("#{DEPLOY_DIR}/#{ZIP_FILE_PREFIX}-#{RELEASE_BUILD_NUMBER}.zip", DEPLOY_SRC_DIR)
-  create_zip("#{DEPLOY_DIR}/#{ZIP_FILE_PREFIX}-#{RELEASE_BUILD_NUMBER}.zip", DEPLOY_DOCS_DIR)
 end

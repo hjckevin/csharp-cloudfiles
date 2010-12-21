@@ -4,7 +4,7 @@ using System.Net;
 using com.mosso.cloudfiles.domain;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 
 namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ObjectSpecs
 {

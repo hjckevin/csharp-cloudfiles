@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 using System.Xml;
 using com.mosso.cloudfiles.domain.request;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 
 namespace com.mosso.cloudfiles.integration.tests.domain.GetAccountSpecs
 {

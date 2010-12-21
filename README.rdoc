@@ -2,15 +2,20 @@
 
 == Description
 
-This is a .NET/C# interface into the {Rackspace CloudFiles}[http://www.rackspacecloud.com/cloud_hosting_products/files] service. Cloud Files is a reliable, scalable and affordable web-based storage hosting for backing up and archiving all your static content.  Cloud Files is the first and only cloud service that leverages a tier one CDN provider to create such an easy and complete storage-to-delivery solution for media content.
+This is a .NET/C# interface into the {Rackspace CloudFiles}[http://www.rackspacecloud.com/cloud_hosting_products/files] service. 
+Cloud Files is a reliable, scalable and affordable web-based storage hosting for backing up and archiving all your static content.  
+Cloud Files is the first and only cloud service that leverages a tier one CDN provider to create such an easy and complete storage-to-delivery 
+solution for media content.
 
 == *Creating Issues*
 
-Please read the {wiki}[http://wiki.github.com/rackspace/csharp-cloudfiles/] about what information is best to help people fix your issues, then create an issue on the {issues tab}[http://github.com/rackspace/csharp-cloudfiles/issues].
+Please read the {wiki}[http://wiki.github.com/rackspace/csharp-cloudfiles/] about what information is best to help people fix your issues, 
+then create an issue on the {issues tab}[http://github.com/rackspace/csharp-cloudfiles/issues].
 
 == Getting dll and using in your project
 
-Go to the {downloads page}[http://github.com/rackspace/csharp-cloudfiles/downloads] and download the latest version.  Unzip the file, unzip the bin zip, and grab the following files:
+Go to the {downloads page}[http://github.com/rackspace/csharp-cloudfiles/downloads] and download the latest version.  
+Unzip the file, unzip the bin zip, and grab the following files:
 
 	com.mosso.cloudfiles.dll
 	log4net.dll
@@ -28,7 +33,10 @@ Reference them from your application.  Look at the examples below once you done 
 
 == Necessary prerequisites
 
-Running the tests requires Ruby and Rake to be installed.  We suggest you use the {Ruby Installer For Windows}[http://rubyinstaller.org/]. We currently use the 1.8.6 version.  After that is installed you will need to install the rake, rubyzip(v0.9.1), and activesupport(v2.3.5) gems.
+Visual Studio 2010 and .NET 4.0
+
+Running the tests requires Ruby and Rake to be installed.  We suggest you use the {Ruby Installer For Windows}[http://rubyinstaller.org/]. 
+We currently use the 1.8.6 version.  After that is installed you will need to install the rake, rubyzip(v0.9.1), and activesupport(v2.3.5) gems.
 
 	gem install rake
 	gem install rubyzip -v 0.9.1
@@ -36,7 +44,8 @@ Running the tests requires Ruby and Rake to be installed.  We suggest you use th
 
 == Getting source, compiling, and using in your project
 
-Follow the instructions {here}[http://help.github.com/win-git-installation/] to install msysgit (Git for Windows users) and the instructions {here}[http://help.github.com/msysgit-key-setup/] on how to get your ssh keys setup for using Github.
+Follow the instructions {here}[http://help.github.com/win-git-installation/] to install msysgit (Git for Windows users) 
+and the instructions {here}[http://help.github.com/msysgit-key-setup/] on how to get your ssh keys setup for using Github.
 
 	git clone git://github.com/rackspace/csharp-cloudfiles.git
 
@@ -87,7 +96,8 @@ Just replace the placeholder text.  This file *is not* under source control.  It
 
 See the class definitions for documentation on specific methods and operations.
 
-types are explicitly used in this example. The +var+ keyword could also be used and object/collection initializers could be used.  We are being explicit for example
+types are explicitly used in this example. The +var+ keyword could also be used and object/collection initializers could be used. 
+We are being explicit for example
 
 <b>Connect to CloudFiles</b>
 	var userCredentials = new UserCredentials("username", "api key");
@@ -321,4 +331,4 @@ See the Cloud Files Viewer demo for a more concrete example
 == License
 
 See COPYING for license information.
-Copyright (c) 2010, Rackspace US, Inc.
+Copyright (c) 2008, 2009 2010, 2011, Rackspace US, Inc.

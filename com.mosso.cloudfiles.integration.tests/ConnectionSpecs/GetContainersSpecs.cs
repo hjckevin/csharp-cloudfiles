@@ -1,6 +1,6 @@
 using com.mosso.cloudfiles.exceptions;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 
 namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainersSpecs
 {

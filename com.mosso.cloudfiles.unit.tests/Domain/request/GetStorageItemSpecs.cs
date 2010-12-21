@@ -6,7 +6,7 @@ using com.mosso.cloudfiles.exceptions;
 using com.mosso.cloudfiles.utils;
 using Moq;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 
 namespace com.mosso.cloudfiles.unit.tests.Domain.request
 {

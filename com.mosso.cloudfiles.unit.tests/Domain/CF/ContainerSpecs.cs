@@ -3,7 +3,7 @@ using System.Xml;
 using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.exceptions;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 using System.Collections.Generic;
 using Moq;
 using System.Net;

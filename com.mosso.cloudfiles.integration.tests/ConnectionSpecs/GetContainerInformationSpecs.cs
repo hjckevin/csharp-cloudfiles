@@ -4,7 +4,7 @@ using System.Xml;
 using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.exceptions;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 using System.Collections.Generic;
 
 namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainerInformationSpecs
@@ -101,7 +101,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainerInf
 
             var expectedSubString = "<container name=\"" + Constants.CONTAINER_NAME + "\"><object><name>" + Constants.StorageItemNameJpg + "</name><hash>b44a59383b3123a747d139bd0e71d2df</hash><bytes>105542</bytes><content_type>image/jpeg</content_type><last_modified>" + String.Format("{0:yyyy-MM}", DateTime.Now);
 
-		    Console.WriteLine(xmlReturnValue.InnerXml);
+//		    Console.WriteLine(xmlReturnValue.InnerXml);
             Assert.That(Regex.Match(xmlReturnValue.InnerXml, expectedSubString).Success, Is.True);
 		
 		}
