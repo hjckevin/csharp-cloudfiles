@@ -1,7 +1,7 @@
 using System;
 using com.mosso.cloudfiles.domain.request;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 
 namespace com.mosso.cloudfiles.unit.tests.Domain.request.GetContainersSpecs
 {

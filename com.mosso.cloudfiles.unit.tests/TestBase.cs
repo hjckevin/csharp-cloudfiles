@@ -3,7 +3,7 @@ using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.response;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 
 namespace com.mosso.cloudfiles.unit.tests
 {

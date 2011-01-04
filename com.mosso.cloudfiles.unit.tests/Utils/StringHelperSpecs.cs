@@ -1,7 +1,7 @@
 using com.mosso.cloudfiles.Exceptions;
 using com.mosso.cloudfiles.utils;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 
 namespace com.mosso.cloudfiles.unit.tests.Utils.StringHelperSpecs
 {

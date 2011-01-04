@@ -1,11 +1,11 @@
-INTEGRATION_TESTS_CONFIG_FILE = "C:/builds/cloudfilescsharp/build/release/IntegrationTests/Credentials.config"
+INTEGRATION_TESTS_CONFIG_FILE = "builds/cloudfilescsharp/build/release/IntegrationTests/Credentials.config"
 COMPILE_TARGET = "release"
-PRODUCT = "csharp-floudfiles"
-COPYRIGHT = "Copyright (c) 2008 2009 2010, Rackspace Managed Hosting.  All Rights Reserved";
+PRODUCT = "csharp-cloudfiles"
+COPYRIGHT = "Copyright (c) 2008, 2009 2010, 2011, Rackspace Managed Hosting.  All Rights Reserved";
 COMPANY = "Rackspace Managed Hosting"
 DESCRIPTION = "C#.NET API for Rackspace Cloud Files Cloud Storage"
 COMMON_ASSEMBLY_INFO = 'com.mosso.cloudfiles/Properties/AssemblyInfo.cs';
-CLR_VERSION = "v3.5"
+CLR_VERSION = "v4.0.30319"
 
 SLN_FILE = "com.mosso.cloudfiles.sln"
 ZIP_FILE_PREFIX = "csharp-cloudfiles"
@@ -14,9 +14,9 @@ CORE_PROJECT_ORIGINAL_DLL_DIR = "com.mosso.cloudfiles/bin/#{COMPILE_TARGET}"
 INTEGRATION_TESTS_ORIGINAL_DLL_DIR = "com.mosso.cloudfiles.integration.tests/bin/#{COMPILE_TARGET}"
 UNIT_TESTS_ORIGINAL_DLL_DIR = "com.mosso.cloudfiles.unit.tests/bin/#{COMPILE_TARGET}"
 
-RELEASE_BUILD_NUMBER = "1.4.2.7"
+RELEASE_BUILD_NUMBER = "1.5.0.0"
 
-CLOUDFILES_BUILD_DIR = "C:/builds/cloudfilescsharp"
+CLOUDFILES_BUILD_DIR = "builds/cloudfilescsharp"
 
 # BUILD CODE DIRECTORY
 BUILD_DIR = "#{CLOUDFILES_BUILD_DIR}/build"

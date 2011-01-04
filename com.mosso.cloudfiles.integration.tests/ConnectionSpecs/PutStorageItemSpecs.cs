@@ -5,7 +5,7 @@ using System.Reflection;
 using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.exceptions;
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
+
 using System.Threading;
 
 namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.PutStorageItemSpecs

@@ -1,5 +1,6 @@
 obj
 bin
+builds
 _ReSharper.*
 *.csproj.user
 *.resharper.user
@@ -18,3 +19,4 @@ Credentials.config
 coverage.xml
 coverage.xml.bkp
 com.mosso.cloudfiles.sln.proj
+com.mosso.cloludfiles-testresults.xml

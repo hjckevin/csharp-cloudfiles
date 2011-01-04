@@ -4,7 +4,7 @@ using System.Xml;
 using com.mosso.cloudfiles.domain;
 using NUnit.Framework;
 using com.mosso.cloudfiles.exceptions;
-using NUnit.Framework.SyntaxHelpers;
+
 
 namespace com.mosso.cloudfiles.unit.tests.Domain.CF.AccountSpecs
 {
