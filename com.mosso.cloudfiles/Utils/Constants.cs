@@ -30,8 +30,8 @@ namespace com.mosso.cloudfiles.utils
         public const string CONTENT_LENGTH_HEADER = "Content-Length";
         public const string CONTENT_TYPE_HEADER = "Content-Type";
         public const string MOSSO_AUTH_URL = "https://api.mosso.com/auth";
-		public const Uri US_AUTHURL =  new Uri("https://auth.api.rackspacecloud.com/v1.0");
-		public const Uri UK_AUTHURL = new Uri("https://auth.api.rackspacecloud.com/v1.0");
+        public const string US_AUTHURL = "https://auth.api.rackspacecloud.com/v1.0";
+        public const string UK_AUTHURL = "https://auth.api.rackspacecloud.com/v1.0";
         public const string X_LOG_RETENTION = "X-Log-Retention";
 		
     }
