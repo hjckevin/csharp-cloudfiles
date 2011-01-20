@@ -122,6 +122,11 @@ namespace com.mosso.cloudfiles
 
         public string AuthToken { private set; get; }
 
+        public Boolean HasCDN()
+        {
+            return isNotNullOrEmpty(CdnManagementUrl);
+        }
+
         public void AddProgressWatcher(ProgressCallback progressCallback)
         {
             _callbackFuncs.Add(progressCallback);
@@ -1277,6 +1282,9 @@ namespace com.mosso.cloudfiles
         /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
         public Container GetPublicContainerInformation(string containerName)
         {
+            if (!HasCDN())
+                return null;
+
             if (string.IsNullOrEmpty(containerName))
                 throw new ArgumentNullException();
 
@@ -1322,6 +1330,9 @@ namespace com.mosso.cloudfiles
         /// <returns>xml document of public account information</returns>
         public XmlDocument GetPublicAccountInformationXML()
         {
+            if (!HasCDN())
+                return null;
+
             return StartProcess.ByLoggingMessage("Retrieving account information for account " + CdnManagementUrl)
                 .ThenDoing(() => getPublicAccountInformationXML())
                 .AndIfErrorThrownIs<WebException>()
@@ -1339,6 +1350,9 @@ namespace com.mosso.cloudfiles
         /// <returns>json string of public account information</returns>
         public string GetPublicAccountInformationJSON()
         {
+            if (!HasCDN())
+                return null;
+
             return StartProcess.ByLoggingMessage("Retrieving account information for account " + CdnManagementUrl)
                 .ThenDoing(() => getPublicAccountInformationJson())
                 .AndIfErrorThrownIs<WebException>()
@@ -1352,12 +1366,18 @@ namespace com.mosso.cloudfiles
 
         private void markContainerAsPrivate(string containerName)
         {
+            if (!HasCDN())
+                return;
+
             var request = new SetPublicContainerDetails(CdnManagementUrl, containerName, false, false, -1, "", "");
             _requestfactory.Submit(request, AuthToken);
         }
 
         private Uri markContainerAsPublic(string containerName, int timeToLiveInSeconds)
         {
+            if (!HasCDN())
+                return null;
+
             var request = new MarkContainerAsPublic(CdnManagementUrl, containerName, timeToLiveInSeconds);
             var response = _requestfactory.Submit(request, AuthToken);
 
@@ -1411,11 +1431,14 @@ namespace com.mosso.cloudfiles
 
         private bool IsAuthenticated()
         {
-            return isNotNullOrEmpty(AuthToken, StorageUrl, CdnManagementUrl) && _usercreds != null;
+            return isNotNullOrEmpty(AuthToken, StorageUrl) && _usercreds != null;
         }
 
         private string GetContainerCdnUri(Container container)
         {
+            if (!HasCDN())
+                return null;
+
             try
             {
                 var publicContainer = GetPublicContainerInformation(container.Name);
@@ -1692,6 +1715,10 @@ namespace com.mosso.cloudfiles
         {
             var request = new GetPublicContainerInformation(CdnManagementUrl, containerName);
             var response = _requestfactory.Submit(request, AuthToken);
+
+            if (!HasCDN())
+                return null;
+
             return response == null ?
                                         null
                        : new Container(containerName) { CdnUri = response.Headers[Constants.X_CDN_URI], TTL = Convert.ToInt32(response.Headers[Constants.X_CDN_TTL]) };
@@ -1699,6 +1726,9 @@ namespace com.mosso.cloudfiles
 
         private string getPublicAccountInformationJson()
         {
+            if (!HasCDN())
+                return null;
+
             var request = new GetPublicContainersInformationSerialized(CdnManagementUrl, Format.JSON);
             var getSerializedResponse = _requestfactory.Submit(request, AuthToken);
             return string.Join("", getSerializedResponse.ContentBody.ToArray());
@@ -1706,6 +1736,9 @@ namespace com.mosso.cloudfiles
 
         private XmlDocument getPublicAccountInformationXML()
         {
+            if (!HasCDN())
+                return null;
+
             var request = new GetPublicContainersInformationSerialized(CdnManagementUrl, Format.XML);
             var getSerializedResponse = _requestfactory.Submit(request, AuthToken);
             var xmlResponse = String.Join("", getSerializedResponse.ContentBody.ToArray());
@@ -1726,6 +1759,9 @@ namespace com.mosso.cloudfiles
 
         private void setDetailsOnPublicContainer(string publiccontainer, bool loggingenabled, int ttl, string referreracl, string useragentacl)
         {
+            if (!HasCDN())
+                return;
+
             var request = new SetPublicContainerDetails(CdnManagementUrl, publiccontainer, true, loggingenabled, ttl, useragentacl, referreracl);
                 _requestfactory.Submit(request, AuthToken);
         }
@@ -1780,6 +1816,9 @@ namespace com.mosso.cloudfiles
 
         private List<string> getPublicContainers()
         {
+            if (!HasCDN())
+                return null;
+
             var getPublicContainers = new GetPublicContainers(CdnManagementUrl);
                 var getPublicContainersResponse = _requestfactory.Submit(getPublicContainers, AuthToken);
                 var containerList = getPublicContainersResponse.ContentBody;

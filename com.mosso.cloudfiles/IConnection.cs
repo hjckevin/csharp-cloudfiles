@@ -11,6 +11,7 @@ namespace com.mosso.cloudfiles
     {
         AccountInformation GetAccountInformation();
         string GetAccountInformationJson();
+        Boolean HasCDN();
         XmlDocument GetAccountInformationXml();
         void CreateContainer(string containerName);
         void DeleteContainer(string continerName);

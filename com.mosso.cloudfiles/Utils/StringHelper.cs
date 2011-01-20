@@ -25,7 +25,7 @@ namespace com.mosso.cloudfiles.utils
             if (String.IsNullOrEmpty(stringToEncode))  
                 throw new ArgumentNullException();
 
-            return HttpUtility.UrlEncode(stringToEncode).Replace("+", "%20");
+            return HttpUtility.UrlEncode(stringToEncode).Replace("+", "%20").Replace("%3a", ":");
         }
 
         public static string StripSlashPrefix(this string path)

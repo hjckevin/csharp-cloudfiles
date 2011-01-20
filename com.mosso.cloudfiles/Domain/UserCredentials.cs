@@ -41,6 +41,18 @@ namespace com.mosso.cloudfiles.domain
         }
 
         /// <summary>
+        /// Constructor - specific auth url with username and api key
+        /// </summary>
+        /// <param name="authUrl">url to authenticate against</param>
+        /// <param name="username">client username to use during authentication</param>
+        /// <param name="api_access_key">client api access key to use during authentication</param>
+        public UserCredentials(Uri authUrl, string username, string api_access_key) :
+            this(authUrl, username, api_access_key, null, null, null)
+        {
+        }
+
+
+        /// <summary>
         /// UserCredential constructor
         /// </summary>
         /// <param name="authUrl">url to authenticate against</param>
