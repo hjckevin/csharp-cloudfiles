@@ -10,6 +10,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.SetPublicContai
         [Test]
         public void Should_occur_without_error()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             var containerList = connection.GetPublicContainers();
             Assert.That(containerList.Contains(Constants.CONTAINER_NAME), Is.False);
             connection.MarkContainerAsPrivate(Constants.CONTAINER_NAME);
@@ -22,6 +25,8 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.SetPublicContai
         [Test]
         public void should_occur_without_error()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
@@ -40,6 +45,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.SetPublicContai
         [Test]
         public void should_remove_it_from_the_public_containers_list()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);

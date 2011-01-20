@@ -10,6 +10,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.MarkContainerAs
         [Test]
         public void Should_return_a_public_cdn_uri()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
@@ -27,6 +30,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.MarkContainerAs
         [Test]
         public void Should_be_able_to_get_the_cdn_uri_from_the_container_information()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
@@ -54,6 +60,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.MarkContainerAs
             [Test]
             public void should_add_the_ttl_to_the_container()
             {
+                if (!connection.HasCDN())
+                    Assert.Ignore("Provider does not support CDN Management");
+
                 string containerName = Guid.NewGuid().ToString();
                 try
                 {
@@ -80,6 +89,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.MarkContainerAs
         [Test]
         public void should_allow_redundant_setting_of_public_status()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);

@@ -13,6 +13,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
 
         protected override void SetUp()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
@@ -37,6 +40,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
 
         protected override void SetUp()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             connection.CreateContainer(Constants.CONTAINER_NAME);
             connection.MarkContainerAsPublic(Constants.CONTAINER_NAME);
             connection.SetDetailsOnPublicContainer(Constants.CONTAINER_NAME, false, 7200, "testdomain.com", "Mozilla");
@@ -74,6 +80,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
 
         protected override void SetUp()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             connection.CreateContainer(Constants.CONTAINER_NAME);
             connection.MarkContainerAsPublic(Constants.CONTAINER_NAME);
             connection.SetDetailsOnPublicContainer(Constants.CONTAINER_NAME, false, 7200, "testdomain.com", "Mozilla");

@@ -13,13 +13,14 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.ContainerSpecs
     {
         protected IAccount account;
         protected IContainer container;
-
+        protected IConnection connection;
+ 
         [SetUp]
         public void Setup()
         {
-            var userCredentials = new UserCredentials(Credentials.USERNAME, Credentials.API_KEY);
-            var connection = new Connection(userCredentials);
+            var userCredentials = new UserCredentials(new Uri(Credentials.AUTH_ENDPOINT), Credentials.USERNAME, Credentials.API_KEY);
 
+            connection = new Connection(userCredentials);
             account = connection.Account;
             container = account.CreateContainer(Constants.CONTAINER_NAME);
         }
@@ -44,6 +45,10 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.ContainerSpecs
         [Test]
         public void Should_obtain_a_public_url()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
+
             container.MarkAsPublic();
 
             Assert.That(Regex.Match(container.PublicUrl.ToString(),"(cdn.*|ltd).cloudfiles.rackspacecloud.com").Success, Is.True, "Public Url was " + container.PublicUrl);

@@ -18,8 +18,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
         [Test]
         public void Should_instantiate_engine_without_throwing_exception_when_authentication_passes()
         {
-
-            new Connection(new UserCredentials(Credentials.USERNAME, Credentials.API_KEY));
+            new Connection(new UserCredentials(new Uri(Credentials.AUTH_ENDPOINT), Credentials.USERNAME, Credentials.API_KEY));
         }
 
         [Test]
