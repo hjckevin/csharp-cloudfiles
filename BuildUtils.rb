@@ -1,7 +1,7 @@
 require 'rubygems'
 
 require 'erb'
-require 'active_support'
+require 'active_support/core_ext'
 require 'find'
 require 'zip/zip'
 require 'fileutils'
@@ -75,6 +75,7 @@ class IntegrationTestsCredentialsFilesBuilder
     <credentials>
       <username>PUT USERNAME HERE</username>
       <api_key>PUT API KEY HERE</api_key>
+      <auth_endpoint>https://auth.api.rackspacecloud.com/v1.0</auth_endpoint>
     </credentials>
 		}.gsub(/^    /, '')
 		  

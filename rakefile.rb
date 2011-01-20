@@ -1,3 +1,5 @@
+$:.push(".")
+
 require "Properties.rb"
 require "BuildUtils.rb"
 require "fileutils"
