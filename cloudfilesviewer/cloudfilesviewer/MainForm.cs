@@ -1,4 +1,4 @@
-﻿ using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -13,7 +13,7 @@ namespace CloudFSViewer
 {
     public partial class MainForm : Form
     {
-        private string username, api_access_key;
+        private string username, api_access_key, auth_endpoint;
 
         public MainForm()
         {
@@ -51,12 +51,19 @@ namespace CloudFSViewer
                 {
                     username = credentialsDialog.Username;
                     api_access_key = credentialsDialog.ApiAccessKey;
+                    auth_endpoint = credentialsDialog.AuthEndpoint;
+
+                    if (auth_endpoint.Length == 0)
+                    {
+                        auth_endpoint = "https://auth.api.rackspacecloud.com/v1.0";
+                    }
                     deleteAllContainersButton.Enabled = true;
+                    
                 }
 
                 try
                 {
-                    Connection = new Connection(new UserCredentials(username, api_access_key));
+                    Connection = new Connection(new UserCredentials(new System.Uri(auth_endpoint),username, api_access_key, null, null));
                     RetrieveContainers();
                 }
                 catch
