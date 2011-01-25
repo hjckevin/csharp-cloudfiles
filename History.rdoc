@@ -1,4 +1,12 @@
 = History
+== v1.5.1.0 (2011-1-24)
+== Bugfixes
+ * fix UK url (Closed gh-22)
+== New Features
+ * downgraded master branch to .NET 3.5 runtime due to end-user feedback
+   the solution and projects are still VS2010 version
+ * created NET40 branch for .NET 4.0 runtime
+
 == v1.5.0.0 (2010-12-23)
 == Bugfixes
  * fix misspelling of cloudfiles in assemblyinfo generation - product name
