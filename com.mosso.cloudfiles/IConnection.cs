@@ -54,7 +54,7 @@ namespace com.mosso.cloudfiles
         string AuthToken { get;  }
 
 
-        void SetDetailsOnPublicContainer(string publiccontainer, bool loggingenabled, int ttl, string referreracl, string useragentacl );
+        void SetDetailsOnPublicContainer(string publiccontainer, bool loggingenabled, int ttl);
         XmlDocument GetPublicAccountInformationXML();
         string GetPublicAccountInformationJSON();
     }

@@ -1,6 +1,7 @@
 using System;
 using System.Net;
 using com.mosso.cloudfiles.domain;
+using com.mosso.cloudfiles.utils;
 using NUnit.Framework;
 
 namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
@@ -20,6 +21,12 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
         {
 
             new Connection(new UserCredentials(Credentials.USERNAME, Credentials.API_KEY));
+        }
+
+        [Test]
+        public void Should_authenticate_when_specific_auth_url_type_provided()
+        {
+            new Connection(new UserCredentials(Credentials.USERNAME, Credentials.API_KEY, AuthUrl.US));
         }
 
         [Test]

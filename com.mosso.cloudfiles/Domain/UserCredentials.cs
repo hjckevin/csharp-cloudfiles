@@ -40,6 +40,24 @@ namespace com.mosso.cloudfiles.domain
         {
         }
 
+        public UserCredentials(string username, string api_access_key, AuthUrl authUrl)
+        {
+            this.username = username;
+            this.api_access_key = api_access_key;
+            switch(authUrl)
+            {
+                case utils.AuthUrl.UK:
+                    this.authUrl = new Uri(Constants.UK_AUTHURL);
+                    break;
+                case utils.AuthUrl.Mosso:
+                    this.authUrl = new Uri(Constants.MOSSO_AUTH_URL);
+                    break;
+                default:
+                    this.authUrl = new Uri(Constants.US_AUTHURL);
+                    break;
+            }
+        }
+
         /// <summary>
         /// UserCredential constructor
         /// </summary>

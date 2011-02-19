@@ -15,8 +15,6 @@ namespace com.mosso.cloudfiles.domain.request
         private readonly bool _isCdnEnabled;
         private readonly bool _isLoggingEnabled;
         private readonly int _timeToLiveInSeconds;
-        private readonly string _agentacl;
-        private readonly string _refacl;
 
         /// <summary>
         /// Assigns various details to containers already publicly available on the CDN
@@ -26,9 +24,7 @@ namespace com.mosso.cloudfiles.domain.request
         /// <param name="isCdnEnabled">Sets whether or not specified container is available on the CDN</param>
         /// <param name="isLoggingEnabled">sets whether or not logging is enabled</param>
         /// <param name="timeToLiveInSeconds">the time limit for the container to be public</param>
-        /// <param name="agentacl"></param>
-        /// <param name="refacl"></param>
-        public SetPublicContainerDetails(string cdnManagementUrl, string containerName,  bool isCdnEnabled,bool isLoggingEnabled ,int timeToLiveInSeconds, string agentacl, string refacl)
+        public SetPublicContainerDetails(string cdnManagementUrl, string containerName,  bool isCdnEnabled,bool isLoggingEnabled ,int timeToLiveInSeconds)
         {
   
             if (String.IsNullOrEmpty(cdnManagementUrl) ||
@@ -39,8 +35,6 @@ namespace com.mosso.cloudfiles.domain.request
             _isCdnEnabled = isCdnEnabled;
             _isLoggingEnabled = isLoggingEnabled;
             _timeToLiveInSeconds = timeToLiveInSeconds;
-            _agentacl = agentacl;
-            _refacl = refacl;
         }
 
         public Uri CreateUri()
@@ -54,9 +48,6 @@ namespace com.mosso.cloudfiles.domain.request
             request.Headers.Add(Constants.X_CDN_ENABLED, _isCdnEnabled.Capitalize());
             request.Headers.Add(Constants.X_LOG_RETENTION, _isLoggingEnabled.Capitalize());
             if(_timeToLiveInSeconds > -1) request.Headers.Add(Constants.X_CDN_TTL, _timeToLiveInSeconds.ToString());
-            if(!String.IsNullOrEmpty(_agentacl)) request.Headers.Add(Constants.X_USER_AGENT_ACL, _agentacl);
-            if (!String.IsNullOrEmpty(_refacl)) request.Headers.Add(Constants.X_REFERRER_ACL, _refacl);
-        
         }
     }
 }

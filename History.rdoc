@@ -1,4 +1,10 @@
 = History
+== v1.5.2.0 (2011-1-24)
+== Bugfixes
+ * Create UserCredentials constructor to allow user to change Auth url (US,UK,Mosso) (re-Closes gh-22)
+== Deprecated (via changes by Rackspace)
+ * removed all usages of useragent acl and referrer acl, this does include trimming the pararmeter list to the SetDetailsOnPublicContainer method on the IConnection interface
+
 == v1.5.1.0 (2011-1-24)
 == Bugfixes
  * fix UK url (Closed gh-22)
