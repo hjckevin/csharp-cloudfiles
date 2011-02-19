@@ -1,40 +1,21 @@
-INTEGRATION_TESTS_CONFIG_FILE = "builds/cloudfilescsharp/build/release/IntegrationTests/Credentials.config"
-COMPILE_TARGET = "release"
+ABSOLUTE_PATH = File.expand_path(File.dirname(__FILE__))
+
+COMPILE_TARGET = 'release'
+INTEGRATION_TESTS_CONFIG_FILE = File.join(ABSOLUTE_PATH, 'com.mosso.cloudfiles.integration.tests','bin',COMPILE_TARGET,'Credentials.config')
 PRODUCT = "csharp-cloudfiles"
 COPYRIGHT = "Copyright (c) 2008, 2009 2010, 2011, Rackspace Managed Hosting.  All Rights Reserved";
 COMPANY = "Rackspace Managed Hosting"
 DESCRIPTION = "C#.NET API for Rackspace Cloud Files Cloud Storage"
-COMMON_ASSEMBLY_INFO = 'com.mosso.cloudfiles/Properties/AssemblyInfo.cs';
-CLR_VERSION = "v3.5"
+COMMON_ASSEMBLY_INFO = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles','Properties','AssemblyInfo.cs')
+CLR_VERSION = 'v3.5'
+SLN_FILE = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles.sln')
+ZIP_FILE_PREFIX = ["csharp-cloudfiles-DOTNET",CLR_VERSION].join
+CORE_DLL_DIR = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles','bin',COMPILE_TARGET)
+INTEGRATION_TESTS_DLL = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles.integration.tests','bin',COMPILE_TARGET,'com.mosso.cloudfiles.integration.tests.dll')
+UNIT_TESTS_DLL = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles.unit.tests','bin',COMPILE_TARGET,'com.mosso.cloudfiles.unit.tests.dll')
+RELEASE_BUILD_NUMBER = "1.5.2.0"
+BUILDS_DIR = File.join(ABSOLUTE_PATH,'builds')
 
-SLN_FILE = "com.mosso.cloudfiles.sln"
-ZIP_FILE_PREFIX = "csharp-cloudfiles"
-
-CORE_PROJECT_ORIGINAL_DLL_DIR = "com.mosso.cloudfiles/bin/#{COMPILE_TARGET}"
-INTEGRATION_TESTS_ORIGINAL_DLL_DIR = "com.mosso.cloudfiles.integration.tests/bin/#{COMPILE_TARGET}"
-UNIT_TESTS_ORIGINAL_DLL_DIR = "com.mosso.cloudfiles.unit.tests/bin/#{COMPILE_TARGET}"
-
-RELEASE_BUILD_NUMBER = "1.5.1.0"
-
-CLOUDFILES_BUILD_DIR = "builds/cloudfilescsharp"
-
-# BUILD CODE DIRECTORY
-BUILD_DIR = "#{CLOUDFILES_BUILD_DIR}/build"
-BUILD_DOCS_DIR = "#{CLOUDFILES_BUILD_DIR}/build/docs"
-
-# BUILD CODE SUB-DIRECTORIES
-
-TEST_REPORTS_DIR = "#{BUILD_DIR}/test-reports"
-CONFIG_DIR = "#{BUILD_DIR}/#{COMPILE_TARGET}"
-INTEGRATION_TESTS_DIR = "#{BUILD_DIR}/#{COMPILE_TARGET}/IntegrationTests"
-UNIT_TESTS_DIR = "#{BUILD_DIR}/#{COMPILE_TARGET}/UnitTests"
-
-# BUILD DEPLOY DIRECTORY (ZIP FILE)
-DEPLOY_DIR = "#{CLOUDFILES_BUILD_DIR}/deploy"
-
-# BUILD DEPLOY SUB-DIRECTORIES
-
-DEPLOY_SRC_DIR ="#{DEPLOY_DIR}/src"
-DEPLOY_BIN_DIR = "#{DEPLOY_DIR}/bin"
-DEPLOY_EXAMPLE_DIR = "#{DEPLOY_DIR}/example"
-DEPLOY_DOCS_DIR = "#{DEPLOY_DIR}/docs"
+NUNIT_CMD_EXE = File.join(ABSOLUTE_PATH,'lib','nunit','nunit-console.exe')
+FRAMEWORK_DIR = File.join(ENV['windir'].dup, 'Microsoft.NET', 'Framework', CLR_VERSION)
+MSBUILD_EXE = File.join(FRAMEWORK_DIR, 'msbuild.exe')

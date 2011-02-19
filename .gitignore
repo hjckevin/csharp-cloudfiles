@@ -19,4 +19,5 @@ Credentials.config
 coverage.xml
 coverage.xml.bkp
 com.mosso.cloudfiles.sln.proj
-com.mosso.cloludfiles-testresults.xml
+csharp-cloudfiles-unit-tests-results.xml
+csharp-cloudfiles-integration-tests-results.xml

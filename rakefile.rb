@@ -1,12 +1,95 @@
+require 'rubygems'
+require 'albacore'
 require "Properties.rb"
-require "BuildUtils.rb"
 require "fileutils"
 
-desc "compiles, runs unit tests, runs integration tests, and create zip files"
+desc "compiles, runs tests and creates zip file"
 task :all => [:default]
 
-desc "**Default**, compiles, runs unit tests, runs integration tests, and create zip files"
-task :default => [:compile, :tests, :create_zips]
+desc "compiles, runs tests and creates zip file"
+task :default => [:compile, :tests, :zip]
+
+################
+#  COMPILE THE CODE
+################
+
+desc "Update the version information for the build"
+assemblyinfo :assemblyinfo do |asm|
+  puts "The build number is #{RELEASE_BUILD_NUMBER}"
+  asm.version = RELEASE_BUILD_NUMBER
+  asm.company_name = COMPANY
+  asm.product_name = PRODUCT
+  asm.description = DESCRIPTION
+  asm.copyright = COPYRIGHT
+  asm.output_file = COMMON_ASSEMBLY_INFO
+end
+
+desc "Compiles the app"
+msbuild :compile => :assemblyinfo do |msb|
+  msb.command = MSBUILD_EXE
+  msb.properties :configuration => COMPILE_TARGET
+  msb.targets :Rebuild
+  msb.verbosity = "minimal"
+  msb.solution = SLN_FILE
+end
+
+################
+#  RUN TESTS
+################
+desc "Run integration and unit tests"
+task :tests => [:unit_tests, :integration_tests]
+
+desc "Run unit tests"
+nunit :unit_tests do |nunit|
+  nunit.command = NUNIT_CMD_EXE
+  nunit.assemblies UNIT_TESTS_DLL
+  nunit.options '/xml=csharp-cloudfiles-unit-tests-results.xml'
+end
+
+desc "Run integration tests"
+nunit :integration_tests do |nunit|
+  if ENV['CRED_FILE_LOC']
+	puts "ENVIRONMENT VARIABLE: #{ENV['CRED_FILE_LOC']}"
+    puts "copying file from #{ENV['CRED_FILE_LOC']} to #{INTEGRATION_TESTS_CONFIG_FILE}"
+	copy(ENV['CRED_FILE_LOC'], INTEGRATION_TESTS_CONFIG_FILE)
+  end
+  
+  if !File.exists?(INTEGRATION_TESTS_CONFIG_FILE)
+	if File.exists?("#{ABSOLUTE_PATH}/Credentials.config")
+	  puts "copying file from #{ABSOLUTE_PATH}/Credentials.config to #{INTEGRATION_TESTS_CONFIG_FILE}"
+	  copy("#{ABSOLUTE_PATH}/Credentials.config", INTEGRATION_TESTS_CONFIG_FILE)
+	  exit
+	end
+    puts "Credentials.config file does not exist.  Please run 'rake create_credentials_config'"
+    exit
+  end
+  
+  nunit.command = NUNIT_CMD_EXE
+  nunit.assemblies INTEGRATION_TESTS_DLL
+  nunit.options '/xml=csharp-cloudfiles-integration-tests-results.xml'
+end
+
+########################
+#  CREATING ZIP FILES
+########################
+
+desc "Create a binary zip"
+zip do |zip|
+  puts "CREATING ZIP"
+  Dir.mkdir BUILDS_DIR if !File.directory?(BUILDS_DIR)  
+  file = "#{ZIP_FILE_PREFIX}-bin-#{RELEASE_BUILD_NUMBER}.zip"
+  File.delete(file) if File.exists?(file)
+
+  zip.output_path = BUILDS_DIR
+  zip.directories_to_zip CORE_DLL_DIR
+  zip.output_file = file
+
+  puts "ZIP CREATION COMPLETE"
+end
+
+##################
+#  CONFIG FILE
+##################
 
 desc "create credentials config template file"
 task :create_credentials_config do
@@ -14,114 +97,19 @@ task :create_credentials_config do
   credentialsConfigTemplateBuilder.write
 end
 
-################
-#  COMPILE THE CODE
-################
-desc "Update the version information for the build"
-task :version do
-  builder = AsmInfoBuilder.new RELEASE_BUILD_NUMBER,
-                               :product => PRODUCT,
-                               :copyright => COPYRIGHT,
-                               :company => COMPANY,
-                               :allow_partially_trusted_callers => true,
-                               :description => DESCRIPTION
-                               
-  buildNumber = builder.buildnumber
-  puts "The build number is #{buildNumber}"
-  builder.write COMMON_ASSEMBLY_INFO  
-end
-
-desc "Prepares the working directory for a new build"
-task :clean do
-  FileUtils.rm_rf CLOUDFILES_BUILD_DIR if File.exists? CLOUDFILES_BUILD_DIR
-	FileUtils.mkdir_p CLOUDFILES_BUILD_DIR
-  Dir.mkdir BUILD_DIR
-  Dir.mkdir BUILD_DOCS_DIR
-  Dir.mkdir TEST_REPORTS_DIR
-  Dir.mkdir CONFIG_DIR
-  Dir.mkdir INTEGRATION_TESTS_DIR
-  Dir.mkdir UNIT_TESTS_DIR
-end
-
-desc "Compiles the app"
-task :compile => [:clean, :version] do
-  MSBuildRunner.compile :compilemode => COMPILE_TARGET, :solutionfile => SLN_FILE, :clrversion => CLR_VERSION
-  
-  copy(INTEGRATION_TESTS_CONFIG_FILE, INTEGRATION_TESTS_ORIGINAL_DLL_DIR) if File.exists?(INTEGRATION_TESTS_CONFIG_FILE)
-  
-  directories = { 
-    CORE_PROJECT_ORIGINAL_DLL_DIR => CONFIG_DIR,
-    INTEGRATION_TESTS_ORIGINAL_DLL_DIR => INTEGRATION_TESTS_DIR,
-    UNIT_TESTS_ORIGINAL_DLL_DIR => UNIT_TESTS_DIR
-  }
-  directories.each do |k, v|
-	rm_rf("#{k}/logs/")
-    copy(Dir.glob(File.join(k, "*")), v)
-  end
-end
-
-################
-#  RUN TESTS
-################
-desc "Run integration and unit tests"
-task :tests => [:unit_test, :integration_test]
-
-desc "Runs unit tests"
-task :unit_test => :compile do
-  puts "Running unit tests"
-  runner = NUnitRunner.new :compilemode => COMPILE_TARGET, :source => UNIT_TESTS_DIR, :results => TEST_REPORTS_DIR
-  runner.executeTests ['com.mosso.cloudfiles.unit.tests']
-end
-
-desc "Runs integration tests"
-task :integration_test => :compile do
-
-  puts "ENVIRONMENT VARIABLE: #{ENV['CRED_FILE_LOC']}"
-  if ENV['CRED_FILE_LOC']
-    puts "copying file from #{ENV['CRED_FILE_LOC']} to #{INTEGRATION_TESTS_CONFIG_FILE}"
-	copy(ENV['CRED_FILE_LOC'], INTEGRATION_TESTS_CONFIG_FILE)
-  end
-  
-  if !File.exists?(INTEGRATION_TESTS_CONFIG_FILE)
-    puts "Credentials.config file does not exist.  Please run 'rake create_credentials_config'"
-    exit
-  end
-  
-  puts "Running integration tests"
-  runner = NUnitRunner.new :compilemode => COMPILE_TARGET, :source => INTEGRATION_TESTS_DIR, :results => TEST_REPORTS_DIR
-  runner.executeTests ['com.mosso.cloudfiles.integration.tests']  
-end
-
-################
-#  CREATING ZIP FILES
-################
-
-desc "Creates the downloadable zip files"
-task :create_zips => [:clear_dist, :create_binary_zip, :create_source_zip, :create_master_zip]
-
-desc "Clear built zips"
-task :clear_dist do
-  FileUtils.rm_rf DEPLOY_DIR if File.exists? DEPLOY_DIR
-  Dir.mkdir DEPLOY_DIR
-end
-
-desc "Create a binary zip"
-task :create_binary_zip do
-  puts "Creating binary zip"
-  Dir.mkdir DEPLOY_BIN_DIR unless File.exists? DEPLOY_BIN_DIR
-  create_zip("#{DEPLOY_BIN_DIR}/#{ZIP_FILE_PREFIX}-bin-#{RELEASE_BUILD_NUMBER}.zip", CONFIG_DIR ,  /UnitTests|IntegrationTests/)
-end
-
-desc "Creates a source zip"
-task :create_source_zip do
-  puts "Creating source zip"
-  Dir.mkdir DEPLOY_SRC_DIR unless File.exists? DEPLOY_SRC_DIR
-  create_zip("#{DEPLOY_SRC_DIR}/#{ZIP_FILE_PREFIX}-src-#{RELEASE_BUILD_NUMBER}.zip", Dir.pwd, /.gitignore|.git|build|dist|results|_ReSharper|bin|obj|.user|.suo|.resharper|.cache|Credentials.config/)
-end
-
-desc "Create zip of binary, source, and doc zip files"
-task :create_master_zip do
-  puts "Creating master zip"
-  create_zip("#{DEPLOY_DIR}/#{ZIP_FILE_PREFIX}-#{RELEASE_BUILD_NUMBER}.zip", DEPLOY_BIN_DIR)
-  create_zip("#{DEPLOY_DIR}/#{ZIP_FILE_PREFIX}-#{RELEASE_BUILD_NUMBER}.zip", DEPLOY_SRC_DIR)
+class IntegrationTestsCredentialsFilesBuilder
+	def write
+		template = %q{<?xml version="1.0" encoding="utf-8"?>
+    <credentials>
+      <username>PUT USERNAME HERE</username>
+      <api_key>PUT API KEY HERE</api_key>
+    </credentials>
+		}.gsub(/^    /, '')
+		  
+	  erb = ERB.new(template, 0, "%<>")
+	  
+	  File.open("#{ABSOLUTE_PATH}/Credentials.config", 'w') do |file|
+		  file.puts erb.result(binding) 
+	  end
+	end
 end
