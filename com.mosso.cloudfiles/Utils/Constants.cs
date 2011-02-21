@@ -1,4 +1,3 @@
-using System;
 namespace com.mosso.cloudfiles.utils
 {
     /// <summary>
@@ -9,8 +8,6 @@ namespace com.mosso.cloudfiles.utils
         public static string X_CDN_MANAGEMENT_URL = "X-CDN-Management-URL";
         public static string X_CDN_URI = "X-CDN-URI";
         public static string X_CDN_ENABLED = "X-CDN-Enabled";
-        public static string X_USER_AGENT_ACL = "X-User-Agent-ACL";
-        public static string X_REFERRER_ACL = "X-Referrer-ACL";
         public static string X_CDN_TTL = "X-TTL";
         public const string X_AUTH_TOKEN = "X-Auth-Token";
         public const string USER_AGENT = "csharp-cloudfiles";

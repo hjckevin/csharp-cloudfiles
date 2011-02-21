@@ -89,6 +89,7 @@
     <Compile Include="Domain\Response\Interfaces\ICloudFilesResponse.cs" />
     <Compile Include="Exceptions\InsecureUrlException.cs" />
     <Compile Include="IConnection.cs" />
+    <Compile Include="Utils\AuthUrl.cs" />
     <Compile Include="Utils\ContainerNameValidator.cs" />
     <Compile Include="Domain\AccountInformation.cs" />
     <Compile Include="Domain\CF_Account.cs" />

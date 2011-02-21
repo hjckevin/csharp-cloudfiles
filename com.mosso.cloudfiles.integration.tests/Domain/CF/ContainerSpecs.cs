@@ -46,7 +46,9 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.ContainerSpecs
         {
             container.MarkAsPublic();
 
-            Assert.That(Regex.Match(container.PublicUrl.ToString(),"(cdn.*|ltd).cloudfiles.rackspacecloud.com").Success, Is.True, "Public Url was " + container.PublicUrl);
+            var pattern = @"^http:\/\/(.*.\.rackcdn\.com|(cdn.*|ltd).cloudfiles.rackspacecloud.com)";
+            Assert.That(Regex.Match(container.PublicUrl.ToString(),pattern).Success, Is.True, 
+                "Public Url was " + container.PublicUrl);
         }
     }
 

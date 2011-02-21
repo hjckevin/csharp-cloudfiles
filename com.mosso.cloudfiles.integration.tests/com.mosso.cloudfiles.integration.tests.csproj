@@ -79,7 +79,6 @@
     <Compile Include="ConnectionSpecs\AuthenticationSpecs.cs" />
     <Compile Include="ConnectionSpecs\GetStorageItemInformationSpecs.cs" />
     <Compile Include="ConnectionSpecs\MakePathSpecs.cs" />
-    <Compile Include="ConnectionSpecs\SetAclOnPublicContainerSpec.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Credentials.cs">
       <SubType>Code</SubType>

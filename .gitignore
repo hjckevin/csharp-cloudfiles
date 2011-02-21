@@ -19,4 +19,4 @@ Credentials.config
 coverage.xml
 coverage.xml.bkp
 com.mosso.cloudfiles.sln.proj
-com.mosso.cloludfiles-testresults.xml
+*-tests-results.xml

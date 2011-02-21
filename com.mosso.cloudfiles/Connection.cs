@@ -1294,15 +1294,13 @@ namespace com.mosso.cloudfiles
         /// <param name="publiccontainer"></param>
         /// <param name="loggingenabled"></param>
         /// <param name="ttl"></param>
-        /// <param name="referreracl"></param>
-        /// <param name="useragentacl"></param>
-        public void SetDetailsOnPublicContainer(string publiccontainer, bool loggingenabled, int ttl, string referreracl, string useragentacl)
+        public void SetDetailsOnPublicContainer(string publiccontainer, bool loggingenabled, int ttl)
         {
             if (string.IsNullOrEmpty(publiccontainer))
                 throw new ArgumentNullException();
 
             StartProcess.ByLoggingMessage("Adding logging to container named "+ publiccontainer + " for user "+ _usercreds.Username)
-                .ThenDoing(() => setDetailsOnPublicContainer(publiccontainer, loggingenabled, ttl, referreracl, useragentacl))
+                .ThenDoing(() => setDetailsOnPublicContainer(publiccontainer, loggingenabled, ttl))
                 .AndIfErrorThrownIs<WebException>()
                 .Do(DetermineReasonForContainerError)
                 .AndLogError("Error setting logging on container named "+ publiccontainer + " for user "+ _usercreds.Username)
@@ -1352,7 +1350,7 @@ namespace com.mosso.cloudfiles
 
         private void markContainerAsPrivate(string containerName)
         {
-            var request = new SetPublicContainerDetails(CdnManagementUrl, containerName, false, false, -1, "", "");
+            var request = new SetPublicContainerDetails(CdnManagementUrl, containerName, false, false, -1);
             _requestfactory.Submit(request, AuthToken);
         }
 
@@ -1692,9 +1690,12 @@ namespace com.mosso.cloudfiles
         {
             var request = new GetPublicContainerInformation(CdnManagementUrl, containerName);
             var response = _requestfactory.Submit(request, AuthToken);
-            return response == null ?
-                                        null
-                       : new Container(containerName) { CdnUri = response.Headers[Constants.X_CDN_URI], TTL = Convert.ToInt32(response.Headers[Constants.X_CDN_TTL]) };
+            return response == null ? null
+                       : new Container(containerName)
+                             {
+                                 CdnUri = response.Headers[Constants.X_CDN_URI], 
+                                 TTL = Convert.ToInt32(response.Headers[Constants.X_CDN_TTL])
+                             };
         }
 
         private string getPublicAccountInformationJson()
@@ -1724,9 +1725,9 @@ namespace com.mosso.cloudfiles
             return xmlDocument;
         }
 
-        private void setDetailsOnPublicContainer(string publiccontainer, bool loggingenabled, int ttl, string referreracl, string useragentacl)
+        private void setDetailsOnPublicContainer(string publiccontainer, bool loggingenabled, int ttl)
         {
-            var request = new SetPublicContainerDetails(CdnManagementUrl, publiccontainer, true, loggingenabled, ttl, useragentacl, referreracl);
+            var request = new SetPublicContainerDetails(CdnManagementUrl, publiccontainer, true, loggingenabled, ttl);
                 _requestfactory.Submit(request, AuthToken);
         }
 

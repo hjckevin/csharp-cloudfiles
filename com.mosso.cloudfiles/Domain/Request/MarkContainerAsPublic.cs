@@ -64,7 +64,7 @@ namespace com.mosso.cloudfiles.domain.request
         {
             request.Method = "PUT";
             request.Headers.Add(Constants.X_CDN_ENABLED, "true".Capitalize());
-            if (_timeToLiveInSeconds > -1) { request.Headers.Add(Constants.X_CDN_TTL, _timeToLiveInSeconds.ToString()); }
+            if (_timeToLiveInSeconds > -1) request.Headers.Add(Constants.X_CDN_TTL, _timeToLiveInSeconds.ToString());
         }
     }
 }
