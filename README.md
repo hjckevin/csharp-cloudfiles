@@ -7,7 +7,7 @@ Cloud Files is a reliable, scalable and affordable web-based storage hosting for
 Cloud Files is the first and only cloud service that leverages a tier one CDN provider to create such an easy and complete storage-to-delivery 
 solution for media content.
 
-## *Creating Issues*
+## **Creating Issues**
 
 Please read the [wiki](http://wiki.github.com/rackspace/csharp-cloudfiles/) about what information is best to help people fix your issues, 
 then create an issue on the {issues tab](http://github.com/rackspace/csharp-cloudfiles/issues).
