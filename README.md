@@ -10,7 +10,7 @@ solution for media content.
 ## **Creating Issues**
 
 Please read the [wiki](http://wiki.github.com/rackspace/csharp-cloudfiles/) about what information is best to help people fix your issues, 
-then create an issue on the {issues tab](http://github.com/rackspace/csharp-cloudfiles/issues).
+then create an issue on the [issues tab](http://github.com/rackspace/csharp-cloudfiles/issues).
 
 ## Getting dll and using in your project
 
