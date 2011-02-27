@@ -40,14 +40,14 @@ desc "Run integration and unit tests"
 task :tests => [:unit_tests, :integration_tests]
 
 desc "Run unit tests"
-nunit :unit_tests do |nunit|
+nunit :unit_tests => :compile do |nunit|
   nunit.command = NUNIT_CMD_EXE
   nunit.assemblies UNIT_TESTS_DLL
   nunit.options '/xml=csharp-cloudfiles-unit-tests-results.xml'
 end
 
 desc "Run integration tests"
-nunit :integration_tests do |nunit|
+nunit :integration_tests => :compile  do |nunit|
   if ENV['CRED_FILE_LOC']
 	puts "ENVIRONMENT VARIABLE: #{ENV['CRED_FILE_LOC']}"
     puts "copying file from #{ENV['CRED_FILE_LOC']} to #{INTEGRATION_TESTS_CONFIG_FILE}"

@@ -1,11 +1,9 @@
 namespace com.mosso.cloudfiles.domain.request.Interfaces
 {
-    #region Using
     using System;
     using System.IO;
     using System.Net;
-    using com.mosso.cloudfiles.domain.response.Interfaces;
-    #endregion
+    using response.Interfaces;
 
     public interface ICloudFilesRequest
     {
@@ -28,10 +26,10 @@ namespace com.mosso.cloudfiles.domain.request.Interfaces
         string Method { get; set; }
 
         /// <summary>
-        /// Gets the HTTP headers to use for this request.
+        /// Gets or sets the HTTP headers to use for this request.
         /// </summary>
         /// <value>The headers.</value>
-        WebHeaderCollection Headers { get; }
+        WebHeaderCollection Headers { get; set; }
 
         /// <summary>
         /// Gets the length of the content to send for this request.

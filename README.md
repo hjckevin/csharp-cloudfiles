@@ -62,10 +62,12 @@ Logging is done with the log4net.dll and log4net.config file that are included i
 You just need to edit the log4net.config file to turn it on:
 
 	change:
-	<log4net debug="false">
+	<level value="INFO" />
 	
 	to:
-	<log4net debug="true">
+	<level value="DEBUG" /> or
+	<level value="ERROR" /> or
+	<level value="ALL" />
 	
 so that logging starts and you get the desired logging output and format.
 

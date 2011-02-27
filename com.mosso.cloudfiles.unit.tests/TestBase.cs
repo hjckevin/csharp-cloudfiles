@@ -1,7 +1,6 @@
 using System;
 using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.domain.request;
-using com.mosso.cloudfiles.domain.response;
 using NUnit.Framework;
 
 
@@ -15,9 +14,9 @@ namespace com.mosso.cloudfiles.unit.tests
         [SetUp]
         public void SetUpBase()
         {
-            Uri uri = new Uri(Constants.AUTH_URL);
+            var uri = new Uri(Constants.AUTH_URL);
 
-            GetAuthentication request =
+            var request =
                 new GetAuthentication(
                     new UserCredentials(
                         uri,
@@ -26,7 +25,7 @@ namespace com.mosso.cloudfiles.unit.tests
                         Constants.CREDENTIALS_CLOUD_VERSION,
                         Constants.CREDENTIALS_ACCOUNT_NAME));
 
-            IResponse response = new GenerateRequestByType().Submit(request, authToken);
+            var response = new GenerateRequestByType().Submit(request, authToken);
                 ;
 
             storageUrl = response.Headers[utils.Constants.X_STORAGE_URL];

@@ -31,5 +31,7 @@ namespace com.mosso.cloudfiles.unit.tests
 
         public const int MAX_CONTAINER_NAME_LENGTH = 256;
         public const int MAX_OBJECT_NAME_LENGTH = 1024;
+
+        public const string X_PURGE_EMAIL = "X-Purge-Email";
     }
 }

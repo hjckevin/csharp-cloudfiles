@@ -16,22 +16,28 @@ namespace com.mosso.cloudfiles.domain.request
     /// </summary>
     public class DeleteStorageItem : IAddToWebRequest
     {
-        private readonly string _storageUrl;
+        private readonly string _url;
         private readonly string _containerName;
         private readonly string _storageItemName;
+        private readonly string[] _emailAddresses;
+
+        public DeleteStorageItem(string url, string containerName, string storageItemName) : this(url, containerName, storageItemName, null)
+        {
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DeleteStorageItem"/> class.
         /// </summary>
-        /// <param name="storageUrl">the customer unique url to interact with cloudfiles</param>
+        /// <param name="url">the customer unique url to interact with cloudfiles</param>
         /// <param name="containerName">the name of the container where the storage item is located</param>
         /// <param name="storageItemName">the name of the storage item to add meta information too</param>
+        /// <param name="emailAddresses">the email addresses to notify who</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
         /// <exception cref="ContainerNameException">Thrown when the container name is invalid</exception>
         /// <exception cref="StorageItemNameException">Thrown when the object name is invalid</exception>
-        public DeleteStorageItem(string storageUrl,  string containerName, string storageItemName)
+        public DeleteStorageItem(string url,  string containerName, string storageItemName, string[] emailAddresses)
         {
-            if (string.IsNullOrEmpty(storageUrl)
+            if (string.IsNullOrEmpty(url)
             || string.IsNullOrEmpty(containerName)
             || string.IsNullOrEmpty(storageItemName))
             {
@@ -48,9 +54,10 @@ namespace com.mosso.cloudfiles.domain.request
                 throw new StorageItemNameException();
             }
 
-            _storageUrl = storageUrl;
+            _url = url;
             _containerName = containerName;
             _storageItemName = storageItemName;
+            _emailAddresses = emailAddresses;
         }
 
         /// <summary>
@@ -59,7 +66,7 @@ namespace com.mosso.cloudfiles.domain.request
         /// <returns>A new URI for this container</returns>
         public Uri CreateUri()
         {
-            return new Uri(_storageUrl + "/" + _containerName.Encode() + "/" + _storageItemName.StripSlashPrefix().Encode());
+            return new Uri(_url + "/" + _containerName.Encode() + "/" + _storageItemName.StripSlashPrefix().Encode());
         }
 
         /// <summary>
@@ -69,6 +76,10 @@ namespace com.mosso.cloudfiles.domain.request
         public void Apply(ICloudFilesRequest request)
         {
             request.Method = "DELETE";
+            if(_emailAddresses != null && _emailAddresses.Length > 0)
+            {
+                request.Headers.Add(Constants.X_PURGE_EMAIL, string.Join(",", _emailAddresses));
+            }
         }
     }
 }

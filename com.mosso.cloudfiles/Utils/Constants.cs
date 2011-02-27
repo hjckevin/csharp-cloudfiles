@@ -21,14 +21,14 @@ namespace com.mosso.cloudfiles.utils
         public const string X_STORAGE_URL = "X-Storage-Url";
         public const string X_CONTAINER_STORAGE_OBJECT_COUNT = "X-Container-Object-Count";
         public const string X_CONTAINER_BYTES_USED = "X-Container-Bytes-Used";
+        public const string X_PURGE_EMAIL = "X-Purge-Email";
         public const string ETAG = "ETag";
         public const int MAXIMUM_META_KEY_LENGTH = 128;
         public const int MAXIMUM_META_VALUE_LENGTH = 256;
         public const string CONTENT_LENGTH_HEADER = "Content-Length";
         public const string CONTENT_TYPE_HEADER = "Content-Type";
-        public const string MOSSO_AUTH_URL = "https://api.mosso.com/auth";
         public const string US_AUTHURL = "https://auth.api.rackspacecloud.com/v1.0";
-        public const string UK_AUTHURL = "https://lon.auth.api.racksapcecloud.com/v1.0";
+        public const string UK_AUTHURL = "https://lon.auth.api.rackspacecloud.com/v1.0";
         public const string X_LOG_RETENTION = "X-Log-Retention";
 		
     }

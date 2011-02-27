@@ -14,6 +14,8 @@ namespace com.mosso.cloudfiles
         XmlDocument GetAccountInformationXml();
         void CreateContainer(string containerName);
         void DeleteContainer(string continerName);
+        void PurgePublicContainer(string continerName, string[] emailAddresses);
+        void PurgePublicContainer(string continerName);
         List<string> GetContainers();
         List<string> GetContainerItemList(string containerName);
         List<string> GetContainerItemList(string containerName, Dictionary<GetItemListParameters, string> parameters);
@@ -28,6 +30,7 @@ namespace com.mosso.cloudfiles
         void PutStorageItem(string containerName, Stream storageStream, string remoteStorageItemName);
         void PutStorageItem(string containerName, Stream storageStream, string remoteStorageItemName, Dictionary<string, string> metadata);
         void DeleteStorageItem(string containerName, string storageItemname);
+        void PurgePublicStorageItem(string containerName, string storageItemname);
         StorageItem GetStorageItem(string containerName, string storageItemName);
         void GetStorageItem(string containerName, string storageItemName, string localFileName);
         StorageItem GetStorageItem(string containerName, string storageItemName, Dictionary<RequestHeaderFields, string> requestHeaderFields);
