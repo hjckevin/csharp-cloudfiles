@@ -14,7 +14,7 @@ namespace com.mosso.cloudfiles.unit.tests.domain.StorageItemSpecs
         [SetUp]
         public void SetUp()
         {
-            Dictionary<string, string> metadata = new Dictionary<string, string>
+            var metadata = new Dictionary<string, string>
                                                       {
                                                           {Constants.META_KEY1, Constants.META_VALUE1},
                                                           {Constants.META_KEY2, Constants.META_VALUE2}

@@ -12,10 +12,10 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.SetPublicContainerDetai
     public class when_setting_public_container_details_and_cdn_management_url_is_null
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void should_throw_argument_null_exception()
         {
-            new SetPublicContainerDetails(null, "containername", true, false, -1);
+            Assert.Throws<ArgumentNullException>(
+                ()=>new SetPublicContainerDetails(null, "containername", true, false, -1));
         }
     }
 
@@ -23,10 +23,10 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.SetPublicContainerDetai
     public class when_setting_public_container_details_and_cdn_management_is_emptry_string
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void should_throw_argument_null_exception()
         {
-            new SetPublicContainerDetails("", "containername", true, false, -1);
+            Assert.Throws<ArgumentNullException>(
+                ()=>new SetPublicContainerDetails("", "containername", true, false, -1));
         }
     }
 
@@ -35,10 +35,10 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.SetPublicContainerDetai
     public class when_setting_public_container_details_and_container_name_is_null
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void should_throw_argument_null_exception()
         {
-            new SetPublicContainerDetails("http://cdnmanagementurl", null, true, false, -1);
+            Assert.Throws<ArgumentNullException>(
+                ()=>new SetPublicContainerDetails("http://cdnmanagementurl", null, true, false, -1));
         }
     }
 
@@ -46,10 +46,10 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.SetPublicContainerDetai
     public class when_setting_public_container_details_and_container_name_is_emptry_string
     {
         [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
         public void should_throw_argument_null_exception()
         {
-            new SetPublicContainerDetails("http://cdnmanagementurl", "", true, false,-1);
+            Assert.Throws<ArgumentNullException>(
+                ()=>new SetPublicContainerDetails("http://cdnmanagementurl", "", true, false,-1));
         }
     }
 
@@ -87,12 +87,9 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.SetPublicContainerDetai
         public void should_have_a_http_post_method()
         {
             var mock = new Mock<ICloudFilesRequest>();
-            var headers = new WebHeaderCollection();
-            mock.SetupGet(x => x.Headers).Returns(headers);
+            mock.SetupGet(x => x.Headers).Returns(new WebHeaderCollection());
             setPublicContainerDetails.Apply(mock.Object);
             mock.VerifySet(x => x.Method = "POST");
-            
-           
         }
 
 
@@ -100,14 +97,12 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.SetPublicContainerDetai
         public void should_have_cdn_enabled_in_the_headers()
         {
             Asserts.AssertHeaders(setPublicContainerDetails, utils.Constants.X_CDN_ENABLED, "True");
-          
         }
 
         [Test]
         public void should_have_time_to_live_aka_ttl_in_the_headers()
         {
             Asserts.AssertHeaders(setPublicContainerDetails, utils.Constants.X_CDN_TTL, "12345");
-         
         }
     }
 }

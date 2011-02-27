@@ -77,8 +77,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConnectionSpecs\AuthenticationSpecs.cs" />
+    <Compile Include="ConnectionSpecs\PurgePublicContainerSpecs.cs" />
+    <Compile Include="ConnectionSpecs\DeletePublicStorageItemSpecs.cs" />
     <Compile Include="ConnectionSpecs\GetStorageItemInformationSpecs.cs" />
     <Compile Include="ConnectionSpecs\MakePathSpecs.cs" />
+    <Compile Include="ConnectionSpecs\PurgePublicStorageItemSpecs.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="Credentials.cs">
       <SubType>Code</SubType>

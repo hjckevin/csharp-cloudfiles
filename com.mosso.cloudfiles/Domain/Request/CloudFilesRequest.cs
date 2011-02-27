@@ -59,6 +59,10 @@ namespace com.mosso.cloudfiles.domain.request
 
             _httpWebRequest = request;
             _proxyCredentials = proxyCredentials;
+            if(request.Headers == null)
+            {
+                request.Headers = new WebHeaderCollection();
+            }
         }
 
         private event Connection.ProgressCallback Progress;
@@ -114,6 +118,7 @@ namespace com.mosso.cloudfiles.domain.request
         public WebHeaderCollection Headers
         {
             get { return _httpWebRequest.Headers; }
+            set { _httpWebRequest.Headers = value; }
         }
 
         /// <summary>

@@ -78,6 +78,7 @@
     <Compile Include="Constants.cs" />
     <Compile Include="CustomMatchers\UriMatchers.cs" />
     <Compile Include="CustomMatchers\WebHeaderMatchers.cs" />
+    <Compile Include="Domain\request\PurgePublicContainerSpecs.cs" />
     <Compile Include="Domain\request\PutStorageDirectorySpecs.cs" />
     <Compile Include="Domain\request\SetLoggingToContainerRequestSpec.cs" />
     <Compile Include="Utils\ContainerNameValidatorSpecs.cs" />
@@ -109,17 +110,9 @@
     <Compile Include="Domain\StorageItemSpecs.cs" />
     <Compile Include="Domain\UserCredentialsSpecs.cs" />
     <Compile Include="Utils\EnumHelperSpecs.cs" />
-    <Compile Include="Mocks\MockResponse.cs" />
-    <Compile Include="Mocks\MockRequest.cs" />
-    <Compile Include="Mocks\MockRequestFactory.cs" />
-    <Compile Include="Mocks\MockStream.cs" />
-    <Compile Include="OurWebRequest.cs" />
-    <Compile Include="OurWebResponse.cs" />
-    <Compile Include="RequestFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utils\StringHelperSpecs.cs" />
     <Compile Include="TestBase.cs" />
-    <Compile Include="Mocks\MockCFRequest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="StorageObjectTest.txt">

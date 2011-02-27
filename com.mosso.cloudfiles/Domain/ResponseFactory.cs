@@ -55,23 +55,18 @@ namespace com.mosso.cloudfiles.domain
         private string OutputRequestInformation(ICloudFilesRequest request)
         {
             var output = new StringBuilder();
-            output.Append("\n");
-            output.Append("REQUEST");
-            output.Append("\n");
+            output.AppendLine("REQUEST");
             output.Append("Request URL: ");
-            output.Append(request.RequestUri);
-            output.Append("\n");
-            output.Append("method: ");
-            output.Append(request.Method);
-            output.Append("\n");
-            output.Append("Headers: ");
-            output.Append("\n");
+            output.AppendLine(request.RequestUri.ToString());
+            output.Append("Method: ");
+            output.AppendLine(request.Method);
+            output.AppendLine("Headers: ");
             foreach (var key in request.Headers.AllKeys)
             {
                 output.Append(key);
                 output.Append(": ");
                 output.Append(request.Headers[key]);
-                output.Append("\n");
+                output.AppendLine();
             }
 
             return output.ToString();
@@ -80,26 +75,18 @@ namespace com.mosso.cloudfiles.domain
         private string OutputResponseInformation(ICloudFilesResponse response)
         {
             var output = new StringBuilder();
-            output.Append("\n");
-            output.Append("RESPONSE:");
-            output.Append("\n");
-            output.Append("method: ");
-            output.Append(response.Method);
-            output.Append("\n");
+            output.AppendLine("RESPONSE:");
             output.Append("Status Code: ");
-            output.Append(response.StatusCode.ToString());
-            output.Append("\n");
+            output.AppendLine(response.StatusCode.ToString());
             output.Append("Status Description: ");
-            output.Append(response.StatusDescription);
-            output.Append("\n");
-            output.Append("Headers: ");
-            output.Append("\n");
+            output.AppendLine(response.StatusDescription);
+            output.AppendLine("Headers: ");
             foreach (var key in response.Headers.AllKeys)
             {
                 output.Append(key);
                 output.Append(": ");
                 output.Append(response.Headers[key]);
-                output.Append("\n");
+                output.AppendLine();
             }
 
             return output.ToString();

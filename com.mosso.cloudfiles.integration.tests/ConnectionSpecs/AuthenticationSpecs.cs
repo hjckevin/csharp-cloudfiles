@@ -19,7 +19,6 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
         [Test]
         public void Should_instantiate_engine_without_throwing_exception_when_authentication_passes()
         {
-
             new Connection(new UserCredentials(Credentials.USERNAME, Credentials.API_KEY));
         }
 
@@ -30,10 +29,16 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
         }
 
         [Test]
-        [ExpectedException(typeof(WebException), ExpectedMessage = "The remote server returned an error: (401) Unauthorized.")]
+        public void Should_authenticate_when_uk_auth_url_type_provided()
+        {
+            Assert.Throws<WebException>(() => 
+                new Connection(new UserCredentials(Credentials.USERNAME, Credentials.API_KEY, AuthUrl.UK)), "The remote server returned an error: (401) Unauthorized.");
+        }
+
+        [Test]
         public void Should_throw_not_authorized_exception_when_credentials_are_invalid()
         {
-            new Connection(new UserCredentials("invalid_username", "invalid_api_key"));
+            Assert.Throws<WebException>(() => new Connection(new UserCredentials("invalid_username", "invalid_api_key")), "The remote server returned an error: (401) Unauthorized.");
         }
     }
 }

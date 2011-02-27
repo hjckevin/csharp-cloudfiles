@@ -238,10 +238,63 @@ namespace com.mosso.cloudfiles
 
             StartProcess
                 .ByLoggingMessage("Deleting container '" + containerName + "' for user " + _usercreds.Username)
-                .ThenDoing(() => deleteContainer(containerName))
+                .ThenDoing(() => deleteContainer(StorageUrl, containerName))
                 .AndIfErrorThrownIs<WebException>()
                 .Do(DetermineReasonForContainerError)
                 .AndLogError("Error deleting container '" + containerName + "' for user " + _usercreds.Username)
+                .Now();
+        }
+
+        /// <summary>
+        /// This method is used to delete a public container on cloudfiles
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// UserCredentials userCredentials = new UserCredentials("username", "api key");
+        /// IConnection connection = new Connection(userCredentials);
+        /// connection.PurgePublicContainer("container name");
+        /// </code>
+        /// </example>
+        /// <param name="containerName">The name of the public container to purge</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
+        public void PurgePublicContainer(string containerName)
+        {
+            if (string.IsNullOrEmpty(containerName))
+                throw new ArgumentNullException();
+
+            StartProcess
+                .ByLoggingMessage("Purging public container '" + containerName + "' for user " + _usercreds.Username)
+                .ThenDoing(() => purgePublicContainer(CdnManagementUrl, containerName,null))
+                .AndIfErrorThrownIs<WebException>()
+                .Do(DetermineReasonForContainerError)
+                .AndLogError("Error purging public container '" + containerName + "' for user " + _usercreds.Username)
+                .Now();
+        }
+
+        /// <summary>
+        /// This method is used to delete a public container on cloudfiles
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// UserCredentials userCredentials = new UserCredentials("username", "api key");
+        /// IConnection connection = new Connection(userCredentials);
+        /// connection.PurgePublicContainer("container name", "me@me.com);
+        /// </code>
+        /// </example>
+        /// <param name="containerName">The name of the container to delete</param>
+        /// <param name="emailAddresses">The email addresses to notify once the deletion is complete</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
+        public void PurgePublicContainer(string containerName, string[] emailAddresses)
+        {
+            if (string.IsNullOrEmpty(containerName))
+                throw new ArgumentNullException();
+
+            StartProcess
+                .ByLoggingMessage("Purging public container '" + containerName + "' for user " + _usercreds.Username)
+                .ThenDoing(() => purgePublicContainer(CdnManagementUrl, containerName, emailAddresses))
+                .AndIfErrorThrownIs<WebException>()
+                .Do(DetermineReasonForContainerError)
+                .AndLogError("Error purging public container '" + containerName + "' for user " + _usercreds.Username)
                 .Now();
         }
 
@@ -845,6 +898,63 @@ namespace com.mosso.cloudfiles
                 .AndIfErrorThrownIs<WebException>()
                 .Do(DetermineReasonForStorageItemError)
                 .AndLogError("Error deleting storage item "+ storageItemName + " in container '"+ containerName + "' for user "+ _usercreds.Username)
+                .Now();
+        }
+
+        /// <summary>
+        /// This method deletes a storage object in a given container
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// UserCredentials userCredentials = new UserCredentials("username", "api key");
+        /// IConnection connection = new Connection(userCredentials);
+        /// connection.DeleteStorageItem("container name", "RemoteStorageItem.txt");
+        /// </code>
+        /// </example>
+        /// <param name="containerName">The name of the container that contains the storage object</param>
+        /// <param name="storageItemName">The name of the storage object to delete</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
+        public void PurgePublicStorageItem(string containerName, string storageItemName)
+        {
+            if (string.IsNullOrEmpty(containerName) ||
+                string.IsNullOrEmpty(storageItemName))
+                throw new ArgumentNullException();
+
+            StartProcess
+                .ByLoggingMessage("Deleting storage item " + storageItemName + " in container '" + containerName + "' for user " + _usercreds.Username)
+                .ThenDoing(() => deleteStorageItem(containerName, storageItemName))
+                .AndIfErrorThrownIs<WebException>()
+                .Do(DetermineReasonForStorageItemError)
+                .AndLogError("Error deleting storage item " + storageItemName + " in container '" + containerName + "' for user " + _usercreds.Username)
+                .Now();
+        }
+
+        /// <summary>
+        /// This method deletes a storage object in a given container
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// UserCredentials userCredentials = new UserCredentials("username", "api key");
+        /// IConnection connection = new Connection(userCredentials);
+        /// connection.DeleteStorageItem("container name", "RemoteStorageItem.txt");
+        /// </code>
+        /// </example>
+        /// <param name="containerName">The name of the container that contains the storage object</param>
+        /// <param name="storageItemName">The name of the storage object to delete</param>
+        /// <param name="emailAddresses">The email addresses to notify once the purge is complete</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
+        public void PurgePublicStorageItem(string containerName, string storageItemName, string[] emailAddresses)
+        {
+            if (string.IsNullOrEmpty(containerName) ||
+                string.IsNullOrEmpty(storageItemName))
+                throw new ArgumentNullException();
+
+            StartProcess
+                .ByLoggingMessage("Deleting storage item " + storageItemName + " in container '" + containerName + "' for user " + _usercreds.Username)
+                .ThenDoing(() => deleteStorageItem(containerName, storageItemName))
+                .AndIfErrorThrownIs<WebException>()
+                .Do(DetermineReasonForStorageItemError)
+                .AndLogError("Error deleting storage item " + storageItemName + " in container '" + containerName + "' for user " + _usercreds.Username)
                 .Now();
         }
 
@@ -1530,9 +1640,15 @@ namespace com.mosso.cloudfiles
                 throw new ContainerAlreadyExistsException("The container already exists");
         }
 
-        private void deleteContainer(string containerName)
+        private void deleteContainer(string url, string containerName)
         {
-            var deleteContainer = new DeleteContainer(StorageUrl, containerName);
+            var deleteContainer = new DeleteContainer(url, containerName, null);
+            _requestfactory.Submit(deleteContainer, AuthToken, _usercreds.ProxyCredentials);
+        }
+
+        private void purgePublicContainer(string url, string containerName, string[] emailAddresses)
+        {
+            var deleteContainer = new DeleteContainer(url, containerName, emailAddresses);
             _requestfactory.Submit(deleteContainer, AuthToken, _usercreds.ProxyCredentials);
         }
 
@@ -1747,6 +1863,12 @@ namespace com.mosso.cloudfiles
         private void deleteStorageItem(string containerName, string storageItemName)
         {
             var deleteStorageItem = new DeleteStorageItem(StorageUrl, containerName, storageItemName);
+            _requestfactory.Submit(deleteStorageItem, AuthToken);
+        }
+
+        private void purgePublicStorageItem(string containerName, string storageItemName, string[] emailAddresses)
+        {
+            var deleteStorageItem = new DeleteStorageItem(CdnManagementUrl, containerName, storageItemName, emailAddresses);
             _requestfactory.Submit(deleteStorageItem, AuthToken);
         }
 

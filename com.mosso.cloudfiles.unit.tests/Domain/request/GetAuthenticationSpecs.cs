@@ -35,9 +35,9 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.GetAuthenticationSpecs
         }
 
         [Test]
-        public void should_use_mosso_auth_url()
+        public void should_use_US_auth_url()
         {
-            Assert.That(getAuthentication.CreateUri().ToString(), Is.EqualTo(utils.Constants.MOSSO_AUTH_URL));
+            Assert.That(getAuthentication.CreateUri().ToString(), Is.EqualTo(utils.Constants.US_AUTHURL));
         }
 
         [Test]

@@ -2,6 +2,14 @@
 
 ## v1.5.2.0 (2011-2-20)
 #### New Features
+ * Allow user to purge individual items or entire containers from CDN. PurgePublicContainer and PurgePublicStorageItem
+#### Bugfixes
+ * Fixed duplicate logging with log4net (Closes gh-9)
+#### Removed Features
+ * Starting removal of SpecMaker, Ryan Svihla's BDD framework.
+
+## v1.5.2.0 (2011-2-20)
+#### New Features
  * Changed README and History files to markdown (.md)
  * Changed build process from custom Ruby files to use [Albacore](http://github.com/DerickBailey/Albacore) gem
 #### Bugfixes

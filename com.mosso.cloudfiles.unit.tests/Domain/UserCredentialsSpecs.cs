@@ -103,9 +103,9 @@ namespace com.mosso.cloudfiles.unit.tests.domain.UserCredentialsSpecs
         }
 
         [Test]
-        public void Should_default_auth_url_to_mosso_api_url()
+        public void Should_default_auth_url_to_US_api_url()
         {
-            Assert.That(userCreds.AuthUrl.ToString(), Is.EqualTo(utils.Constants.MOSSO_AUTH_URL));
+            Assert.That(userCreds.AuthUrl.ToString(), Is.EqualTo(utils.Constants.US_AUTHURL));
         }
     }
 }

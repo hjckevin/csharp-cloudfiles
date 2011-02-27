@@ -25,7 +25,7 @@ namespace com.mosso.cloudfiles.domain
         /// <param name="username">client username to use during authentication</param>
         /// <param name="api_access_key">client api access key to use during authentication</param>
         public UserCredentials(string username, string api_access_key) :
-            this(new Uri(Constants.MOSSO_AUTH_URL), username, api_access_key, null, null)
+            this(new Uri(Constants.US_AUTHURL), username, api_access_key, null, null)
         {
         }
 
@@ -36,7 +36,7 @@ namespace com.mosso.cloudfiles.domain
         /// <param name="api_access_key">client api access key to use during authentication</param>
         /// <param name="proxyCredentials">credentials to use to obtain access via proxy</param>
         public UserCredentials(string username, string api_access_key, ProxyCredentials proxyCredentials) :
-            this(new Uri(Constants.MOSSO_AUTH_URL), username, api_access_key, null, null, proxyCredentials)
+            this(new Uri(Constants.US_AUTHURL), username, api_access_key, null, null, proxyCredentials)
         {
         }
 
@@ -44,18 +44,8 @@ namespace com.mosso.cloudfiles.domain
         {
             this.username = username;
             this.api_access_key = api_access_key;
-            switch(authUrl)
-            {
-                case utils.AuthUrl.UK:
-                    this.authUrl = new Uri(Constants.UK_AUTHURL);
-                    break;
-                case utils.AuthUrl.Mosso:
-                    this.authUrl = new Uri(Constants.MOSSO_AUTH_URL);
-                    break;
-                default:
-                    this.authUrl = new Uri(Constants.US_AUTHURL);
-                    break;
-            }
+            this.authUrl = authUrl == utils.AuthUrl.UK 
+                ? new Uri(Constants.UK_AUTHURL) : new Uri(Constants.US_AUTHURL);
         }
 
         /// <summary>

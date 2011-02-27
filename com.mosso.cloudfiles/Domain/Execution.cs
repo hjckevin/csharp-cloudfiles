@@ -170,7 +170,7 @@ namespace com.mosso.cloudfiles
 		
 		public void Now()
 		{
-			Log.Info(this, _startmessage);
+			Log.Debug(this, _startmessage);
 			try
 			{ 
 				_startaction.Invoke();
