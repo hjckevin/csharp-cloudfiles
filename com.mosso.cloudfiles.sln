@@ -3,10 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{1820EC64-F253-4FD1-A92C-F6747D239024}"
 	ProjectSection(SolutionItems) = preProject
-		History.rdoc = History.rdoc
 		Properties.rb = Properties.rb
 		rakefile.rb = rakefile.rb
-		README.rdoc = README.rdoc
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "com.mosso.cloudfiles.integration.tests", "com.mosso.cloudfiles.integration.tests\com.mosso.cloudfiles.integration.tests.csproj", "{E9F72C28-155A-476F-B533-BAEC0228CA1E}"
@@ -18,6 +16,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{222DDA44-9C3C-44B2-8CF2-33E4E6BE9ADB}"
 	ProjectSection(SolutionItems) = preProject
 		COPYING = COPYING
+		History.md = History.md
+		README.md = README.md
 	EndProjectSection
 EndProject
 Global

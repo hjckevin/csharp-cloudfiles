@@ -153,6 +153,7 @@
   <ItemGroup>
     <Content Include="Log4Net.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
     </Content>
   </ItemGroup>
   <ItemGroup>
