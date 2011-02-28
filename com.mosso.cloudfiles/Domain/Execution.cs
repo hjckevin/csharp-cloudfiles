@@ -139,7 +139,7 @@ namespace com.mosso.cloudfiles
 		
 		public R Now()
 		{
-			Log.Info(this, _startmessage);
+			Log.Debug(this, _startmessage);
 			try
 			{ 
 				return _startaction.Invoke();

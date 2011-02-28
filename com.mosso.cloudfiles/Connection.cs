@@ -1478,7 +1478,7 @@ namespace com.mosso.cloudfiles
                 string.IsNullOrEmpty(remoteobjname))
                 throw new ArgumentNullException();
 
-            Log.Info(this, "Putting storage item "
+            Log.Debug(this, "Putting storage item "
                            + remoteobjname + " with metadata into container '"
                            + containerName + "' for user "
                            + _usercreds.Username);

@@ -1,6 +1,6 @@
 # History
 
-## v1.5.2.0 (2011-2-20)
+## v1.5.2.1 (2011-2-27)
 #### New Features
  * Allow user to purge individual items or entire containers from CDN. PurgePublicContainer and PurgePublicStorageItem
 #### Bugfixes
