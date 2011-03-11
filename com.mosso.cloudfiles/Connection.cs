@@ -1810,6 +1810,7 @@ namespace com.mosso.cloudfiles
                        : new Container(containerName)
                              {
                                  CdnUri = response.Headers[Constants.X_CDN_URI], 
+                                 CdnSslUri = response.Headers[Constants.X_CDN_SSL_URI], 
                                  TTL = Convert.ToInt32(response.Headers[Constants.X_CDN_TTL])
                              };
         }

@@ -8,6 +8,7 @@ namespace com.mosso.cloudfiles.utils
     {
         public static string X_CDN_MANAGEMENT_URL = "X-CDN-Management-URL";
         public static string X_CDN_URI = "X-CDN-URI";
+        public static string X_CDN_SSL_URI = "X-CDN-SSL-URI";
         public static string X_CDN_ENABLED = "X-CDN-Enabled";
         public static string X_CDN_TTL = "X-TTL";
         public const string X_AUTH_TOKEN = "X-Auth-Token";

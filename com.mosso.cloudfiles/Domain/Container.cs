@@ -2,6 +2,8 @@
 /// See COPYING file for licensing information
 /// 
 
+using System;
+
 namespace com.mosso.cloudfiles.domain
 {
     /// <summary>
@@ -55,6 +57,10 @@ namespace com.mosso.cloudfiles.domain
         /// User Agent ACL
         /// </summary>
         public string UserAgentACL { get; set; }
-          
+
+        /// <summary>
+        /// The SSL URI one can use to access objects in this container via the CDN.
+        /// </summary>
+        public string CdnSslUri { get; set; }
     }
 }

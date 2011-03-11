@@ -34,11 +34,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainerInf
         }
 
         [Test]
-        [ExpectedException(typeof (ContainerNotFoundException))]
         public void Should_throw_an_exception_when_the_container_does_not_exist()
         {
-            
-            connection.GetContainerInformation(Constants.CONTAINER_NAME);
+            Assert.Throws<ContainerNotFoundException>(() => connection.GetContainerInformation(Constants.CONTAINER_NAME));
         }
     }
 

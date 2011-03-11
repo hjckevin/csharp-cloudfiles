@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using com.mosso.cloudfiles.exceptions;
 using NUnit.Framework;
 
@@ -17,8 +18,11 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetPublicContai
 
                 var container = connection.GetPublicContainerInformation(Constants.CONTAINER_NAME);
 
-                Assert.That(container.CdnUri.Length, Is.GreaterThan(0));
-                Assert.That(container.ByteCount, Is.EqualTo(0));    
+                Assert.That(Regex.Match(container.CdnUri, @"^http:\/\/.*\..*\.cf0\.rackcdn\.com$").Success, Is.True,
+                    string.Format("{0} didn't match the regex", container.CdnUri));
+                Assert.That(container.ByteCount, Is.EqualTo(0));
+                Assert.That(Regex.Match(container.CdnSslUri, @"^https://.*\.ssl\.cf0\.rackcdn\.com$").Success, Is.True, 
+                    string.Format("{0} didn't match the regex", container.CdnSslUri));
             }
             finally
             {
