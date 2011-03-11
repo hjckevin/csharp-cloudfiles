@@ -6,6 +6,7 @@ namespace com.mosso.cloudfiles.Utils
 
     public static class MimeHelper
     {
+        public static string ApplicationOctetStream = "application/octet-stream";
 
         public static Dictionary<string, string> UserTypes { get; set; }
 
@@ -18,7 +19,7 @@ namespace com.mosso.cloudfiles.Utils
             BuiltInTypes = new Dictionary<string, string> {
                 {".3dm", "x-world/x-3dmf"},
                 {".3dmf", "x-world/x-3dmf"},
-                {".a", "application/octet-stream"},
+                {".a", ApplicationOctetStream},
                 {".aab", "application/x-authorware-bin"},
                 {".aam", "application/x-authorware-map"},
                 {".aas", "application/x-authorware-seg"},
@@ -34,7 +35,7 @@ namespace com.mosso.cloudfiles.Utils
                 {".ani", "application/x-navi-animation"},
                 {".aos", "application/x-nokia-9000-communicator-add-on-software"},
                 {".aps", "application/mime"},
-                {".arc", "application/octet-stream"},
+                {".arc", ApplicationOctetStream},
                 {".arj", "application/arj"},
                 {".art", "image/x-jg"},
                 {".asf", "video/x-ms-asf"},
@@ -45,7 +46,7 @@ namespace com.mosso.cloudfiles.Utils
                 {".avi", "video/avi"},
                 {".avs", "video/avs-video"},
                 {".bcpio", "application/x-bcpio"},
-                {".bin", "application/octet-stream"},
+                {".bin", ApplicationOctetStream},
                 {".bm", "image/bmp"},
                 {".bmp", "image/bmp"},
                 {".boo", "application/book"},
@@ -65,7 +66,7 @@ namespace com.mosso.cloudfiles.Utils
                 {".cha", "application/x-chat"},
                 {".chat", "application/x-chat"},
                 {".class", "application/java"},
-                {".com", "application/octet-stream"},
+                {".com", ApplicationOctetStream},
                 {".conf", "text/plain"},
                 {".cpio", "application/x-cpio"},
                 {".cpp", "text/x-c"},
@@ -90,7 +91,7 @@ namespace com.mosso.cloudfiles.Utils
                 {".dotx", "application/vnd.openxmlformats-officedocument.wordprocessingml.template"},
                 {".dp", "application/commonground"},
                 {".drw", "application/drafting"},
-                {".dump", "application/octet-stream"},
+                {".dump", ApplicationOctetStream},
                 {".dv", "video/x-dv"},
                 {".dvi", "application/x-dvi"},
                 {".dwf", "model/vnd.dwf"},
@@ -104,7 +105,7 @@ namespace com.mosso.cloudfiles.Utils
                 {".es", "application/x-esrehber"},
                 {".etx", "text/x-setext"},
                 {".evy", "application/envoy"},
-                {".exe", "application/octet-stream"},
+                {".exe", ApplicationOctetStream},
                 {".f", "text/plain"},
                 {".f77", "text/x-fortran"},
                 {".f90", "text/plain"},
@@ -180,8 +181,8 @@ namespace com.mosso.cloudfiles.Utils
                 {".la", "audio/nspaudio"},
                 {".lam", "audio/x-liveaudio"},
                 {".latex", "application/x-latex"},
-                {".lha", "application/octet-stream"},
-                {".lhx", "application/octet-stream"},
+                {".lha", ApplicationOctetStream},
+                {".lhx", ApplicationOctetStream},
                 {".list", "text/plain"},
                 {".lma", "audio/nspaudio"},
                 {".log", "text/plain"},
@@ -189,8 +190,8 @@ namespace com.mosso.cloudfiles.Utils
                 {".lst", "text/plain"},
                 {".lsx", "text/x-la-asf"},
                 {".ltx", "application/x-latex"},
-                {".lzh", "application/octet-stream"},
-                {".lzx", "application/octet-stream"},
+                {".lzh", ApplicationOctetStream},
+                {".lzx", ApplicationOctetStream},
                 {".m", "text/plain"},
                 {".m1v", "video/mpeg"},
                 {".m2a", "audio/mpeg"},
@@ -245,7 +246,7 @@ namespace com.mosso.cloudfiles.Utils
                 {".nix", "application/x-mix-transfer"},
                 {".nsc", "application/x-conference"},
                 {".nvd", "application/x-navidoc"},
-                {".o", "application/octet-stream"},
+                {".o", ApplicationOctetStream},
                 {".oda", "application/oda"},
                 {".omc", "application/x-omc"},
                 {".omcd", "application/x-omcdatamaker"},
@@ -296,7 +297,7 @@ namespace com.mosso.cloudfiles.Utils
                 {".pre", "application/x-freelance"},
                 {".prt", "application/pro_eng"},
                 {".ps", "application/postscript"},
-                {".psd", "application/octet-stream"},
+                {".psd", ApplicationOctetStream},
                 {".pvu", "paleovu/x-pv"},
                 {".pwz", "application/vnd.ms-powerpoint"},
                 {".py", "text/x-script.phyton"},
@@ -331,7 +332,7 @@ namespace com.mosso.cloudfiles.Utils
                 {".rv", "video/vnd.rn-realvideo"},
                 {".s", "text/x-asm"},
                 {".s3m", "audio/s3m"},
-                {".saveme", "application/octet-stream"},
+                {".saveme", ApplicationOctetStream},
                 {".sbk", "application/x-tbook"},
                 {".scm", "application/x-lotusscreencam"},
                 {".sdml", "text/plain"},
@@ -397,7 +398,7 @@ namespace com.mosso.cloudfiles.Utils
                 {".uri", "text/uri-list"},
                 {".uris", "text/uri-list"},
                 {".ustar", "application/x-ustar"},
-                {".uu", "application/octet-stream"},
+                {".uu", ApplicationOctetStream},
                 {".uue", "text/x-uuencode"},
                 {".vcd", "application/x-cdlink"},
                 {".vcs", "text/x-vcalendar"},
@@ -478,13 +479,15 @@ namespace com.mosso.cloudfiles.Utils
                 {".xyz", "chemical/x-pdb"},
                 {".z", "application/x-compressed"},
                 {".zip", "application/zip"},
-                {".zoo", "application/octet-stream"},
+                {".zoo", ApplicationOctetStream},
                 {".zsh", "text/x-script.zsh"}
             };
         }
 
         public static string GetMimeType(string filename)
         {
+            if (string.IsNullOrEmpty(filename)) return ApplicationOctetStream;
+
             var extension = Path.GetExtension(filename).ToLower();
 
             string mimetype;
@@ -492,7 +495,7 @@ namespace com.mosso.cloudfiles.Utils
             if (!UserTypes.TryGetValue(extension, out mimetype))
                 BuiltInTypes.TryGetValue(extension, out mimetype);
 
-            return mimetype ?? "application/octet-stream";
+            return mimetype ?? ApplicationOctetStream;
         }
     }
 }

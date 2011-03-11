@@ -104,6 +104,7 @@
     <Compile Include="Domain\request\PutStorageItemSpecs.cs" />
     <Compile Include="Domain\request\SetPublicContainerDetailsSpecs.cs" />
     <Compile Include="Domain\request\SetStorageItemMetaInformationSpecs.cs" />
+    <Compile Include="Utils\MimeHelperSpecs.cs" />
     <Compile Include="Utils\ObjectNameValidatorSpecs.cs" />
     <Compile Include="Services\ConnectionSpecs.cs" />
     <Compile Include="Domain\ContainerSpecs.cs" />
