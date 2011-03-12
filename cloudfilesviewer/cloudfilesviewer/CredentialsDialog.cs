@@ -7,6 +7,7 @@ namespace CloudFSViewer
     {
         private string username;
         private string api_access_key;
+        private string auth_endpoint;
 
         public CredentialsDialog()
         {
@@ -28,6 +29,7 @@ namespace CloudFSViewer
         {
             username = textBoxUsername.Text;
             api_access_key = textBoxApiAccessKey.Text;
+            auth_endpoint = textBoxAuthEndpoint.Text;
             DialogResult = DialogResult.OK;
             Close();
         }
@@ -40,6 +42,11 @@ namespace CloudFSViewer
         public string ApiAccessKey
         {
             get { return api_access_key; }
+        }
+
+        public string AuthEndpoint
+        {
+            get { return auth_endpoint; }
         }
     }
 }

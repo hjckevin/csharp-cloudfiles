@@ -10,6 +10,7 @@ namespace com.mosso.cloudfiles.integration.tests
 
         public static readonly string USERNAME = _credentialsConfigParser.GetUsername();
         public static readonly string API_KEY = _credentialsConfigParser.GetApiKey();
+        public static readonly string AUTH_ENDPOINT = _credentialsConfigParser.GetAuthEndpoint();
     }
 
     internal class CredentialsConfigParser
@@ -34,6 +35,11 @@ namespace com.mosso.cloudfiles.integration.tests
         public string GetApiKey()
         {
             return _xmlDocument.SelectSingleNode("/credentials/api_key").InnerText;
+        }
+
+        public string GetAuthEndpoint()
+        {
+            return _xmlDocument.SelectSingleNode("/credentials/auth_endpoint").InnerText;
         }
     }
 }

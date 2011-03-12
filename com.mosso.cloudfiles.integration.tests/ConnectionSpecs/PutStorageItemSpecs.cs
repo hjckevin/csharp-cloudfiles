@@ -32,13 +32,13 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.PutStorageItemS
 
         [Test]
         public void Should_upload_file_with_the_file_name_minus_the_file_path_in_uri_format()
-        {
-            
+        {            
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
 
                 var executingPath = Assembly.GetExecutingAssembly().CodeBase.Replace(@"com.mosso.cloudfiles.integration.tests.DLL", "") + Constants.StorageItemName;
+                
                 connection.PutStorageItem(Constants.CONTAINER_NAME, executingPath);
 
                 var containerList = connection.GetContainerItemList(Constants.CONTAINER_NAME);
@@ -48,7 +48,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.PutStorageItemS
             {
                 var storageItems = connection.GetContainerItemList(Constants.CONTAINER_NAME);
 
-                if(storageItems.Contains(Constants.StorageItemName))
+                if (storageItems.Contains(Constants.StorageItemName))
                     connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
 
                 if (connection.GetContainerInformation(Constants.CONTAINER_NAME) != null)

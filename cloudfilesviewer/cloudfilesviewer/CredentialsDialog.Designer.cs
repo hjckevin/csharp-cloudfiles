@@ -33,6 +33,8 @@ namespace CloudFSViewer
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.textBoxAuthEndpoint = new System.Windows.Forms.TextBox();
             this.buttonOk = new System.Windows.Forms.Button();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
@@ -73,21 +75,40 @@ namespace CloudFSViewer
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.label3);
+            this.groupBox1.Controls.Add(this.textBoxAuthEndpoint);
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.textBoxUsername);
             this.groupBox1.Controls.Add(this.label2);
             this.groupBox1.Controls.Add(this.textBoxApiAccessKey);
             this.groupBox1.Location = new System.Drawing.Point(10, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(246, 81);
+            this.groupBox1.Size = new System.Drawing.Size(339, 109);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Credentials";
             this.groupBox1.UseCompatibleTextRendering = true;
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(6, 78);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(74, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Auth Endpoint";
+            // 
+            // textBoxAuthEndpoint
+            // 
+            this.textBoxAuthEndpoint.Location = new System.Drawing.Point(99, 78);
+            this.textBoxAuthEndpoint.Name = "textBoxAuthEndpoint";
+            this.textBoxAuthEndpoint.Size = new System.Drawing.Size(234, 20);
+            this.textBoxAuthEndpoint.TabIndex = 6;
+            this.textBoxAuthEndpoint.Text = "https://auth.api.rackspacecloud.com/v1.0";
+            // 
             // buttonOk
             // 
-            this.buttonOk.Location = new System.Drawing.Point(181, 99);
+            this.buttonOk.Location = new System.Drawing.Point(274, 139);
             this.buttonOk.Name = "buttonOk";
             this.buttonOk.Size = new System.Drawing.Size(75, 23);
             this.buttonOk.TabIndex = 4;
@@ -98,7 +119,7 @@ namespace CloudFSViewer
             // buttonCancel
             // 
             this.buttonCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.buttonCancel.Location = new System.Drawing.Point(99, 99);
+            this.buttonCancel.Location = new System.Drawing.Point(193, 139);
             this.buttonCancel.Name = "buttonCancel";
             this.buttonCancel.Size = new System.Drawing.Size(75, 23);
             this.buttonCancel.TabIndex = 5;
@@ -112,7 +133,7 @@ namespace CloudFSViewer
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonCancel;
-            this.ClientSize = new System.Drawing.Size(267, 132);
+            this.ClientSize = new System.Drawing.Size(361, 174);
             this.ControlBox = false;
             this.Controls.Add(this.buttonCancel);
             this.Controls.Add(this.buttonOk);
@@ -139,5 +160,7 @@ namespace CloudFSViewer
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.Button buttonOk;
         private System.Windows.Forms.Button buttonCancel;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox textBoxAuthEndpoint;
     }
 }

@@ -11,6 +11,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetPublicContai
         [Test]
         public void Should_retrieve_public_container_info_when_the_container_exists_and_is_public()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);

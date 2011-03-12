@@ -20,7 +20,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.AuthenticationRequestSpe
         public void Setup()
         {
             request =
-                new GetAuthentication(new UserCredentials(Credentials.USERNAME, Credentials.API_KEY));
+                new GetAuthentication(new UserCredentials(new Uri(Credentials.AUTH_ENDPOINT), Credentials.USERNAME, Credentials.API_KEY));
             factory = new GenerateRequestByType();
         }
 
@@ -37,8 +37,10 @@ namespace com.mosso.cloudfiles.integration.tests.domain.AuthenticationRequestSpe
         {
             var response = factory.Submit(request, null);
             Assert.That(response.Headers[Constants.XStorageUrl].Length, Is.GreaterThan(0));
-            var storageUri = new Uri(response.Headers[Constants.XStorageUrl]);
-            Assert.That(Regex.Match(storageUri.AbsolutePath, "/v1/MossoCloudFS_.*").Success, Is.True);
+
+            // This is not true for non-cloudfiles providers
+            // var storageUri = new Uri(response.Headers[Constants.XStorageUrl]);
+            // Assert.That(Regex.Match(storageUri.AbsolutePath, "/v1/MossoCloudFS_.*").Success, Is.True);
         }
 
         [Test]
@@ -47,7 +49,8 @@ namespace com.mosso.cloudfiles.integration.tests.domain.AuthenticationRequestSpe
             var response = factory.Submit(request);
             var authToken = response.Headers[Constants.XAuthToken];
             Assert.That(authToken.Length, Is.GreaterThan(0));
-            Assert.That(authToken.Length, Is.EqualTo(STORAGE_TOKEN.Length));
+            // This is not necessarily true for non-cloudfiles providers
+            // Assert.That(authToken.Length, Is.EqualTo(STORAGE_TOKEN.Length));
         }
 
         [Test]
@@ -60,6 +63,9 @@ namespace com.mosso.cloudfiles.integration.tests.domain.AuthenticationRequestSpe
         [Test]
         public void Should_return_a_cdn_management_url_header()
         {
+            // Not true for non-cloudfiles providers
+            Assert.Ignore();
+
             var response =
                 factory.Submit(request, null);
             Assert.That(response.Headers[Constants.XCdnManagementUrl], Is.Not.Null);

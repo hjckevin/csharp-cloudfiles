@@ -9,6 +9,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetPublicContai
         [Test]
         public void Should_retrieve_a_list_of_public_containers_on_the_cdn()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
@@ -36,6 +39,9 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetPublicContai
         [Test, Ignore("Only works if account has no pre-existing containers")]
         public void Should_retrieve_a_list_with_count_of_zero()
         {
+            if (!connection.HasCDN())
+                Assert.Ignore("Provider does not support CDN Management");
+
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);

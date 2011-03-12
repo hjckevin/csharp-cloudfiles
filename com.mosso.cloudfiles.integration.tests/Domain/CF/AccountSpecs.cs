@@ -18,7 +18,7 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.AccountSpecs
         [SetUp]
         public void SetUp()
         {
-            userCreds = new UserCredentials(Credentials.USERNAME, Credentials.API_KEY);
+            userCreds = new UserCredentials(new Uri(Credentials.AUTH_ENDPOINT), Credentials.USERNAME, Credentials.API_KEY);
             connection = new Connection(userCreds);
 
             account = connection.Account;

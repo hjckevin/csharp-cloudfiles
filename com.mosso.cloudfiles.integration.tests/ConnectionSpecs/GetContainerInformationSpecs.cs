@@ -25,7 +25,8 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainerInf
                 Assert.That(containerInformation.Name, Is.EqualTo(containerName));
                 Assert.That(containerInformation.ByteCount, Is.EqualTo(0));
                 Assert.That(containerInformation.ObjectCount, Is.EqualTo(0));
-                Assert.That(containerInformation.CdnUri, Is.EqualTo(""));
+                if(connection.HasCDN())
+                    Assert.That(containerInformation.CdnUri, Is.EqualTo(""));
             }
             finally
             {
