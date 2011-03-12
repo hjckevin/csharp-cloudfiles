@@ -1,5 +1,5 @@
 using System.Net;
-using SpecMaker.Core.Exceptions;
+using NUnit.Framework;
 
 namespace com.mosso.cloudfiles.unit.tests.CustomMatchers
 {
@@ -14,7 +14,7 @@ namespace com.mosso.cloudfiles.unit.tests.CustomMatchers
         public void HasValueOf(string expectedvalue)
         {
             if(_value!=expectedvalue)
-                throw new RuleException("Expected value of " + expectedvalue + " was actually " + _value);
+                throw new AssertionException("Expected value of " + expectedvalue + " was actually " + _value);
         }
     }
     public static class WebHeaderMatchers

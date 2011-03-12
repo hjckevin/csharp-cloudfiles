@@ -1,18 +1,20 @@
+using System;
 using System.Net;
 using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using com.mosso.cloudfiles.unit.tests.CustomMatchers;
 using Moq;
-using SpecMaker.Core;
+using NUnit.Framework;
 
 namespace com.mosso.cloudfiles.unit.tests.Domain.request
 {
-    public class SetLoggingToContainerRequestSpec : BaseSpec
+    [TestFixture]
+    public class Logging_container_base
     {
-        #region setup infoz
-        private Mock<ICloudFilesRequest> requestmock;
-        private WebHeaderCollection webheaders;
-        private void SetupApply(bool isenabled)
+        protected Mock<ICloudFilesRequest> requestmock;
+        protected WebHeaderCollection webheaders;
+
+        protected virtual void SetupApply(bool isenabled)
         {
             var loggingtopublicontainer = new SetLoggingToContainerRequest("fakecontainer", "http://fake", isenabled);
             requestmock = new Mock<ICloudFilesRequest>();
@@ -20,34 +22,72 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request
             requestmock.SetupGet(x => x.Headers).Returns(webheaders);
             loggingtopublicontainer.Apply(requestmock.Object);
         }
-        #endregion
-
-        public void when_creating_the_uri()
-        {
-            const string container = "mycontainer";
-            const string url = "http://myurl.com";
-
-            var loggingtopublicontainer = new SetLoggingToContainerRequest(container, url, true);
-            var uri = loggingtopublicontainer.CreateUri();
-
-            should("use a management url as the base url", () => uri.StartsWith(url));
-            should("put public container at end of url", () => uri.EndsWith(container));
-        }
-     
-        public void when_logging_is_not_set()
+    }
+    
+    public class When_logging_is_not_set:Logging_container_base
+    {   
+        [SetUp]
+        public void SetUp()
         {
             SetupApply(false);
-
-            should("set method to put", () => requestmock.VerifySet(x => x.Method = "POST"));
-            should("set X-Log-Retention to False", () => webheaders.KeyValueFor("X-Log-Retention").HasValueOf("False"));
         }
-        public void when_logging_is_set()
+
+        [Test]
+        public void should_set_method_to_put()
         {
+            requestmock.VerifySet(x => x.Method = "POST");
+        }
 
+        [Test]
+        public void should_set_X_Log_Retention_to_False()
+        {
+            webheaders.KeyValueFor("X-Log-Retention").HasValueOf("False");
+        }
+    }
+    public class When_logging_is_set:Logging_container_base
+    {    
+        [SetUp]
+        public void SetUp()
+        {
             SetupApply(true);
+        }
+        
+        [Test]
+        public void should_set_method_to_put()
+        {
+            requestmock.VerifySet(x => x.Method = "POST");
+        }
+        [Test]
+        public void should_set_X_Log_Retention_to_True()
+        {
+            webheaders.KeyValueFor("X-Log-Retention").HasValueOf("True");
+        }
+    }
+    public class When_creating_the_uri:Logging_container_base
+    {
+        private Uri uri;
+        private string url;
+        private string container;
 
-            should("set method to put", () => requestmock.VerifySet(x => x.Method = "POST"));
-            should("set X-Log-Retention to True", () => webheaders.KeyValueFor("X-Log-Retention").HasValueOf("True"));
+        [SetUp]
+        public void SetUp()
+        {
+            container = "mycontainer";
+            url = "http://myurl.com";
+
+            var loggingtopublicontainer = new SetLoggingToContainerRequest(container, url, true);
+            uri = loggingtopublicontainer.CreateUri();
+        }
+        [Test]
+        public void should_use_a_management_url_as_the_base_url()
+        {
+            uri.StartsWith(url);
+        }
+            
+        [Test]
+        public void should_put_public_container_at_end_of_url()
+        {
+            uri.EndsWith(container);
         }
     }
 }

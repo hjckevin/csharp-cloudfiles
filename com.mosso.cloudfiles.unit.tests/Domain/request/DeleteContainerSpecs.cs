@@ -2,44 +2,68 @@ using System;
 using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using Moq;
-using SpecMaker.Core;
-using SpecMaker.Core.Matchers;
+using NUnit.Framework;
 
 namespace com.mosso.cloudfiles.unit.tests.Domain.request.DeleteContainerSpecs
 {
-    public class DeleteContainerSpecs : BaseSpec
+    [TestFixture]
+    public class Delete_container_base
     {
-        public void when_deleting_a_container_and_storage_url_is_null()
+        protected virtual void SetUp(){}
+        [SetUp]
+        public void SetUpBaseContext()
         {
-            should("throw ArgumentNullException", () => new DeleteContainer(null, "containername"),
-                typeof(ArgumentNullException));
+            SetUp();
         }
-        public void when_deleting_a_container_and_storage_url_is_empty_string()
+        
+    }
+    public class When_deleting_container_and_some_data_is_missing:Delete_container_base
+    {
+        [Test]
+        public void should_throw_exception_when_storage_url_is_null()
         {
-            should("throw ArgumentNullException", () => new DeleteContainer("", "containername"),
-                typeof(ArgumentNullException));
+            Assert.Throws<ArgumentNullException>(() => new DeleteContainer(null, "containername"));
         }
-        public void when_deleting_a_container_and_container_name_is_null()
+
+        [Test]
+        public void should_throw_exception_when_storage_url_is_empty()
         {
-            should("throw ArgumentNullException", () => new DeleteContainer("http://storageurl", null),
-                   typeof(ArgumentNullException));
+            Assert.Throws<ArgumentNullException>(() => new DeleteContainer("", "containername"));
         }
-        public void when_deleting_a_container_and_container_name_is_empty_string()
+        [Test]
+        public void should_throw_exception_when_deleting_a_container_and_container_name_is_null()
         {
-            should("throw ArgumentNullException", () => new DeleteContainer("http://storageUrl", ""),
-                   typeof(ArgumentNullException));
+            Assert.Throws<ArgumentNullException>(() => new DeleteContainer("http://storageurl", null));
         }
-        public void when_deleting_a_container()
+        [Test]
+        public void should_throw_exception_when_deleting_a_container_and_container_name_is_empty()
         {
-            var deleteContainer = new DeleteContainer("http://storageurl", "containername");
-            var mockrequest = new Mock<ICloudFilesRequest>();
+            Assert.Throws<ArgumentNullException>(() => new DeleteContainer("http://storageurl", ""));
+        }
+    }
+
+    public class When_deleting_a_container: Delete_container_base
+    {
+        private DeleteContainer deleteContainer;
+        private Mock<ICloudFilesRequest> mockrequest;
+
+        protected override void SetUp()
+        {
+            deleteContainer = new DeleteContainer("http://storageurl", "containername");
+            mockrequest = new Mock<ICloudFilesRequest>();
             deleteContainer.Apply(mockrequest.Object);
-            should("have url made of storage url and container name", 
-                ()=>deleteContainer.CreateUri().ToString().Is("http://storageurl/containername"));
-            should("have http delete method", ()=>
-                mockrequest.VerifySet(x => x.Method = "DELETE")
-                );
         }
+        [Test]
+        public void Should_have_url_made_of_storage_url_and_container_name()
+        {
+            Assert.AreEqual("http://storageurl/containername",deleteContainer.CreateUri().ToString());
+        }
+        [Test]
+        public void Should_have_http_delete_method()
+        {
+            mockrequest.VerifySet(x => x.Method = "DELETE");
+        }
+
     }
 
    
