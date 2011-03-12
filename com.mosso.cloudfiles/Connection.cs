@@ -50,12 +50,6 @@ namespace com.mosso.cloudfiles
         private readonly List<ProgressCallback> _callbackFuncs;
         private readonly GenerateRequestByType _requestfactory;
         private readonly bool _useServiceNet;
-
-        private bool isNotNullOrEmpty(params string[] strings)
-        {
-            return strings.All(str => !String.IsNullOrEmpty(str));
-        }
-
         protected string CdnManagementUrl;
         protected UserCredentials _usercreds;
 
@@ -124,7 +118,7 @@ namespace com.mosso.cloudfiles
 
         public Boolean HasCDN()
         {
-            return isNotNullOrEmpty(CdnManagementUrl);
+            return !string.IsNullOrEmpty(CdnManagementUrl);
         }
 
         public void AddProgressWatcher(ProgressCallback progressCallback)
@@ -1538,7 +1532,7 @@ namespace com.mosso.cloudfiles
 
         private bool IsAuthenticated()
         {
-            return isNotNullOrEmpty(AuthToken, StorageUrl) && _usercreds != null;
+            return !string.IsNullOrEmpty(AuthToken) && !string.IsNullOrEmpty(StorageUrl) && _usercreds != null;
         }
 
         private string GetContainerCdnUri(Container container)

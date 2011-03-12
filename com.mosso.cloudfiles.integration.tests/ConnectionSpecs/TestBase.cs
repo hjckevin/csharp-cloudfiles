@@ -16,7 +16,8 @@ namespace com.mosso.cloudfiles.integration.tests
         [SetUp]
         public void SetUpBase()
         {
-            var request = new GetAuthentication(new UserCredentials(new Uri(Credentials.AUTH_ENDPOINT), Credentials.USERNAME, Credentials.API_KEY));
+            var credentials = new UserCredentials(new Uri(Credentials.AUTH_ENDPOINT), Credentials.USERNAME,Credentials.API_KEY);
+            var request = new GetAuthentication(credentials);
             var cfrequest = new CloudFilesRequest((HttpWebRequest) WebRequest.Create(request.CreateUri()));
             request.Apply(cfrequest);
             var response =
@@ -24,35 +25,10 @@ namespace com.mosso.cloudfiles.integration.tests
             
             storageUrl = response.Headers[Constants.XStorageUrl];
             authToken = response.Headers[Constants.XAuthToken];
-            //Assert.That(authToken.Length, Is.EqualTo(36));
-            connection = new Connection(new UserCredentials(new Uri(Credentials.AUTH_ENDPOINT),Credentials.USERNAME, Credentials.API_KEY));
-            SetUp();
-        }
+            connection = new Connection(credentials);
 
+            if (!connection.HasCDN()) Assert.Ignore("Provider does not support CDN Management");
 
-        protected virtual void SetUp()
-        {
-        }
-    }
-    public class SharedTestBase
-    {
-        protected string storageUrl;
-        protected string authToken;
-        protected IConnection connection;
-
-        [TestFixtureSetUp]
-        public void SetUpBase()
-        {
-            var request = new GetAuthentication(new UserCredentials(new Uri(Credentials.AUTH_ENDPOINT), Credentials.USERNAME, Credentials.API_KEY));
-            var cfrequest = new CloudFilesRequest((HttpWebRequest)WebRequest.Create(request.CreateUri()));
-            request.Apply(cfrequest);
-            var response =
-                new ResponseFactory().Create(cfrequest);
-
-            storageUrl = response.Headers[Constants.XStorageUrl];
-            authToken = response.Headers[Constants.XAuthToken];
-            //Assert.That(authToken.Length, Is.EqualTo(36));
-            connection = new Connection(new UserCredentials(new Uri(Credentials.AUTH_ENDPOINT), Credentials.USERNAME, Credentials.API_KEY));
             SetUp();
         }
 

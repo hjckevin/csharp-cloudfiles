@@ -1,6 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Xml;
 using com.mosso.cloudfiles.domain;
 using NUnit.Framework;
@@ -9,7 +8,7 @@ using NUnit.Framework;
 namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetAccountInformationSpecs
 {
     [TestFixture]
-    public class When_retrieving_account_information_from_a_container_using_connection : SharedTestBase
+    public class When_retrieving_account_information_from_a_container_using_connection : TestBase
     {
         private AccountInformation account;
 
@@ -18,15 +17,12 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetAccountInfor
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
-
                 connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-
                 account = connection.GetAccountInformation();
             }
             finally
             {
                 connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }
         }
@@ -34,15 +30,13 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetAccountInfor
         [Test]
         public void Should_return_the_size_and_quantity_of_items_in_the_account()
         {
-            // Not valid for accounts that have no content.
-            Assert.Ignore();
             Assert.That(account, Is.Not.Null);
             Assert.That(account.BytesUsed, Is.GreaterThan(0));
         }
     }
 
     [TestFixture]
-    public class When_getting_serialized_account_information_for_an_account_in_json_format_and_container_exists : SharedTestBase
+    public class When_getting_serialized_account_information_for_an_account_in_json_format_and_container_exists : TestBase
     {
         private string jsonReturnValue;
 
@@ -77,7 +71,6 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetAccountInfor
     public class When_getting_serialized_account_information_for_an_account_in_xml_format_and_container_exists : TestBase
     {
         private XmlDocument xmlReturnValue;
-
 
         protected override void SetUp()
         {

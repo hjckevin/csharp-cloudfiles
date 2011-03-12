@@ -42,7 +42,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainerInf
     }
 
     [TestFixture]
-    public class When_getting_serialized_container_information_for_a_container_in_json_format_and_objects_exist : SharedTestBase
+    public class When_getting_serialized_container_information_for_a_container_in_json_format_and_objects_exist : TestBase
     {
 		private string jsonReturnValue;
 	 
@@ -71,7 +71,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetContainerInf
     }
 
     [TestFixture]
-    public class When_getting_serialized_container_information_for_a_container_in_xml_format_and_objects_exist : SharedTestBase
+    public class When_getting_serialized_container_information_for_a_container_in_xml_format_and_objects_exist : TestBase
     {
 		private XmlDocument xmlReturnValue;
 		 

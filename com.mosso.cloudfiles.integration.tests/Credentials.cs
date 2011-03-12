@@ -29,17 +29,29 @@ namespace com.mosso.cloudfiles.integration.tests
         
         public string GetUsername()
         {
-            return _xmlDocument.SelectSingleNode("/credentials/username").InnerText;
+            var usernameNode = _xmlDocument.SelectSingleNode("/credentials/username");
+            if(usernameNode == null)
+                throw new XmlException("Username node missing from Credential.config file");
+
+            return usernameNode.InnerText;
         }
 
         public string GetApiKey()
         {
-            return _xmlDocument.SelectSingleNode("/credentials/api_key").InnerText;
+            var apiKeyNode = _xmlDocument.SelectSingleNode("/credentials/api_key");
+            if (apiKeyNode == null)
+                throw new XmlException("API key node missing from Credential.config file");
+
+            return apiKeyNode.InnerText;
         }
 
         public string GetAuthEndpoint()
         {
-            return _xmlDocument.SelectSingleNode("/credentials/auth_endpoint").InnerText;
+            var authEndpointNode = _xmlDocument.SelectSingleNode("/credentials/auth_endpoint");
+            if (authEndpointNode == null)
+                throw new XmlException("Auth endpoint node missing from Credential.config file");
+
+            return authEndpointNode.InnerText;
         }
     }
 }
