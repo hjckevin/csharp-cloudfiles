@@ -1,5 +1,5 @@
 using System;
-using SpecMaker.Core.Exceptions;
+using NUnit.Framework;
 
 namespace com.mosso.cloudfiles.unit.tests.CustomMatchers
 {
@@ -8,7 +8,7 @@ namespace com.mosso.cloudfiles.unit.tests.CustomMatchers
         private static void BoolCheck(bool booleancheck, string message)
         {
             if(!booleancheck)
-                throw new RuleException(message);
+                throw new AssertionException(message);
         }
         public static void StartsWith(this Uri basestring, string comparedto)
         {

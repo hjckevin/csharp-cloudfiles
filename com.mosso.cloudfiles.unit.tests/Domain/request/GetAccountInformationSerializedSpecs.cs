@@ -1,25 +1,21 @@
 using System;
-using System.Net;
 using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using Moq;
 using NUnit.Framework;
 
-using SpecMaker.Core;
-
 namespace com.mosso.cloudfiles.unit.tests.Domain.request.GetAccountInformationSerializedSpecs
 {
-    public class GetAccountInformationSerializedSpecs: BaseSpec
+    [TestFixture]
+    public class When_getting_account_information_in_json_format_and_storage_url_is_null
     {
-        public void when_getting_account_information_in_json_format_and_storage_url_is_null()
+        [Test]
+        public void shoult_throw_argument_null_exception()
         {
-            should("throw ArgumentNullException", () => new GetAccountInformationSerialized(null, Format.JSON),
-                   typeof (ArgumentNullException));
+
+            Assert.Throws<ArgumentNullException>(() => new GetAccountInformationSerialized(null, Format.JSON));
         }
-     
-        
     }
-   
     [TestFixture]
     public class when_getting_account_information_in_json_format_and_storage_url_is_emptry_string
     {

@@ -1,6 +1,5 @@
 using System.Reflection;
 using System.Runtime.InteropServices;
-
 [assembly: AssemblyDescription("C#.NET API for Rackspace Cloud Files Cloud Storage")]
 [assembly: AssemblyCompany("Rackspace Managed Hosting")]
 [assembly: AssemblyProduct("csharp-cloudfiles")]

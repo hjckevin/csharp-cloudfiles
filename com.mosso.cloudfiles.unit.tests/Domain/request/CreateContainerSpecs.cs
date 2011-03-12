@@ -2,41 +2,67 @@ using System;
 using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using Moq;
-using SpecMaker.Core;
-using SpecMaker.Core.Matchers;
+using NUnit.Framework;
 
 namespace com.mosso.cloudfiles.unit.tests.Domain.request.CreateContainerSpecs
 {
-    public class CreateContainerSpecs: BaseSpec
+    [TestFixture]
+    public class Base_container_context
     {
-        public void when_creating_a_container_and_storae_url_is_null()
+        protected virtual void SetupContext()
         {
-            should("throw ArgumentNullException",()=> new CreateContainer(null, "containername"), typeof(ArgumentNullException));
         }
-        public void when_creating_a_container_and_storage_url_is_emptry_string()
+
+        [SetUp]
+        public void SetUp()
         {
-            should("throw ArugmentNullException ",()=> new CreateContainer("", "containername"), typeof(ArgumentNullException));
+            SetupContext();
         }
-        public void when_creating_a_container_and_container_name_is_null()
+    }
+
+    public class When_creating_a_container_with_missing_data : Base_container_context
+    {
+        [Test]
+        public void should_throw_exception_when_storage_url_is_null()
         {
-            should("throw ArgumentNullException", ()=> new CreateContainer("http://storageuri", null), typeof(ArgumentNullException) );
+            Assert.Throws<ArgumentNullException>(()=> new CreateContainer(null, "containername"));
         }
-        public void  when_creating_a_container_and_container_name_is_empty_string()
+        [Test]
+        public void should_throw_exception_when_storage_url_is_empty()
         {
-            should("throw ArgumentNullException", 
-                ()=> new CreateContainer("http://storageuri", ""), typeof(ArgumentNullException) );
+            Assert.Throws<ArgumentNullException>(()=> new CreateContainer("", "containername"));
         }
-        public void when_creating_a_container()
+        [Test]
+        public void should_throw_exception_when_container_is_null()
         {
-            var createContainer = new CreateContainer("http://storageurl", "containername");   
-            var mock = new Mock<ICloudFilesRequest>();
+            Assert.Throws<ArgumentNullException>(()=> new CreateContainer("http://storageuri", null));
+        }
+        [Test]
+        public void should_throw_exception_when_container_is_empty()
+        {
+            Assert.Throws<ArgumentNullException>(()=> new CreateContainer("http://storageuri", ""));
+        }
+    }
+    public class When_creating_a_container: Base_container_context
+    {
+        private CreateContainer createContainer;
+        private Mock<ICloudFilesRequest> mock;
+
+        protected override void SetupContext()
+        {
+            createContainer = new CreateContainer("http://storageurl", "containername");   
+            mock = new Mock<ICloudFilesRequest>();
             createContainer.Apply(mock.Object);
-           
-            
-            should("append container name to storage url",()=>createContainer.CreateUri().ToString().Is("http://storageurl/containername"));
-            should("use PUT method", () => 
-                mock.VerifySet(x => x.Method = "PUT")
-                );
+        }
+        [Test]
+        public void should_append_container_name_to_storage_url()
+        {
+             Assert.AreEqual("http://storageurl/containername", createContainer.CreateUri().ToString());
+        }
+        [Test]
+        public void should_use_put_method()
+        {
+            mock.VerifySet(x => x.Method = "PUT");
         }
     }
 

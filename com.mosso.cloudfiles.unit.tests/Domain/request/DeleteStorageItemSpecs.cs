@@ -3,50 +3,69 @@ using System.Net;
 using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using Moq;
-using SpecMaker.Core.Matchers;
-using SpecMaker.Core;
+using NUnit.Framework;
 
 namespace com.mosso.cloudfiles.unit.tests.Domain.request.DeleteStorageItemSpecs
 {
-    public class DeleteStorageItemSpecs: BaseSpec
+    [TestFixture]
+    public class When_parameters_missing_from_delete_storage_item
     {
-        public void when_deleting_a_storage_item_and_storage_url_is_null()
+        [Test]
+        public void should_throw_when_deleting_a_storage_item_and_storage_url_is_null()
         {
-            should("throw ArgumentNullException",()=>new DeleteStorageItem(null, "containername", "storageitemname"), typeof(ArgumentNullException));
+            Assert.Throws<ArgumentNullException>(() => new DeleteStorageItem(null, "containername", "storageitemname"));
         }
-        public void when_deleting_a_storage_item_and_storage_url_is_emptry_string()
+        [Test]
+        public void should_throw_when_deleting_a_storage_item_and_storage_url_is_emptry_string()
         {
-            
-              should("throw ArgumentNullException",()=>new DeleteStorageItem("", "containername", "storageitemname"), typeof(ArgumentNullException));
+            Assert.Throws<ArgumentNullException>(() => new DeleteStorageItem("", "containername", "storageitemname"));
         }
-        public void when_deleting_a_storage_item_and_storage_item_name_is_null()
+        [Test]
+        public void should_throw_when_deleting_a_storage_item_and_storage_item_name_is_null()
         {
-            should("throw ArgumentNullException", () =>new DeleteStorageItem("http://storageurl", "containername", null),typeof(ArgumentNullException));
+            Assert.Throws<ArgumentNullException>(() => new DeleteStorageItem("http://storageurl", "containername", null));
         }
-        public void when_deleting_a_storage_item_and_storage_item_name_is_emptry_string()
+        [Test]
+        public void should_throw_when_deleting_a_storage_item_and_storage_item_name_is_emptry_string()
         {
-            should("throw ArgumentNullException", () =>new DeleteStorageItem("http://storageurl", "containername", ""),typeof(ArgumentNullException));
+            Assert.Throws<ArgumentNullException>(() => new DeleteStorageItem("http://storageurl", "containername", ""));
         }
-        public void when_deleting_a_storage_item_and_container_name_is_null()
+        [Test]
+        public void should_throw_when_deleting_a_storage_item_and_container_name_is_null()
         {
-            should("throw ArgumentNullException", () =>new DeleteStorageItem("http://storageurl", null, "storageitemname"),typeof(ArgumentNullException));
+           Assert.Throws<ArgumentNullException>(() => new DeleteStorageItem("http://storageurl", null, "storageitemname"));
         }
 
-        public void when_deleting_a_storage_item_and_container_name_is_emptry_string()
+        [Test]
+        public void should_throw_when_deleting_a_storage_item_and_container_name_is_emptry_string()
         {
-            should("throw ArgumentNullException", () =>new DeleteStorageItem("http://storageurl", "", "storageitemname"),typeof(ArgumentNullException));
+            Assert.Throws<ArgumentNullException>(() => new DeleteStorageItem("http://storageurl", "", "storageitemname"));
         }
-        public void when_deleting_a_storage_item()
+    }
+    [TestFixture]
+    public class When_deleting_a_storage_item
+    {
+        private DeleteStorageItem deleteStorageItem;
+        private Mock<ICloudFilesRequest> mockrequest;
+
+        [SetUp]
+        public void SetUp()
         {
-            var deleteStorageItem = new DeleteStorageItem("http://storageurl", "containername", "storageitemname");
-            var _mockrequest = new Mock<ICloudFilesRequest>();
-             _mockrequest.SetupGet(x => x.Headers).Returns(new WebHeaderCollection());
-            deleteStorageItem.Apply(_mockrequest.Object);
-            
-            should("start with storageurl, have container name next, and then end with the item being deleted",
-                ()=>deleteStorageItem.CreateUri().Is("http://storageurl/containername/storageitemname"));
-            should("use HTTP DELETE method",()=> _mockrequest.VerifySet(x => x.Method = "DELETE"));
+            deleteStorageItem = new DeleteStorageItem("http://storageurl", "containername", "storageitemname");
+            mockrequest = new Mock<ICloudFilesRequest>();
+            mockrequest.SetupGet(x => x.Headers).Returns(new WebHeaderCollection());
+            deleteStorageItem.Apply(mockrequest.Object);
         }
-  }     
-    
+        [Test]
+        public void should_start_with_storageurl_have_container_name_next_and_then_end_with_the_item_being_deleted()
+        {
+            Assert.AreEqual("http://storageurl/containername/storageitemname", deleteStorageItem.CreateUri().ToString());
+        }
+        [Test]
+        public void should_use_http_delete_method()
+        {
+            mockrequest.VerifySet(x => x.Method = "DELETE");
+        }
+
+    }
 }
