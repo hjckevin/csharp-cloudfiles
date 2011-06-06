@@ -103,8 +103,8 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerItemListSpec
                 for (var i = 0; i < 12; ++i)
                     testHelper.PutItemInContainer(Constants.StorageItemName, i.ToString());
 
-                var parameters = new Dictionary<GetItemListParameters, string>
-                                                                           {{GetItemListParameters.Limit, "10"}};
+                var parameters = new Dictionary<GetListParameters, string>
+                                                                           {{GetListParameters.Limit, "10"}};
 
                 var getContainerItemsRequest = new GetContainerItemList(storageUrl, Constants.CONTAINER_NAME, parameters);
 
@@ -137,7 +137,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerItemListSpec
                     testHelper.PutItemInContainer(Constants.StorageItemName, "topdir1/" + i + "file");
                 }
 
-                var parameters = new Dictionary<GetItemListParameters, string> { { GetItemListParameters.Path, "topdir1" } };
+                var parameters = new Dictionary<GetListParameters, string> { { GetListParameters.Path, "topdir1" } };
 
                 var getContainerItemsRequest = new GetContainerItemList(storageUrl,
                                                                                         Constants.CONTAINER_NAME, parameters);
@@ -186,7 +186,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerItemListSpec
                     testHelper.PutItemInContainer(Constants.StorageItemName, "topdir1/" + i + "file");
                 }
 
-                var parameters = new Dictionary<GetItemListParameters, string> { { GetItemListParameters.Path, "topdir1/subdir2" } };
+                var parameters = new Dictionary<GetListParameters, string> { { GetListParameters.Path, "topdir1/subdir2" } };
 
                 var getContainerItemsRequest = new GetContainerItemList(storageUrl, Constants.CONTAINER_NAME, parameters);
              //   getContainerItemsRequest.UserAgent = Constants.USER_AGENT;
@@ -221,8 +221,8 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerItemListSpec
                 for (var i = 0; i < 12; ++i)
                     testHelper.PutItemInContainer(Constants.StorageItemName, i.ToString());
 
-                var parameters = new Dictionary<GetItemListParameters, string>
-                                                                           {{GetItemListParameters.Prefix, "2"}};
+                var parameters = new Dictionary<GetListParameters, string>
+                                                                           {{GetListParameters.Prefix, "2"}};
 
                 var getContainerItemsRequest = new GetContainerItemList(storageUrl, Constants.CONTAINER_NAME, parameters);
              //   getContainerItemsRequest.UserAgent = Constants.USER_AGENT;
@@ -249,7 +249,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerItemListSpec
                 for (var i = 0; i < 12; ++i)
                     testHelper.PutItemInContainer(Constants.StorageItemName, i.ToString());
 
-                var parameters = new Dictionary<GetItemListParameters, string>{{GetItemListParameters.Marker, "5"}};
+                var parameters = new Dictionary<GetListParameters, string>{{GetListParameters.Marker, "5"}};
 
                 var getContainerItemsRequest = new GetContainerItemList(storageUrl, Constants.CONTAINER_NAME, parameters);
 
@@ -274,7 +274,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetContainerItemListSpec
                 try
                 {
                     var parameters =
-                        new Dictionary<GetItemListParameters, string> {{(GetItemListParameters) int.MaxValue, "2"}};
+                        new Dictionary<GetListParameters, string> {{(GetListParameters) int.MaxValue, "2"}};
 
                     new GetContainerItemList(storageUrl, Constants.CONTAINER_NAME, parameters);
                 }

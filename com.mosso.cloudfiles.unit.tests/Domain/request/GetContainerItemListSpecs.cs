@@ -11,10 +11,10 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.GetContainerItemListSpe
     public class Base_GetContainerItemList
     {
         protected Uri uri;
-        protected Dictionary<GetItemListParameters, string> parameters;
+        protected Dictionary<GetListParameters, string> parameters;
         protected Mock<ICloudFilesRequest> _mockrequest;
 
-        protected Mock<ICloudFilesRequest> GetMockrequest(Dictionary<GetItemListParameters, string> parameters,
+        protected Mock<ICloudFilesRequest> GetMockrequest(Dictionary<GetListParameters, string> parameters,
                                                           out Uri uri)
         {
             var getContainerItemList = new GetContainerItemList("http://storageurl", "containername", parameters);
@@ -93,7 +93,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.GetContainerItemListSpe
         [SetUp]
         public void Setup()
         {
-            parameters = new Dictionary<GetItemListParameters, string> {{GetItemListParameters.Limit, "2"}};
+            parameters = new Dictionary<GetListParameters, string> {{GetListParameters.Limit, "2"}};
             _mockrequest = GetMockrequest(parameters, out uri);
         }
 
@@ -122,7 +122,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.GetContainerItemListSpe
         [SetUp]
         public void SetUp()
         {
-            parameters = new Dictionary<GetItemListParameters, string> {{GetItemListParameters.Marker, "abc"}};
+            parameters = new Dictionary<GetListParameters, string> {{GetListParameters.Marker, "abc"}};
             _mockrequest = GetMockrequest(parameters, out uri);
         }
 
@@ -151,7 +151,7 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.GetContainerItemListSpe
         [SetUp]
         public void SetUp()
         {
-            parameters = new Dictionary<GetItemListParameters, string> {{GetItemListParameters.Prefix, "a"}};
+            parameters = new Dictionary<GetListParameters, string> {{GetListParameters.Prefix, "a"}};
             _mockrequest = GetMockrequest(parameters, out uri);
         }
 
@@ -180,8 +180,8 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.GetContainerItemListSpe
         [SetUp]
         public void SetUp()
         {
-            parameters = new Dictionary<GetItemListParameters, string>
-                             {{GetItemListParameters.Path, "dir1/subdir2/"}};
+            parameters = new Dictionary<GetListParameters, string>
+                             {{GetListParameters.Path, "dir1/subdir2/"}};
 
             _mockrequest = GetMockrequest(parameters, out uri);
         }
@@ -212,12 +212,12 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.request.GetContainerItemListSpe
         [SetUp]
         public void SetUp()
         {
-            parameters = new Dictionary<GetItemListParameters, string>
+            parameters = new Dictionary<GetListParameters, string>
                              {
-                                 {GetItemListParameters.Limit, "2"},
-                                 {GetItemListParameters.Marker, "abc"},
-                                 {GetItemListParameters.Prefix, "a"},
-                                 {GetItemListParameters.Path, "dir1/subdir2/"}
+                                 {GetListParameters.Limit, "2"},
+                                 {GetListParameters.Marker, "abc"},
+                                 {GetListParameters.Prefix, "a"},
+                                 {GetListParameters.Path, "dir1/subdir2/"}
                              };
             _mockrequest = GetMockrequest(parameters, out uri);
         }

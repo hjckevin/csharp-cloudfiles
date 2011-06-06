@@ -23,7 +23,7 @@ namespace com.mosso.cloudfiles.domain
         void MarkAsPublic();
         bool ObjectExists(string objectName);
         string[] GetObjectNames();
-        string[] GetObjectNames(Dictionary<GetItemListParameters, string> parameters);
+        string[] GetObjectNames(Dictionary<GetListParameters, string> parameters);
         Uri PublicUrl { get; set; }
         string JSON { get; }
         XmlDocument XML { get; }
@@ -81,10 +81,10 @@ namespace com.mosso.cloudfiles.domain
 
         public string[] GetObjectNames()
         {
-            return GetObjectNames(new Dictionary<GetItemListParameters, string>());
+            return GetObjectNames(new Dictionary<GetListParameters, string>());
         }
 
-        public string[] GetObjectNames(Dictionary<GetItemListParameters, string> parameters)
+        public string[] GetObjectNames(Dictionary<GetListParameters, string> parameters)
         {
             return CloudFilesGetContainer(parameters);
         }
@@ -175,7 +175,7 @@ namespace com.mosso.cloudfiles.domain
             return connection.GetContainerInformationXml(Name);
         }
 
-        protected virtual string[] CloudFilesGetContainer(Dictionary<GetItemListParameters, string> parameters)
+        protected virtual string[] CloudFilesGetContainer(Dictionary<GetListParameters, string> parameters)
         {
             return connection.GetContainerItemList(Name, parameters).ToArray();
         }

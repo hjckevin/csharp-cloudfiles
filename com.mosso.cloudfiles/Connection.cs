@@ -26,7 +26,7 @@ namespace com.mosso.cloudfiles
     /// <summary>
     /// enumeration of filters to place on the request url
     /// </summary>
-    public enum GetItemListParameters
+    public enum GetListParameters
     {
         Limit,
         Marker,
@@ -321,6 +321,33 @@ namespace com.mosso.cloudfiles
         }
 
         /// <summary>
+        /// This method retrieves a list of containers associated with a given account
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// UserCredentials userCredentials = new UserCredentials("username", "api key");
+        /// IConnection connection = new Connection(userCredentials);
+        /// Dictionary{GetListParameters, string} parameters = new Dictionary{GetListParameters, string}();
+        /// parameters.Add(GetListParameters.Limit, 2);
+        /// parameters.Add(GetListParameters.Marker, 1);
+        /// parameters.Add(GetListParameters.Prefix, "a");
+        /// List{string} containers = connection.GetContainers();
+        /// </code>
+        /// </example>
+        /// <param name="parameters">Parameters to feed to the request to filter the returned list</param>
+        /// <returns>An instance of List, containing the names of the containers this account owns</returns>
+        public List<string> GetContainers(Dictionary<GetListParameters, string> parameters)
+        {
+            return StartProcess
+                .ByLoggingMessage("Getting containers for user " + _usercreds.Username)
+                .ThenDoing(() => BuildContainerList(parameters))
+                .AndIfErrorThrownIs<Exception>()
+                .Do(Nothing)
+                .AndLogError("Error getting containers for user " + _usercreds.Username)
+                .Now();
+        }
+
+        /// <summary>
         /// This method retrieves the contents of a container
         /// </summary>
         /// <example>
@@ -382,10 +409,10 @@ namespace com.mosso.cloudfiles
         /// <code>
         /// UserCredentials userCredentials = new UserCredentials("username", "api key");
         /// IConnection connection = new Connection(userCredentials);
-        /// Dictionary{GetItemListParameters, string} parameters = new Dictionary{GetItemListParameters, string}();
-        /// parameters.Add(GetItemListParameters.Limit, 2);
-        /// parameters.Add(GetItemListParameters.Marker, 1);
-        /// parameters.Add(GetItemListParameters.Prefix, "a");
+        /// Dictionary{GetListParameters, string} parameters = new Dictionary{GetListParameters, string}();
+        /// parameters.Add(GetListParameters.Limit, 2);
+        /// parameters.Add(GetListParameters.Marker, 1);
+        /// parameters.Add(GetListParameters.Prefix, "a");
         /// List{string} containerItemList = connection.GetContainerItemList("container name", parameters);
         /// </code>
         /// </example>
@@ -393,7 +420,7 @@ namespace com.mosso.cloudfiles
         /// <param name="parameters">Parameters to feed to the request to filter the returned list</param>
         /// <returns>An instance of List, containing the names of the storage objects in the give container</returns>
         /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
-        public List<string> GetContainerItemList(string containerName, Dictionary<GetItemListParameters, string> parameters)
+        public List<string> GetContainerItemList(string containerName, Dictionary<GetListParameters, string> parameters)
         {
             if (string.IsNullOrEmpty(containerName))
                 throw new ArgumentNullException();
@@ -1670,8 +1697,13 @@ namespace com.mosso.cloudfiles
 
         private List<string> BuildContainerList()
         {
+            return BuildContainerList(null);
+        }
+
+        private List<string> BuildContainerList(Dictionary<GetListParameters, string> parameters)
+        {
             IList<string> containerList = new List<string>();
-            var getContainers = new GetContainers(StorageUrl);
+            var getContainers = new GetContainers(StorageUrl, parameters);
             var getContainersResponse = _requestfactory.Submit(getContainers, AuthToken, _usercreds.ProxyCredentials);
             if (getContainersResponse.Status == HttpStatusCode.OK)
             {
@@ -1735,7 +1767,7 @@ namespace com.mosso.cloudfiles
             }
         }
 
-        private List<string> getContainerItemList(string containerName, Dictionary<GetItemListParameters, string> parameters)
+        private List<string> getContainerItemList(string containerName, Dictionary<GetListParameters, string> parameters)
         {
             var containerItemList = new List<string>();
             var getContainerItemList = new GetContainerItemList(StorageUrl, containerName, parameters);

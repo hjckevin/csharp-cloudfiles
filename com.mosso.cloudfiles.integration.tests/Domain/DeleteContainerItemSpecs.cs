@@ -24,6 +24,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.DeleteStorageObjectSpecs
                 var response = new GenerateRequestByType().Submit(deleteStorageItem,authToken );
 
                 Assert.That(response.Status, Is.EqualTo(HttpStatusCode.NoContent));
+                Console.WriteLine(response.Headers["Content-Type"]);
                 Assert.That(response.Headers["Content-Type"].Contains("text/plain"), Is.True);
             }
         }

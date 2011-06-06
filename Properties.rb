@@ -13,7 +13,7 @@ ZIP_FILE_PREFIX = ["csharp-cloudfiles-DOTNET",CLR_VERSION].join
 CORE_DLL_DIR = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles','bin',COMPILE_TARGET)
 INTEGRATION_TESTS_DLL = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles.integration.tests','bin',COMPILE_TARGET,'com.mosso.cloudfiles.integration.tests.dll')
 UNIT_TESTS_DLL = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles.unit.tests','bin',COMPILE_TARGET,'com.mosso.cloudfiles.unit.tests.dll')
-RELEASE_BUILD_NUMBER = "1.5.2.1"
+RELEASE_BUILD_NUMBER = "1.5.3.1"
 BUILDS_DIR = File.join(ABSOLUTE_PATH,'builds')
 
 NUNIT_CMD_EXE = File.join(ABSOLUTE_PATH,'lib','nunit','nunit-console.exe')

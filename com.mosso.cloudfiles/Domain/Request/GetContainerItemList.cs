@@ -33,7 +33,7 @@ namespace com.mosso.cloudfiles.domain.request
         public GetContainerItemList(
             string storageUrl,
             string containerName, 
-            Dictionary<GetItemListParameters, string> requestParameters)
+            Dictionary<GetListParameters, string> requestParameters)
         {
             _storageUrl = storageUrl;
             _containerName = containerName;
@@ -56,11 +56,11 @@ namespace com.mosso.cloudfiles.domain.request
 
             _stringBuilder = new StringBuilder();
 
-            foreach (GetItemListParameters param in requestParameters.Keys)
+            foreach (GetListParameters param in requestParameters.Keys)
             {
                 var paramName = param.ToString().ToLower();
 
-                if (param == GetItemListParameters.Limit)
+                if (param == GetListParameters.Limit)
                 {
                     int.Parse(requestParameters[param]);
                 }

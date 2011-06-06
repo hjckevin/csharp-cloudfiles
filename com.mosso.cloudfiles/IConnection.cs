@@ -18,8 +18,9 @@ namespace com.mosso.cloudfiles
         void PurgePublicContainer(string continerName, string[] emailAddresses);
         void PurgePublicContainer(string continerName);
         List<string> GetContainers();
+        List<string> GetContainers(Dictionary<GetListParameters, string> parameters);
         List<string> GetContainerItemList(string containerName);
-        List<string> GetContainerItemList(string containerName, Dictionary<GetItemListParameters, string> parameters);
+        List<string> GetContainerItemList(string containerName, Dictionary<GetListParameters, string> parameters);
         Container GetContainerInformation(string containerName);
         string GetContainerInformationJson(string containerName);
         XmlDocument GetContainerInformationXml(string containerName);

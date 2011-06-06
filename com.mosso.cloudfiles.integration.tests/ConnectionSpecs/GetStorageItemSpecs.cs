@@ -13,6 +13,25 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetStorageItemS
     public class When_downloading_a_file_using_connection : TestBase
     {
         [Test]
+        public void Should_return_large_file_if_predetermined_container_exists_and_file_exists()
+        {
+            var containers = connection.GetContainers();
+            if(!containers.Contains(Constants.CONTAINER_NAME_WITH_LARGE_OBJECT) || 
+                !connection.GetContainerItemList(Constants.CONTAINER_NAME_WITH_LARGE_OBJECT)
+                    .Contains(Constants.StorageItemNameLarge))
+            {
+                Assert.Ignore(string.Format("The conventional container {0} or large file {1} does not exist.",
+                              Constants.CONTAINER_NAME_WITH_LARGE_OBJECT,
+                              Constants.StorageItemNameLarge));
+            }
+
+            Console.WriteLine(string.Format("Beginning download of {0} file", Constants.StorageItemNameLarge));
+            connection.GetStorageItem(Constants.CONTAINER_NAME_WITH_LARGE_OBJECT, Constants.StorageItemNameLarge, Constants.StorageItemNameLarge);
+            Console.WriteLine(string.Format("Finished download of {0} file", Constants.StorageItemNameLarge));
+
+        }
+
+        [Test]
         public void Should_return_nothing_if_a_local_file_name_is_supplied_and_the_download_is_successful()
         {
             

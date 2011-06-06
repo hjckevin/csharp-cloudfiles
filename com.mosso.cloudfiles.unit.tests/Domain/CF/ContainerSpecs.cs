@@ -103,8 +103,8 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
             Assert.That(objectNames[0], Is.EqualTo(Constants.STORAGE_ITEM_NAME));
             Assert.That(objectNames[1], Is.EqualTo(Constants.HEAD_STORAGE_ITEM_NAME));
 
-            var parameters = new Dictionary<GetItemListParameters, string> 
-            {{GetItemListParameters.Limit, "1"}};
+            var parameters = new Dictionary<GetListParameters, string> 
+            {{GetListParameters.Limit, "1"}};
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.STORAGE_ITEM_NAME));
@@ -128,8 +128,8 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
             Assert.That(objectNames[0], Is.EqualTo(Constants.STORAGE_ITEM_NAME));
             Assert.That(objectNames[1], Is.EqualTo(Constants.HEAD_STORAGE_ITEM_NAME));
 
-            var parameters = new Dictionary<GetItemListParameters, string> 
-            {{GetItemListParameters.Marker, "1"}};
+            var parameters = new Dictionary<GetListParameters, string> 
+            {{GetListParameters.Marker, "1"}};
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.HEAD_STORAGE_ITEM_NAME));
@@ -153,14 +153,14 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
             Assert.That(objectNames[0], Is.EqualTo(Constants.STORAGE_ITEM_NAME));
             Assert.That(objectNames[1], Is.EqualTo(Constants.HEAD_STORAGE_ITEM_NAME));
 
-            var parameters = new Dictionary<GetItemListParameters, string> 
-            {{GetItemListParameters.Prefix, "h"}};
+            var parameters = new Dictionary<GetListParameters, string> 
+            {{GetListParameters.Prefix, "h"}};
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.HEAD_STORAGE_ITEM_NAME));
 
             parameters.Clear();
-            parameters.Add(GetItemListParameters.Prefix, "t");
+            parameters.Add(GetListParameters.Prefix, "t");
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.STORAGE_ITEM_NAME));
@@ -381,12 +381,12 @@ namespace com.mosso.cloudfiles.unit.tests.Domain.CF.ContainerSpecs
             bytesUsed = objects.Count * 34;
         }
 
-        protected override string[] CloudFilesGetContainer(Dictionary<GetItemListParameters, string> parameters)
+        protected override string[] CloudFilesGetContainer(Dictionary<GetListParameters, string> parameters)
         {
             var objectNames = new List<string>();
-            string limit = parameters.ContainsKey(GetItemListParameters.Limit) ? parameters[GetItemListParameters.Limit] : null;
-            string offset = parameters.ContainsKey(GetItemListParameters.Marker) ? parameters[GetItemListParameters.Marker] : null;
-            string prefix = parameters.ContainsKey(GetItemListParameters.Prefix) ? parameters[GetItemListParameters.Prefix] : null;
+            string limit = parameters.ContainsKey(GetListParameters.Limit) ? parameters[GetListParameters.Limit] : null;
+            string offset = parameters.ContainsKey(GetListParameters.Marker) ? parameters[GetListParameters.Marker] : null;
+            string prefix = parameters.ContainsKey(GetListParameters.Prefix) ? parameters[GetListParameters.Prefix] : null;
 
             int count = 0;
             foreach(IObject @object in objects)

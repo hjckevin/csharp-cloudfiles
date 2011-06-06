@@ -96,7 +96,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.MakePathSpecs
                 connection.PutStorageItem(Constants.CONTAINER_NAME, new MemoryStream(new byte[0]), "/dir1/dir2/dir3/" + Constants.StorageItemNameGif);
                 connection.PutStorageItem(Constants.CONTAINER_NAME, new MemoryStream(new byte[0]), "/dir1/dir2/dir3/" + Constants.StorageItemNameJpg);
 
-                var items = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetItemListParameters, string> {{GetItemListParameters.Path, "dir1"}});
+                var items = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetListParameters, string> {{GetListParameters.Path, "dir1"}});
                 Assert.That(items.Count, Is.EqualTo(2));
             }
             finally

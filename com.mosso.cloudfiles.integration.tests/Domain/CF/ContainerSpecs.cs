@@ -129,7 +129,7 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.ContainerSpecs
             Assert.That(objectNames[0], Is.EqualTo(Constants.HeadStorageItemName));
             Assert.That(objectNames[1], Is.EqualTo(Constants.StorageItemName));
 
-            var parameters = new Dictionary<GetItemListParameters, string>{{GetItemListParameters.Limit, "1"}};
+            var parameters = new Dictionary<GetListParameters, string>{{GetListParameters.Limit, "1"}};
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.HeadStorageItemName));
@@ -152,7 +152,7 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.ContainerSpecs
             Assert.That(objectNames[0], Is.EqualTo(Constants.HeadStorageItemName));
             Assert.That(objectNames[1], Is.EqualTo(Constants.StorageItemName));
 
-            var parameters = new Dictionary<GetItemListParameters, string> { { GetItemListParameters.Marker, "HeadStorageItem.txt" } };
+            var parameters = new Dictionary<GetListParameters, string> { { GetListParameters.Marker, "HeadStorageItem.txt" } };
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.StorageItemName));
@@ -176,13 +176,13 @@ namespace com.mosso.cloudfiles.integration.tests.Domain.CF.ContainerSpecs
             Assert.That(objectNames[0], Is.EqualTo(Constants.HeadStorageItemName));
             Assert.That(objectNames[1], Is.EqualTo(Constants.StorageItemName));
 
-            var parameters = new Dictionary<GetItemListParameters, string> { { GetItemListParameters.Prefix, "H" } };
+            var parameters = new Dictionary<GetListParameters, string> { { GetListParameters.Prefix, "H" } };
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.HeadStorageItemName));
 
             parameters.Clear();
-            parameters.Add(GetItemListParameters.Prefix, "T");
+            parameters.Add(GetListParameters.Prefix, "T");
             objectNames = container.GetObjectNames(parameters);
             Assert.That(objectNames.Length, Is.EqualTo(1));
             Assert.That(objectNames[0], Is.EqualTo(Constants.StorageItemName));

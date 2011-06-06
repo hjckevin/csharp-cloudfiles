@@ -1,5 +1,9 @@
 # History
 
+## v1.5.3.1 (2011-6-6)
+#### New Features
+ * Add ability to parameterize the GetContainers call with Marker, Limit, Prefix, Path (Closes gh-37)
+
 ## v1.5.2.1 (2011-2-27)
 #### New Features
  * Allow user to purge individual items or entire containers from CDN. PurgePublicContainer and PurgePublicStorageItem

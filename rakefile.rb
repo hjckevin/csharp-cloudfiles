@@ -1,6 +1,6 @@
 require 'rubygems'
 require 'albacore'
-require "Properties.rb"
+require File.expand_path('../Properties', __FILE__)
 require "fileutils"
 
 desc "compiles, runs tests and creates zip file"
@@ -103,6 +103,8 @@ class IntegrationTestsCredentialsFilesBuilder
     <credentials>
       <username>PUT USERNAME HERE</username>
       <api_key>PUT API KEY HERE</api_key>
+	  <auth_endpoint>https://auth.api.rackspacecloud.com/v1.0</auth_endpoint>
+	  <!-- <auth_endpoint>https://lon.auth.api.rackspacecloud.com/v1.0</auth_endpoint> -->
     </credentials>
 		}.gsub(/^    /, '')
 		  

@@ -15,6 +15,7 @@ namespace com.mosso.cloudfiles.integration.tests
         public static string XLogRetention = "X-Log-Retention";
         public const string ETAG = "ETag";
         public const string CONTAINER_NAME = "integration.tests.container.new";
+        public const string CONTAINER_NAME_WITH_LARGE_OBJECT = "csharp-cloudfiles-large-files";
          
         //Response constants
         public const int NoContentResponse = 204;
@@ -35,6 +36,7 @@ namespace com.mosso.cloudfiles.integration.tests
 
         //StorageItem related constants
         public const string StorageItemName = "TestStorageItem.txt";
+        public const string StorageItemNameLarge = "ubuntu-10.10-desktop-amd64.iso";
         public const string StorageItemNameGif = "TestStorageItem.gif";
         public const string StorageItemNameJpg = "TestStorageItem.jpg";
         public const int StorageItemJpgByteSize = 105542;
