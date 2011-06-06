@@ -54,14 +54,17 @@ nunit :integration_tests => :compile  do |nunit|
 	copy(ENV['CRED_FILE_LOC'], INTEGRATION_TESTS_CONFIG_FILE)
   end
   
-  if !File.exists?(INTEGRATION_TESTS_CONFIG_FILE)
-	if File.exists?("#{ABSOLUTE_PATH}/Credentials.config")
-	  puts "copying file from #{ABSOLUTE_PATH}/Credentials.config to #{INTEGRATION_TESTS_CONFIG_FILE}"
-	  copy("#{ABSOLUTE_PATH}/Credentials.config", INTEGRATION_TESTS_CONFIG_FILE)
-	  exit
+
+  if ENV["CSHARP_CLOUDFILES_USERNAME"].nil? || ENV["CSHARP_CLOUDFILES_API_KEY"].nil? || ENV["CSHARP_CLOUDFILES_AUTH_ENDPOINT"].nil?
+	if !File.exists?(INTEGRATION_TESTS_CONFIG_FILE)
+		if File.exists?("#{ABSOLUTE_PATH}/Credentials.config")
+			puts "copying file from #{ABSOLUTE_PATH}/Credentials.config to #{INTEGRATION_TESTS_CONFIG_FILE}"
+			copy("#{ABSOLUTE_PATH}/Credentials.config", INTEGRATION_TESTS_CONFIG_FILE)
+			exit
+		end
+		puts "Credentials.config file does not exist.  Please run 'rake create_credentials_config'"
+		exit
 	end
-    puts "Credentials.config file does not exist.  Please run 'rake create_credentials_config'"
-    exit
   end
   
   nunit.command = NUNIT_CMD_EXE
