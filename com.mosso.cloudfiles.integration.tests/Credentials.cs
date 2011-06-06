@@ -6,14 +6,57 @@ namespace com.mosso.cloudfiles.integration.tests
 {
     internal static class Credentials
     {
-        private static readonly CredentialsConfigParser _credentialsConfigParser = new CredentialsConfigParser();
-
-        public static readonly string USERNAME = _credentialsConfigParser.GetUsername();
-        public static readonly string API_KEY = _credentialsConfigParser.GetApiKey();
-        public static readonly string AUTH_ENDPOINT = _credentialsConfigParser.GetAuthEndpoint();
+        public static readonly string USERNAME = new CredentialsFactory().Get().GetUsername();
+        public static readonly string API_KEY = new CredentialsFactory().Get().GetApiKey();
+        public static readonly string AUTH_ENDPOINT = new CredentialsFactory().Get().GetAuthEndpoint();
     }
 
-    internal class CredentialsConfigParser
+    internal interface ICredentialsRetriver
+    {
+        string GetUsername();
+        string GetApiKey();
+        string GetAuthEndpoint();
+    }
+
+    internal class CredentialsFactory
+    {
+
+        public ICredentialsRetriver Get()
+        {
+            var api_key = Environment.GetEnvironmentVariable("CSHARP_CLOUDFILES_API_KEY");
+            var username = Environment.GetEnvironmentVariable("CSHARP_CLOUDFILES_USERNAME");
+            var endpoint = Environment.GetEnvironmentVariable("CSHARP_CLOUDFILES_AUTH_ENDPOINT");
+
+            if (!string.IsNullOrEmpty(api_key)
+                && !string.IsNullOrEmpty(username)
+                && !string.IsNullOrEmpty(endpoint))
+            {
+                return new CredentialsEnvironmentVariableGetter();
+            }
+
+            return new CredentialsConfigParser();
+        }
+    }
+
+    internal class CredentialsEnvironmentVariableGetter : ICredentialsRetriver
+    {
+        public string GetUsername()
+        {
+            return Environment.GetEnvironmentVariable("CSHARP_CLOUDFILES_USERNAME");
+        }
+
+        public string GetApiKey()
+        {
+            return Environment.GetEnvironmentVariable("CSHARP_CLOUDFILES_API_KEY");
+        }
+
+        public string GetAuthEndpoint()
+        {
+            return Environment.GetEnvironmentVariable("CSHARP_CLOUDFILES_AUTH_ENDPOINT");
+        }
+    }
+
+    internal class CredentialsConfigParser : ICredentialsRetriver
     {
         private readonly XmlDocument _xmlDocument;
 
