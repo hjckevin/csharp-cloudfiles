@@ -1,5 +1,6 @@
 using System;
 using System.Net;
+using System.Text.RegularExpressions;
 using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.response;
@@ -25,7 +26,7 @@ namespace com.mosso.cloudfiles.integration.tests.domain.DeleteStorageObjectSpecs
 
                 Assert.That(response.Status, Is.EqualTo(HttpStatusCode.NoContent));
                 Console.WriteLine(response.Headers["Content-Type"]);
-                Assert.That(response.Headers["Content-Type"].Contains("text/plain"), Is.True);
+                Assert.That(Regex.Match(response.Headers["Content-Type"], "text/(plain|html)").Success, Is.True);
             }
         }
 

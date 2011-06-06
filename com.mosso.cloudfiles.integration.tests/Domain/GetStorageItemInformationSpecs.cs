@@ -24,7 +24,8 @@ namespace com.mosso.cloudfiles.integration.tests.domain.GetStorageItemInformatio
                     var getStorageItemInformation = new GetStorageItemInformation(storageUrl, Constants.CONTAINER_NAME, Constants.HeadStorageItemName);
                     var getStorageItemInformationResponse = new GenerateRequestByType().Submit(
                         getStorageItemInformation, authToken);
-                    Assert.That(getStorageItemInformationResponse.Status == HttpStatusCode.OK || getStorageItemInformationResponse.Status == HttpStatusCode.NoContent, Is.True);
+                    Assert.That(getStorageItemInformationResponse.Status == HttpStatusCode.OK 
+                        || getStorageItemInformationResponse.Status == HttpStatusCode.NoContent, Is.True);
 
                     var metadata = getStorageItemInformationResponse.Metadata;
                     Assert.That(metadata["Test"], Is.EqualTo("test"));

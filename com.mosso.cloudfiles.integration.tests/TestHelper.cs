@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net;
+using System.Text.RegularExpressions;
 using com.mosso.cloudfiles.domain.request;
 using NUnit.Framework;
 
@@ -47,7 +48,7 @@ namespace com.mosso.cloudfiles.integration.tests
             var setStorageItemMetaInformation = new SetStorageItemMetaInformation(storageUrl, containerName, storageItemName, metadata);
             var postStorageItemResponse = new GenerateRequestByType().Submit(setStorageItemMetaInformation, authToken);
             Assert.That(postStorageItemResponse.Status, Is.EqualTo(HttpStatusCode.Accepted));
-            Assert.That(postStorageItemResponse.Headers["Content-Type"].Contains("text/plain"), Is.True);
+            Assert.That(Regex.Match(postStorageItemResponse.Headers["Content-Type"], "text/(plain|html)").Success, Is.True);
             var contentLength = postStorageItemResponse.Headers["Content-Length"];
             Assert.That(contentLength == "58" || contentLength == "0", Is.True);
         }

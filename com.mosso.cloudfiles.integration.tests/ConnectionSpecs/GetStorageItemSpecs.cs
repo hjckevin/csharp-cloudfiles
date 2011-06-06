@@ -13,6 +13,7 @@ namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs.GetStorageItemS
     public class When_downloading_a_file_using_connection : TestBase
     {
         [Test]
+        [Ignore("Only run if necessary")]
         public void Should_return_large_file_if_predetermined_container_exists_and_file_exists()
         {
             var containers = connection.GetContainers();
