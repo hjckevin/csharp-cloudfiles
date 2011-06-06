@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using com.mosso.cloudfiles.domain;
 using com.mosso.cloudfiles.domain.request;
 using com.mosso.cloudfiles.domain.request.Interfaces;
 using com.mosso.cloudfiles.unit.tests.CustomMatchers;
