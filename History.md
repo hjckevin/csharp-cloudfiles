@@ -1,5 +1,9 @@
 # History
 
+## v1.5.3.2 (2011-7-20)
+#### New Features
+ * Changed namespaces from com.mosso.cloudfiles.* to Rackspace.CloudFiles.* (Closes gh-26)
+
 ## v1.5.3.1 (2011-6-6)
 #### New Features
  * Add ability to parameterize the GetContainers call with Marker, Limit, Prefix, Path (Closes gh-37)

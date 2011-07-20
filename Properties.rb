@@ -13,8 +13,10 @@ ZIP_FILE_PREFIX = ["csharp-cloudfiles-DOTNET",CLR_VERSION].join
 CORE_DLL_DIR = File.join(ABSOLUTE_PATH,'Rackspace.CloudFiles','bin',COMPILE_TARGET)
 INTEGRATION_TESTS_DLL = File.join(ABSOLUTE_PATH,'Rackspace.CloudFiles.Integration.Tests','bin',COMPILE_TARGET,'Rackspace.CloudFiles.Integration.Tests.dll')
 UNIT_TESTS_DLL = File.join(ABSOLUTE_PATH,'Rackspace.CloudFiles.Unit.Tests','bin',COMPILE_TARGET,'Rackspace.CloudFiles.Unit.Tests.dll')
-RELEASE_BUILD_NUMBER = "1.5.3.1"
 BUILDS_DIR = File.join(ABSOLUTE_PATH,'builds')
+
+TEAM_CITY_BUILD_NUMBER = ENV['BUILD_NUMBER']
+RELEASE_BUILD_NUMBER = "#{TEAM_CITY_BUILD_NUMBER || '0.0.0.0'}"
 
 NUNIT_CMD_EXE = File.join(ABSOLUTE_PATH,'lib','nunit','nunit-console.exe')
 FRAMEWORK_DIR = File.join(ENV['windir'].dup, 'Microsoft.NET', 'Framework', CLR_VERSION)
