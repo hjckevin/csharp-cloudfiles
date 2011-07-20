@@ -5,11 +5,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("com.mosso.cloudfiles.unit.tests")]
+[assembly: AssemblyTitle("Rackspace.CloudFiles.Unit.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("com.mosso.cloudfiles.unit.tests")]
+[assembly: AssemblyProduct("Rackspace.CloudFiles.Unit.Tests")]
 [assembly: AssemblyCopyright("Copyright ©  2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

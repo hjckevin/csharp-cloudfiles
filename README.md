@@ -17,7 +17,7 @@ then create an issue on the [issues tab](http://github.com/rackspace/csharp-clou
 Go to the [downloads page](http://github.com/rackspace/csharp-cloudfiles/downloads) and download the latest version.  
 Unzip the file, unzip the bin zip, and grab the following files:
 
-	com.mosso.cloudfiles.dll
+	Rackspace.Cloudfiles.dll
 	log4net.dll
 	log4Net.config
 
@@ -26,7 +26,7 @@ Reference them from your application.  Look at the examples below once you done 
 	/Your_project
 		/lib
 			/cloudfiles
-				com.mosso.cloudfiles.dll
+				Rackspace.Cloudfiles.dll
 				log4net.dll
 		/src
 			...
@@ -71,10 +71,10 @@ You just need to edit the log4net.config file to turn it on:
 	
 so that logging starts and you get the desired logging output and format.
 
-Currently the log is going to log/com.mosso.cloudfiles.log, where you have the dll referenced.
+Currently the log is going to log/Rackspace.CloudFiles.Log, where you have the dll referenced.
 
  
-	<file value="logs/com.mosso.cloudfiles.log" />   (in the log4net.config file)
+	<file value="logs/Rackspace.CloudFiles.Log" />   (in the log4net.config file)
 
 Please reference the [log4net documentation](http://logging.apache.org/log4net/release/config-examples.html) on how to edit that config file.
 

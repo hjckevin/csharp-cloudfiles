@@ -1,18 +1,18 @@
 ABSOLUTE_PATH = File.expand_path(File.dirname(__FILE__))
 
 COMPILE_TARGET = 'release'
-INTEGRATION_TESTS_CONFIG_FILE = File.join(ABSOLUTE_PATH, 'com.mosso.cloudfiles.integration.tests','bin',COMPILE_TARGET,'Credentials.config')
+INTEGRATION_TESTS_CONFIG_FILE = File.join(ABSOLUTE_PATH, 'Rackspace.CloudFiles.Integration.Tests','bin',COMPILE_TARGET,'Credentials.config')
 PRODUCT = "csharp-cloudfiles"
 COPYRIGHT = "Copyright (c) 2008, 2009 2010, 2011, Rackspace Managed Hosting.  All Rights Reserved";
 COMPANY = "Rackspace Managed Hosting"
 DESCRIPTION = "C#.NET API for Rackspace Cloud Files Cloud Storage"
-COMMON_ASSEMBLY_INFO = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles','Properties','AssemblyInfo.cs')
+COMMON_ASSEMBLY_INFO = File.join(ABSOLUTE_PATH,'Rackspace.CloudFiles','Properties','AssemblyInfo.cs')
 CLR_VERSION = 'v3.5'
-SLN_FILE = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles.sln')
+SLN_FILE = File.join(ABSOLUTE_PATH,'Rackspace.CloudFiles.sln')
 ZIP_FILE_PREFIX = ["csharp-cloudfiles-DOTNET",CLR_VERSION].join
-CORE_DLL_DIR = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles','bin',COMPILE_TARGET)
-INTEGRATION_TESTS_DLL = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles.integration.tests','bin',COMPILE_TARGET,'com.mosso.cloudfiles.integration.tests.dll')
-UNIT_TESTS_DLL = File.join(ABSOLUTE_PATH,'com.mosso.cloudfiles.unit.tests','bin',COMPILE_TARGET,'com.mosso.cloudfiles.unit.tests.dll')
+CORE_DLL_DIR = File.join(ABSOLUTE_PATH,'Rackspace.CloudFiles','bin',COMPILE_TARGET)
+INTEGRATION_TESTS_DLL = File.join(ABSOLUTE_PATH,'Rackspace.CloudFiles.Integration.Tests','bin',COMPILE_TARGET,'Rackspace.CloudFiles.Integration.Tests.dll')
+UNIT_TESTS_DLL = File.join(ABSOLUTE_PATH,'Rackspace.CloudFiles.Unit.Tests','bin',COMPILE_TARGET,'Rackspace.CloudFiles.Unit.Tests.dll')
 RELEASE_BUILD_NUMBER = "1.5.3.1"
 BUILDS_DIR = File.join(ABSOLUTE_PATH,'builds')
 

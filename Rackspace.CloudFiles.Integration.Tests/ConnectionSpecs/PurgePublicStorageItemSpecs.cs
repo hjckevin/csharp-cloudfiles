@@ -4,8 +4,6 @@ using Rackspace.CloudFiles.Exceptions;
 
 namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs
 {
-    namespace com.mosso.cloudfiles.integration.tests.ConnectionSpecs
-    {
         [TestFixture]
         public class when_purging_a_public_storage_item : TestBase
         {
@@ -49,5 +47,4 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs
             {
             }
         }
-    }
 }
