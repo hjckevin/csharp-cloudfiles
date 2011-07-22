@@ -1,8 +1,11 @@
 # History
 
-## v1.5.3.2 (2011-7-20)
+## v2.0.0.0 (2011-7-22)
 #### New Features
  * Changed namespaces from com.mosso.cloudfiles.* to Rackspace.CloudFiles.* (Closes gh-26)
+ * Allowed authentication to pass if any 2xx HTTP response received from Authentication request (Closes gh-43)
+### Bugfixes
+ * Change rakefile to delete zip file artifacts before creating new ones
 
 ## v1.5.3.1 (2011-6-6)
 #### New Features

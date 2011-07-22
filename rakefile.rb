@@ -78,6 +78,7 @@ end
 
 desc "Create a binary zip"
 zip do |zip|
+  FileUtils.rm_rf BUILDS_DIR if File.directory?(BUILDS_DIR)
   puts "CREATING ZIP"
   Dir.mkdir BUILDS_DIR if !File.directory?(BUILDS_DIR)  
   file = "#{ZIP_FILE_PREFIX}-bin-#{RELEASE_BUILD_NUMBER}.zip"
