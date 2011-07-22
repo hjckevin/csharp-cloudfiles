@@ -1631,7 +1631,13 @@ namespace Rackspace.CloudFiles
             var getAuthenticationResponse = _requestfactory.Submit(getAuthentication);
             // var getAuthenticationResponse = getAuthentication.Apply(request);
 
-            if (getAuthenticationResponse.Status == HttpStatusCode.NoContent)
+            if (getAuthenticationResponse.Status == HttpStatusCode.OK || 
+                getAuthenticationResponse.Status == HttpStatusCode.Created || 
+                getAuthenticationResponse.Status == HttpStatusCode.Accepted || 
+                getAuthenticationResponse.Status == HttpStatusCode.NonAuthoritativeInformation ||
+                getAuthenticationResponse.Status == HttpStatusCode.NoContent || 
+                getAuthenticationResponse.Status == HttpStatusCode.ResetContent || 
+                getAuthenticationResponse.Status == HttpStatusCode.PartialContent)
             {
                 StorageUrl = getAuthenticationResponse.Headers[Constants.X_STORAGE_URL];
                 if (_useServiceNet)
@@ -1820,8 +1826,9 @@ namespace Rackspace.CloudFiles
             {
                 xmlDocument.LoadXml(xmlResponse);
             }
-            catch (XmlException)
+            catch (XmlException xmlex)
             {
+                Console.WriteLine(xmlex);
                 return xmlDocument;
             }
 
