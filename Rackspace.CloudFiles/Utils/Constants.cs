@@ -35,6 +35,6 @@ namespace Rackspace.CloudFiles.Utils
         public const string US_AUTHURL = "https://auth.api.rackspacecloud.com/v1.0";
         public const string UK_AUTHURL = "https://lon.auth.api.rackspacecloud.com/v1.0";
         public const string X_LOG_RETENTION = "X-Log-Retention";
-		
+        public const string X_CONTAINTER_META_DATA_HEADER = "X-Container-Meta-";
     }
 }

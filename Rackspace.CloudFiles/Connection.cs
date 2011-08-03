@@ -34,6 +34,323 @@ namespace Rackspace.CloudFiles
         Path
     }
 
+    public class UploadProgress : EventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the UploadProgress class.
+        /// </summary>
+        /// <param name="filesize">The size of the file being uploaded.</param>
+        /// <param name="connection">The connection the transfer is being attempted on.</param>
+        /// <param name="callback">The callback method used to notify the requestor of progress.</param>
+        /// <param name="context">A context object specified by the requestor.</param>
+        public UploadProgress(UInt64 filesize, IConnection connection, EventHandler<UploadProgress> callback, Object context)
+        {
+            _syncLock = new object();
+            _callback = callback;
+            _prevCallbackTxPos = 0;
+            _lastCallbackTime = DateTime.MinValue;
+            _callbackPending = false;
+            _completionNotificationSent = false;
+
+            this.Connection = connection;
+            this.Context = context;
+            this.UploadSize = filesize;
+            this.IsComplete = false;
+        }
+
+        #region Public methods
+
+        /// <summary>
+        /// The method callbed by the PutStorageItem progress handler.
+        /// </summary>
+        /// <param name="bytesTx">The number of bytes that were transmitted.</param>
+        internal void OnProgress(int bytesTx)
+        {
+            lock (_syncLock)
+            {
+                bool setComplete = false;
+                if ((ulong)bytesTx + this.BytesTransferred >= this.UploadSize)
+                {
+                    this.BytesTransferred = this.UploadSize;
+                    setComplete = !this.IsComplete;
+                    this.IsComplete = true;
+                }
+                else
+                {
+                    this.BytesTransferred += (ulong)bytesTx;
+                }
+
+                if (!_shouldTriggerCallback(setComplete))
+                {
+                    return;
+                }
+            }
+
+            if (_callback != null)
+            {
+                ThreadPool.QueueUserWorkItem
+                (
+                    f =>
+                    {
+                        _onCallbackStarted();
+
+                        bool error = false;
+                        try
+                        {
+                            _callback(this.Connection, this);
+                        }
+                        catch (Exception)
+                        {
+                            error = true;
+                            throw;
+                        }
+                        finally
+                        {
+                            _onCallbackCompleted(error);
+                        }
+                    }
+                );
+            }
+        }
+
+        /// <summary>
+        /// Gets the bytes remaining for the upload.
+        /// </summary>
+        /// <param name="bytesTransferred">On output, stores the number of bytes already transferred.</param>
+        /// <returns>The number of bytes remaining for the upload</returns>
+        public UInt64 GetProgress(out UInt64 bytesTransferred)
+        {
+            UInt64 remaining = 0;
+            lock (_syncLock)
+            {
+                remaining = (this.UploadSize <= this.BytesTransferred) ? 0 : (this.UploadSize - this.BytesTransferred);
+                bytesTransferred = this.BytesTransferred;
+            }
+
+            return remaining;
+        }
+
+        #endregion
+
+        #region Public Properties
+
+        /// <summary>
+        /// The amount of time that must elapse between calls to the callback method.
+        /// </summary>
+        /// <remarks>
+        /// If this value is null, the callback will not be filtered based on time elapsed
+        /// since the previous call.
+        /// </remarks>
+        public TimeSpan? MaxCallbackFreq { get; set; }
+
+        /// <summary>
+        /// Specifies the the number of bytes that can be transmitted
+        /// between calls to the callback function, when the MaxCallbackFreq
+        /// is enabled, before the MaxCallbackFreq is ignored and the callback is
+        /// called.
+        /// </summary>
+        /// <remarks>
+        /// Example:
+        /// If the MaxCallbackFreq is set to 10 seconds, and MaxBytesTxDeltaFreq is set to 32768 bytes,
+        /// and it has been 6 seconds since the previous call to the callback method, but 49152 bytes
+        /// have been transmitted since the previous call to the callback method, the MaxCallbackFreq will
+        /// be ignored, and the callback will be called.
+        /// </remarks>
+        public int? MaxBytesTxDeltaFreq { get; set; }
+
+        /// <summary>
+        /// The minimum number of bytes that must be transmitted between calls to the callback,
+        /// regardless of the MaxCallbackFreq.
+        /// </summary>
+        public int MinBytesTxDeltaFreq { get; set; }
+
+        /// <summary>
+        /// Gets the caller defined context object.
+        /// </summary>
+        public Object Context { get; private set; }
+
+        /// <summary>
+        /// The IConnection the upload was attempted on.
+        /// </summary>
+        public IConnection Connection { get; private set; }
+
+        /// <summary>
+        /// The size of the upload, in bytes.
+        /// </summary>
+        public UInt64 UploadSize { get; private set; }
+
+        /// <summary>
+        /// The number of bytes already transferred.
+        /// </summary>
+        public UInt64 BytesTransferred { get; private set; }
+
+        /// <summary>
+        /// Indicates whether or not the upload is complete.
+        /// </summary>
+        public bool IsComplete { get; private set; }
+
+        #endregion
+
+        #region Private Methods
+
+        /// <summary>
+        /// Indicates whether or not the callback method should be triggered.
+        /// </summary>
+        /// <param name="setComplete">
+        /// Indicates if this method was called from the progress handler while
+        /// it was setting the status to complete, in which case, the callback should always be called
+        /// if it's not pending already.
+        /// </param>
+        /// <returns>true if the callback should be called, otherwise false.</returns>
+        /// <remarks>This method should only be called from within a lock (_syncLock) block.</remarks>
+        bool _shouldTriggerCallback(bool setComplete)
+        {
+            // if a call to the callback is already pending,
+            // or we've already told them that the operation has completed
+            // we don't want to call their callback again.
+            if ((_callbackPending) || (_completionNotificationSent))
+            {
+                return false;
+            }
+
+            if (setComplete)
+            {
+                _prevCallbackTxPos = this.BytesTransferred;
+                _callbackPending = true;
+                return true;
+            }
+
+            if ((this.MaxCallbackFreq.HasValue) && 
+                (this._lastCallbackTime.Add(this.MaxCallbackFreq.Value) > DateTime.UtcNow))
+            {
+                // the required time has not passed since the last callback, see if we
+                // should override the time base frequency because of the Bytes Transmit Delta
+                if ((!this.MaxBytesTxDeltaFreq.HasValue) ||
+                    (this.MaxBytesTxDeltaFreq.Value <= 0))
+                {
+                    return false;
+                }
+
+                // this shouldn't happen...
+                if (this.BytesTransferred <= _prevCallbackTxPos)
+                {
+                    return false;
+                }
+
+                // check our transmit delta from the last callback vs. our bypassTimeFilter setting:
+                if (this.BytesTransferred - _prevCallbackTxPos >= (UInt64)this.MaxBytesTxDeltaFreq.Value)
+                {
+                    _prevCallbackTxPos = this.BytesTransferred;
+                    _callbackPending = true;
+                    return true;
+                }
+
+                return false;
+            }
+
+            // the time filter wasn't used, check our minBytes between callbacks filter
+            if (this.MinBytesTxDeltaFreq > 0)
+            {
+                if (this.BytesTransferred <= _prevCallbackTxPos)
+                {
+                    return false;
+                }
+
+                if (this.BytesTransferred - _prevCallbackTxPos < (UInt64)this.MinBytesTxDeltaFreq)
+                {
+                    return false;
+                }
+            }
+
+            _callbackPending = true;
+            return true;
+        }
+
+        /// <summary>
+        /// Called from the ThreadPool thread that actually triggers the callback.
+        /// </summary>
+        void _onCallbackStarted()
+        {
+            lock (_syncLock)
+            {
+                _lastCallbackTime = DateTime.UtcNow;
+                _prevCallbackTxPos = this.BytesTransferred;
+
+                if (this.IsComplete)
+                {
+                    _completionNotificationSent = true;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Called by the ThreadPool thread when the callback method has completed executing.
+        /// </summary>
+        void _onCallbackCompleted(bool callbackCausedException)
+        {
+            lock (_syncLock)
+            {
+                // if the operatio completed while the callback was pending
+                // we would've blocked the completion notification, in which case
+                // we need to send it now, because we're not going to get another
+                // event from the PutStorageItem to trigger the callback again.
+                if ((this.IsComplete) && (!_completionNotificationSent))
+                {
+                    if (!callbackCausedException)
+                    {
+                        _callback(this.Connection, this);
+                    }
+
+                    _completionNotificationSent = true;
+                    _callbackPending = false;
+                    return;
+                }
+
+                _callbackPending = false;
+            }
+
+            return;
+        }
+
+        #endregion
+
+        #region Private Members
+
+        /// <summary>
+        /// The callback method used to notify the subscriber of progress.
+        /// </summary>
+        private EventHandler<UploadProgress> _callback;
+
+        /// <summary>
+        /// Object used to sync access to the object between threads.
+        /// </summary>
+        private object _syncLock;
+
+        /// <summary>
+        /// The number of bytes that were transmitted the last time the 
+        /// callback method was called.
+        /// </summary>
+        private UInt64 _prevCallbackTxPos;
+        
+        /// <summary>
+        /// The last time the callback method was called.
+        /// </summary>
+        private DateTime _lastCallbackTime;
+
+        /// <summary>
+        /// Indicates whether or not the callback method is currently pending.
+        /// </summary>
+        private bool _callbackPending;
+
+        /// <summary>
+        /// Indicates whether or not the final, completion notification 
+        /// callback was called.
+        /// </summary>
+        private bool _completionNotificationSent;
+
+        #endregion
+    }
+
     /// <summary>
     /// This class represents the primary means of interaction between a user and cloudfiles. Methods are provided representing all of the actions
     /// one can take against his/her account, such as creating containers and downloading storage objects. 
@@ -115,6 +432,40 @@ namespace Rackspace.CloudFiles
         public string StorageUrl { get; private set; }
 
         public string AuthToken { private set; get; }
+
+        #region UploadProgress Callback Frequency Filters
+
+        /// <summary>
+        /// The amount of time that must elapse between calls to the UploadProgress callback method.
+        /// </summary>
+        /// <remarks>
+        /// If this value is null, the callback will not be filtered based on time elapsed
+        /// since the previous call.
+        /// </remarks>
+        public TimeSpan? MaxCallbackFreq { get; set; }
+
+        /// <summary>
+        /// Specifies the the number of bytes that can be transmitted
+        /// between calls to the callback function, when the MaxCallbackFreq
+        /// is enabled, before the MaxCallbackFreq is ignored and the UploadProgress callback is
+        /// called.
+        /// </summary>
+        /// <remarks>
+        /// Example:
+        /// If the MaxCallbackFreq is set to 10 seconds, and MaxBytesTxDeltaFreq is set to 32768 bytes,
+        /// and it has been 6 seconds since the previous call to the callback method, but 49152 bytes
+        /// have been transmitted since the previous call to the callback method, the MaxCallbackFreq will
+        /// be ignored, and the callback will be called.
+        /// </remarks>
+        public int? MaxBytesTxDeltaFreq { get; set; }
+
+        /// <summary>
+        /// The minimum number of bytes that must be transmitted between calls to the UploadProgress callback,
+        /// regardless of the MaxCallbackFreq.
+        /// </summary>
+        public int MinUploadBytesTxDeltaFreq { get; set; }
+
+        #endregion
 
         public Boolean HasCDN()
         {
@@ -212,6 +563,33 @@ namespace Rackspace.CloudFiles
             StartProcess
                 .ByLoggingMessage("Creating container '" + containerName + "' for user " + _usercreds.Username)
                 .ThenDoing(() => ContainerCreation(containerName))
+                .AndIfErrorThrownIs<Exception>()
+                .Do(Nothing)
+                .AndLogError("Error creating container '" + containerName + "' for user " + _usercreds.Username)
+                .Now();
+        }
+
+        /// <summary>
+        /// This method is used to create a container on cloudfiles with a given name
+        /// </summary>
+        /// <example>
+        /// <code>
+        /// UserCredentials userCredentials = new UserCredentials("username", "api key");
+        /// IConnection connection = new Connection(userCredentials);
+        /// connection.CreateContainer("container name");
+        /// </code>
+        /// </example>
+        /// <param name="containerName">The desired name of the container</param>
+        /// <param name="metadata">The metadata to associate with the new container.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
+        public void CreateContainer(string containerName, Dictionary<string,string> metadata)
+        {
+            if (string.IsNullOrEmpty(containerName))
+                throw new ArgumentNullException();
+
+            StartProcess
+                .ByLoggingMessage("Creating container '" + containerName + "' for user " + _usercreds.Username)
+                .ThenDoing(() => ContainerCreation(containerName, metadata))
                 .AndIfErrorThrownIs<Exception>()
                 .Do(Nothing)
                 .AndLogError("Error creating container '" + containerName + "' for user " + _usercreds.Username)
@@ -546,6 +924,21 @@ namespace Rackspace.CloudFiles
                 .AndIfErrorThrownIs<WebException>()
                 .Do(ex => DetermineReasonForStorageItemError(ex, true))
                 .AndLogError("Error putting storage item "+ localFilePath + " with metadata into container '"+ containerName + "' for user "+ _usercreds.Username)
+                .Now();
+        }
+
+        public void PutStorageItem(string containerName, string localFilePath, Dictionary<string, string> metadata, EventHandler<UploadProgress> callback, Object context)
+        {
+            if (string.IsNullOrEmpty(containerName) ||
+                string.IsNullOrEmpty(localFilePath))
+                throw new ArgumentNullException();
+
+            StartProcess
+                .ByLoggingMessage("Putting storage item into container '" + containerName + "' for user " + _usercreds.Username)
+                .ThenDoing(() => putStorageItem(containerName, localFilePath, metadata, callback, context))
+                .AndIfErrorThrownIs<WebException>()
+                .Do(ex => DetermineReasonForStorageItemError(ex, true))
+                .AndLogError("Error putting storage item " + localFilePath + " with metadata into container '" + containerName + "' for user " + _usercreds.Username)
                 .Now();
         }
 
@@ -899,6 +1292,21 @@ namespace Rackspace.CloudFiles
 
         }
 
+        public void PutStorageItem(string containerName, Stream storageStream, string remoteStorageItemName, Dictionary<string, string> metadata, EventHandler<UploadProgress> callback, Object context)
+        {
+            if (string.IsNullOrEmpty(containerName) ||
+                string.IsNullOrEmpty(remoteStorageItemName))
+                throw new ArgumentNullException();
+
+            StartProcess
+                .ByLoggingMessage("Putting storage item stream into container '" + containerName + "' named " + remoteStorageItemName + " for user " + _usercreds.Username)
+                .ThenDoing(() => putStorageItem(containerName, storageStream, remoteStorageItemName, metadata, callback, context))
+                .AndIfErrorThrownIs<WebException>()
+                .Do(ex => DetermineReasonForStorageItemError(ex, true))
+                .AndLogError("Error putting storage item stream into container '" + containerName + "' named " + remoteStorageItemName + " for user " + _usercreds.Username)
+                .Now();
+
+        }
         /// <summary>
         /// This method deletes a storage object in a given container
         /// </summary>
@@ -1689,6 +2097,14 @@ namespace Rackspace.CloudFiles
                 throw new ContainerAlreadyExistsException("The container already exists");
         }
 
+        private void ContainerCreation(string containerName, Dictionary<string, string> metadata)
+        {
+            var createContainer = new CreateContainer(StorageUrl, containerName, metadata);
+            var createContainerResponse = _requestfactory.Submit(createContainer, AuthToken);
+            if (createContainerResponse.Status == HttpStatusCode.Accepted)
+                throw new ContainerAlreadyExistsException("The container already exists");
+        }
+
         private void deleteContainer(string url, string containerName)
         {
             var deleteContainer = new DeleteContainer(url, containerName, null);
@@ -1799,6 +2215,25 @@ namespace Rackspace.CloudFiles
                     getContainerInformationResponse.Headers[
                         Constants.X_CONTAINER_STORAGE_OBJECT_COUNT])
             };
+
+            foreach (var key in getContainerInformationResponse.Headers.AllKeys)
+            {
+                if (!String.IsNullOrEmpty(key))
+                {
+                    if ((key.StartsWith(Constants.X_CONTAINTER_META_DATA_HEADER)) &&
+                        (key.Length > Constants.X_CONTAINTER_META_DATA_HEADER.Length))
+                    {
+                        string value = getContainerInformationResponse.Headers[key];
+                        if (!String.IsNullOrEmpty(value))
+                        {
+                            // if the specified key already exists, it will be overwritten
+                            // also note: we strip out the "X-Container-Meta-" prefix
+                            container.Metadata[key.Substring(Constants.X_CONTAINTER_META_DATA_HEADER.Length)] = value;
+                        }
+                    }
+                }
+            }
+
             var url = GetContainerCdnUri(container);
             if (!string.IsNullOrEmpty(url)) url += "/";
             container.CdnUri = url;
@@ -1835,6 +2270,40 @@ namespace Rackspace.CloudFiles
             return xmlDocument;
         }
 
+        private void putStorageItem(string containerName, string localFilePath, Dictionary<string, string> metadata, EventHandler<UploadProgress> callback, Object context)
+        {
+            UInt64 filesize = 0;
+            using (FileStream file = new FileStream(localFilePath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            {
+                filesize = (UInt64)file.Length;
+            }
+
+            var remoteName = Path.GetFileName(localFilePath);
+            var localName = localFilePath.Replace("/", "\\");
+            var putStorageItem = new PutStorageItem(StorageUrl, containerName, remoteName, localName, metadata);
+            
+            if (callback != null)
+            {
+                // add the caller's upload specific upload progress handler
+                UploadProgress eventArgs = new UploadProgress(filesize, this, callback, context)
+                {
+                    MaxBytesTxDeltaFreq = this.MaxBytesTxDeltaFreq,
+                    MaxCallbackFreq = this.MaxCallbackFreq,
+                    MinBytesTxDeltaFreq = this.MinUploadBytesTxDeltaFreq
+                };
+
+                putStorageItem.Progress += (x) => { eventArgs.OnProgress(x); };
+            }
+
+            // add the general upload progress handlers
+            foreach (var storedCallback in _callbackFuncs)
+            {
+                putStorageItem.Progress += storedCallback;
+            }
+
+            _requestfactory.Submit(putStorageItem, AuthToken, _usercreds.ProxyCredentials);
+        }
+
         private void putStorageItem(string containerName, string localFilePath, Dictionary<string, string> metadata)
         {
             var remoteName = Path.GetFileName(localFilePath);
@@ -1854,6 +2323,31 @@ namespace Rackspace.CloudFiles
             {
                 putStorageItem.Progress += callback;
             }
+
+            _requestfactory.Submit(putStorageItem, AuthToken, _usercreds.ProxyCredentials);
+        }
+
+        private void putStorageItem(string containerName, Stream storageStream, string remoteStorageItemName, Dictionary<string, string> metadata, EventHandler<UploadProgress> callback, Object context)
+        {
+            var putStorageItem = new PutStorageItem(StorageUrl, containerName, remoteStorageItemName, storageStream, metadata);
+            if (callback != null)
+            {
+                UploadProgress eventArgs = new UploadProgress((UInt64)storageStream.Length, this, callback, context)
+                {
+                    MaxBytesTxDeltaFreq = this.MaxBytesTxDeltaFreq,
+                    MaxCallbackFreq = this.MaxCallbackFreq,
+                    MinBytesTxDeltaFreq = this.MinUploadBytesTxDeltaFreq
+                };
+
+                putStorageItem.Progress += (x) => { eventArgs.OnProgress(x); };
+            }
+
+            // add the general upload progress handlers
+            foreach (var storedCallback in _callbackFuncs)
+            {
+                putStorageItem.Progress += storedCallback;
+            }
+
             _requestfactory.Submit(putStorageItem, AuthToken, _usercreds.ProxyCredentials);
         }
 

@@ -3,6 +3,7 @@
 //----------------------------------------------
 
 using System;
+using System.Collections.Generic;
 
 namespace Rackspace.CloudFiles.Domain
 {
@@ -21,6 +22,8 @@ namespace Rackspace.CloudFiles.Domain
             ObjectCount = 0;
             ByteCount = 0;
             TTL = -1;
+
+            this.Metadata = new Dictionary<string, string>();
         }
 
         /// <summary>
@@ -62,5 +65,10 @@ namespace Rackspace.CloudFiles.Domain
         /// The SSL URI one can use to access objects in this container via the CDN.
         /// </summary>
         public string CdnSslUri { get; set; }
+
+        /// <summary>
+        /// Gets/Sets the metadata associated with the container.
+        /// </summary>
+        public Dictionary<string, string> Metadata { get; private set; }
     }
 }

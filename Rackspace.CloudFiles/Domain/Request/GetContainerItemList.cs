@@ -64,6 +64,12 @@ namespace Rackspace.CloudFiles.Domain.Request
             {
                 var paramName = param.ToString().ToLower();
 
+                string paramValue = requestParameters[param];
+                if (String.IsNullOrEmpty(paramValue))
+                {
+                    continue;
+                }
+
                 if (param == GetListParameters.Limit)
                 {
                     int.Parse(requestParameters[param]);
