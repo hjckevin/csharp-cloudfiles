@@ -184,9 +184,27 @@ namespace Rackspace.CloudFiles.Domain.Request
 
             if (_metadata != null && _metadata.Count > 0)
             {
-                foreach (var s in _metadata.Keys)
+                foreach (var m in _metadata)
                 {
-                    request.Headers.Add(Constants.META_DATA_HEADER + s, _metadata[s]);
+                    if ((String.IsNullOrEmpty(m.Key)) || (String.IsNullOrEmpty(m.Value)))
+                    {
+                        continue;
+                    }
+
+                    if (m.Key.ToLower().StartsWith(Constants.META_DATA_HEADER))
+                    {
+                        // make sure the metadata item isn't just the container metadata prefix string
+                        if (m.Key.Length > Constants.META_DATA_HEADER.Length)
+                        {
+                            // If the caller already added the container metadata prefix string,
+                            // add their key as is.
+                            request.Headers.Add(m.Key, m.Value);
+                        }
+                    }
+                    else
+                    {
+                        request.Headers.Add(Constants.META_DATA_HEADER + m.Key, m.Value);
+                    }
                 }
             }
 

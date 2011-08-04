@@ -14,6 +14,7 @@ namespace Rackspace.CloudFiles.Domain.Request
     using Request.Interfaces;
     using Exceptions;
     using Utils;
+    using System.Collections.Generic;
     #endregion
 
     /// <summary>
@@ -23,6 +24,7 @@ namespace Rackspace.CloudFiles.Domain.Request
     {
         private readonly string _storageUrl;
         private readonly string _containerName;
+        private Dictionary<string, string> _metadata;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CreateContainer"/> class.
@@ -33,6 +35,20 @@ namespace Rackspace.CloudFiles.Domain.Request
         /// <exception cref="ContainerNameException">Thrown when the container name is invalid</exception>
         /// <exception cref="StorageItemNameException">Thrown when the object name is invalid</exception>
         public CreateContainer(string storageUrl, string containerName)
+            : this(storageUrl, containerName, null)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CreateContainer"/> class.
+        /// </summary>
+        /// <param name="storageUrl">The customer unique url to interact with cloudfiles</param>
+        /// <param name="containerName">The name of the container to create.</param>
+        /// <param name="metadata">The metadata to associate with the new container.</param>
+        /// <exception cref="ArgumentNullException">Thrown when any of the reference arguments are null</exception>
+        /// <exception cref="ContainerNameException">Thrown when the container name is invalid</exception>
+        /// <exception cref="StorageItemNameException">Thrown when the object name is invalid</exception>
+        public CreateContainer(string storageUrl, string containerName, Dictionary<String, String> metadata)
         {
             if (string.IsNullOrEmpty(storageUrl) || string.IsNullOrEmpty(containerName))
             {
@@ -46,6 +62,7 @@ namespace Rackspace.CloudFiles.Domain.Request
 
             _storageUrl = storageUrl;
             _containerName = containerName;
+            _metadata = metadata;
         }
 
         /// <summary>
@@ -64,6 +81,33 @@ namespace Rackspace.CloudFiles.Domain.Request
         public void Apply(ICloudFilesRequest request)
         {
             request.Method = "PUT";
+
+            if ((_metadata != null) && (_metadata.Count > 0))
+            {
+                foreach (var m in _metadata)
+                {
+                    if ((String.IsNullOrEmpty(m.Key)) || (String.IsNullOrEmpty(m.Value)))
+                    {
+                        continue;
+                    }
+
+                    if (m.Key.ToLower().StartsWith(Constants.X_CONTAINTER_META_DATA_HEADER))
+                    {
+                        // make sure the metadata item isn't just the container metadata prefix string
+                        if (m.Key.Length > Constants.X_CONTAINTER_META_DATA_HEADER.Length)
+                        {
+                            // If the caller already added the container metadata prefix string,
+                            // add their key as is.
+                            request.Headers.Add(m.Key, m.Value);
+                        }
+                    }
+                    else
+                    {
+                        request.Headers.Add(Constants.X_CONTAINTER_META_DATA_HEADER + m.Key, m.Value);
+                    }
+                }
+            }
+
         }
     }
 }
