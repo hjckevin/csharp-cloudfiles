@@ -102,9 +102,17 @@ namespace Rackspace.CloudFiles.Domain.Response
                 var tags = new Dictionary<string, string>();
                 foreach (string s in _webResponse.Headers.Keys)
                 {
-                    if (s.IndexOf(Constants.META_DATA_HEADER) == -1) continue;
-                    var metaKeyStart = s.LastIndexOf("-");
-                    tags.Add(s.Substring(metaKeyStart + 1), _webResponse.Headers[s]);
+                    // LB- 2011-08-04
+                    // previously, this code used s.LastIndexOf("-") to determine where the metadata
+                    // item name starts, followed by tags.Add(s.Substring(...).
+                    // That assumed that you never had metadata with a name like "audio-bit-rate"
+                    //   1) your metadata item name would result in "rate"
+                    //   2) If you also had an item named "video-bit-rate" the tags.Add(...) method
+                    //      would throw an exception because the key "rate" already exists.
+                    if (s.StartsWith(Constants.META_DATA_HEADER, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        tags[s.Substring(Constants.META_DATA_HEADER.Length)] = _webResponse.Headers[s];
+                    }
                 }
                 return tags;
             }
