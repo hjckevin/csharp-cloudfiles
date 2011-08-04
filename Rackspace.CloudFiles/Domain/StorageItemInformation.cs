@@ -55,10 +55,12 @@ namespace Rackspace.CloudFiles.Domain
                 Dictionary<string, string> tags = new Dictionary<string, string>();
                 foreach (string s in headers.Keys)
                 {
-                    if (s.IndexOf(Constants.META_DATA_HEADER) != -1)
+                    if (s.StartsWith(Constants.META_DATA_HEADER, System.StringComparison.InvariantCultureIgnoreCase))
                     {
-                        int metaKeyStart = s.LastIndexOf("-");
-                        tags.Add(s.Substring(metaKeyStart + 1), headers[s]);
+                        if (s.Length > Constants.META_DATA_HEADER.Length)
+                        {
+                            tags[s.Substring(Constants.META_DATA_HEADER.Length)] = headers[s];
+                        }
                     }
                 }
                 return tags;

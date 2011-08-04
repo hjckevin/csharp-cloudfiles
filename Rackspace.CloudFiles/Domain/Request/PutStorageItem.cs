@@ -191,7 +191,7 @@ namespace Rackspace.CloudFiles.Domain.Request
                         continue;
                     }
 
-                    if (m.Key.ToLower().StartsWith(Constants.META_DATA_HEADER))
+                    if (m.Key.StartsWith(Constants.META_DATA_HEADER, StringComparison.InvariantCultureIgnoreCase))
                     {
                         // make sure the metadata item isn't just the container metadata prefix string
                         if (m.Key.Length > Constants.META_DATA_HEADER.Length)
