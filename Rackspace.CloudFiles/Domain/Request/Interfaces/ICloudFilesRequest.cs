@@ -88,7 +88,13 @@ namespace Rackspace.CloudFiles.Domain.Request.Interfaces
         /// </summary>
         /// <value>The content stream.</value>
         Stream ContentStream { get; }
-        
+
+        /// <summary>
+        /// Gets/Sets the amount of time to wait for the request to complete.
+        /// </summary>
+        /// <remarks>Setting Timeout to null causes the System.Threading.Timeout.Infinit value to be used.</remarks>
+        TimeSpan? Timeout { get; set; }
+
         /// <summary>
         /// Gets the request stream.
         /// </summary>
