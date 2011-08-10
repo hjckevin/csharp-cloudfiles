@@ -363,12 +363,39 @@ namespace Rackspace.CloudFiles
     /// </example>
     public class Connection : IConnection
     {
-        private bool _retry;
         private readonly List<ProgressCallback> _callbackFuncs;
         private readonly GenerateRequestByType _requestfactory;
         private readonly bool _useServiceNet;
         protected string CdnManagementUrl;
         protected UserCredentials _usercreds;
+
+        /// <summary>
+        /// The authentication token returned from CloudFiles expires after 24 hours.
+        /// </summary>
+        private static readonly TimeSpan _authenticationTimeout = new TimeSpan(24, 0, 0);
+
+        /// <summary>
+        /// The amount of time to wait for the authentication attempt to complete.
+        /// </summary>
+        /// <remarks>
+        /// This value is currently only set when attempting a re-authentication attempt.
+        /// </remarks>
+        private static readonly TimeSpan _authRequestTimeout = new TimeSpan(0, 3, 0);
+
+        /// <summary>
+        /// Attempt to re-authenticate once per minute, if we're not authenticated.
+        /// </summary>
+        private static readonly TimeSpan _reAuthenticationInterval = new TimeSpan(0, 1, 0);
+
+        /// <summary>
+        /// Indicates whether or not an re-authenticate attempt is pending.
+        /// </summary>
+        private int _authenticationPending;
+
+        /// <summary>
+        /// A timer used to re-authenticate the connection.
+        /// </summary>
+        private System.Threading.Timer _reAuthenticateTimer;
 
         /// <summary>
         /// A constructor used to create an instance of the Connection class
@@ -388,6 +415,12 @@ namespace Rackspace.CloudFiles
 
         public Connection(UserCredentials userCreds, bool useServiceNet)
         {
+            // configure the timer to be disabled
+            // note, that when the _reInitAuthSequence is called from the timer
+            // we always pass true for the retry.
+            _reAuthenticateTimer = new Timer( (c) => {_reInitAuthSequence(true);}, null, System.Threading.Timeout.Infinite, System.Threading.Timeout.Infinite);
+
+            _authenticationPending = 0;
             _useServiceNet = useServiceNet;
             _requestfactory = new GenerateRequestByType();
             _callbackFuncs = new List<ProgressCallback>();
@@ -432,6 +465,11 @@ namespace Rackspace.CloudFiles
         public string StorageUrl { get; private set; }
 
         public string AuthToken { private set; get; }
+
+        /// <summary>
+        /// Gets the UTC Date/Time the connection was most recently authenticated.
+        /// </summary>
+        public DateTime? AuthenticationTime { get; private set; }
 
         #region UploadProgress Callback Frequency Filters
 
@@ -1956,9 +1994,14 @@ namespace Rackspace.CloudFiles
 
         private void Authenticate()
         {
+            Authenticate(false);
+        }
+
+        private void Authenticate(bool isRetry)
+        {
             StartProcess.
                 ByLoggingMessage("Authenticating user " + _usercreds.Username).
-                ThenDoing(AuthenticateSequence).
+                ThenDoing(() => { AuthenticateSequence(isRetry); }).
                 AndIfErrorThrownIs<Exception>().
                 Do(Nothing).
                 AndLogError("Error authenticating user " + _usercreds.Username).
@@ -1967,7 +2010,8 @@ namespace Rackspace.CloudFiles
 
         private bool IsAuthenticated()
         {
-            return !string.IsNullOrEmpty(AuthToken) && !string.IsNullOrEmpty(StorageUrl) && _usercreds != null;
+            return !string.IsNullOrEmpty(AuthToken) && !string.IsNullOrEmpty(StorageUrl) && _usercreds != null &&
+                ((AuthenticationTime.HasValue) && (AuthenticationTime.Value.Add(_authenticationTimeout) < DateTime.UtcNow));
         }
 
         private string GetContainerCdnUri(Container container)
@@ -1992,7 +2036,11 @@ namespace Rackspace.CloudFiles
 
                 var response = (HttpWebResponse)we.Response;
                 if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
+                {
+                    _reInitAuthSequence();
                     throw new AuthenticationFailedException(we.Message);
+                }
+                
                 throw;
             }
         }
@@ -2035,33 +2083,227 @@ namespace Rackspace.CloudFiles
 
         private void AuthenticateSequence()
         {
+            AuthenticateSequence(false);
+        }
+
+        private void AuthenticateSequence(bool retry)
+        {
             var getAuthentication = new GetAuthentication(_usercreds);
-            var getAuthenticationResponse = _requestfactory.Submit(getAuthentication);
-            // var getAuthenticationResponse = getAuthentication.Apply(request);
 
-            if (getAuthenticationResponse.Status == HttpStatusCode.OK || 
-                getAuthenticationResponse.Status == HttpStatusCode.Created || 
-                getAuthenticationResponse.Status == HttpStatusCode.Accepted || 
-                getAuthenticationResponse.Status == HttpStatusCode.NonAuthoritativeInformation ||
-                getAuthenticationResponse.Status == HttpStatusCode.NoContent || 
-                getAuthenticationResponse.Status == HttpStatusCode.ResetContent || 
-                getAuthenticationResponse.Status == HttpStatusCode.PartialContent)
+            bool responseReceived = false;
+            bool error401Received = false;
+            WebException requestError = null;
+            bool success = false;
+
+            try
             {
-                StorageUrl = getAuthenticationResponse.Headers[Constants.X_STORAGE_URL];
-                if (_useServiceNet)
-                    StorageUrl = StorageUrl.MakeServiceNet();
+                var getAuthenticationResponse = _requestfactory.Submit(getAuthentication);
+                // var getAuthenticationResponse = getAuthentication.Apply(request);
 
-                AuthToken = getAuthenticationResponse.Headers[Constants.X_AUTH_TOKEN];
-                CdnManagementUrl = getAuthenticationResponse.Headers[Constants.X_CDN_MANAGEMENT_URL];
+                responseReceived = true;
+                error401Received = getAuthenticationResponse.Status == HttpStatusCode.Unauthorized;
+
+                if (getAuthenticationResponse.Status == HttpStatusCode.OK ||
+                    getAuthenticationResponse.Status == HttpStatusCode.Created ||
+                    getAuthenticationResponse.Status == HttpStatusCode.Accepted ||
+                    getAuthenticationResponse.Status == HttpStatusCode.NonAuthoritativeInformation ||
+                    getAuthenticationResponse.Status == HttpStatusCode.NoContent ||
+                    getAuthenticationResponse.Status == HttpStatusCode.ResetContent ||
+                    getAuthenticationResponse.Status == HttpStatusCode.PartialContent)
+                {
+                    StorageUrl = getAuthenticationResponse.Headers[Constants.X_STORAGE_URL];
+                    if (_useServiceNet)
+                        StorageUrl = StorageUrl.MakeServiceNet();
+
+                    AuthToken = getAuthenticationResponse.Headers[Constants.X_AUTH_TOKEN];
+                    CdnManagementUrl = getAuthenticationResponse.Headers[Constants.X_CDN_MANAGEMENT_URL];
+
+                    AuthenticationTime = DateTime.UtcNow;
+                    success = true;
+                }
+            }
+            catch (WebException ex)
+            {
+                if ((ex.Status == WebExceptionStatus.ConnectFailure)   ||
+                    (ex.Status == WebExceptionStatus.ConnectionClosed) ||
+                    (ex.Status == WebExceptionStatus.KeepAliveFailure) ||
+                    (ex.Status == WebExceptionStatus.SendFailure)      ||
+                    (ex.Status == WebExceptionStatus.Timeout)          ||
+                    (ex.Status == WebExceptionStatus.UnknownError))
+                {
+                    // we can retry after one of these failures.
+                    requestError = ex;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            if (success)
+            {
                 return;
             }
 
-            if (!_retry && getAuthenticationResponse.Status == HttpStatusCode.Unauthorized)
+            if (responseReceived)
             {
-                _retry = true;
-                Authenticate();
+                if (!retry)
+                {
+                    Authenticate(true);
+                    return;
+                }
+
+                if (error401Received)
+                {
+                    throw new UnauthorizedAccessException();
+                }
+                else
+                {
+                    throw new AuthenticationFailedException("Unexpected HttpStatusCode returned");
+                }
+            }
+            else if (retry)
+            {
+                // we've already retried once - throw the web exception.
+                throw requestError;
+            }
+            else
+            {
+                // try again
+                Authenticate(true);
                 return;
             }
+        }
+
+        private void _reInitAuthSequence()
+        {
+            _reInitAuthSequence(false);
+            return;
+        }
+
+        private void _reInitAuthSequence(bool isRetry)
+        {
+            if (!isRetry)
+            {
+                // note: if authentication fails and a Retry is queued, the retry attempt
+                // maintains ownership of the AuthenticationPending variable.
+                if (Interlocked.CompareExchange(ref _authenticationPending, 1, 0) != 0)
+                {
+                    // a re-authencation attempt is already pending
+                    return;
+                }
+
+                if ((this.AuthenticationTime.HasValue) && (this.AuthenticationTime.Value.Add(_authenticationTimeout) < DateTime.UtcNow))
+                {
+                    Log.Info
+                    (
+                        this,
+                        String.Format
+                        (
+                            "Connection is being re-authenticated though the authentication token isn't set to expire until {0}",
+                            this.AuthenticationTime.Value.Add(_authenticationTimeout).ToString()
+                        )
+                    );
+                }
+            }
+
+            bool receivedResponse = false;
+            bool errorWas401 = false;
+            WebException requestError = null;
+            bool success = false;
+
+            try
+            {
+                var getAuthentication = new GetAuthentication(_usercreds, _authRequestTimeout);
+
+                var getAuthenticationResponse = _requestfactory.Submit(getAuthentication);
+                // var getAuthenticationResponse = getAuthentication.Apply(request);
+
+                receivedResponse = true;
+                errorWas401 = (getAuthenticationResponse.Status == HttpStatusCode.Unauthorized);
+
+                if (getAuthenticationResponse.Status == HttpStatusCode.OK ||
+                    getAuthenticationResponse.Status == HttpStatusCode.Created ||
+                    getAuthenticationResponse.Status == HttpStatusCode.Accepted ||
+                    getAuthenticationResponse.Status == HttpStatusCode.NonAuthoritativeInformation ||
+                    getAuthenticationResponse.Status == HttpStatusCode.NoContent ||
+                    getAuthenticationResponse.Status == HttpStatusCode.ResetContent ||
+                    getAuthenticationResponse.Status == HttpStatusCode.PartialContent)
+                {
+                    string storageUrl = getAuthenticationResponse.Headers[Constants.X_STORAGE_URL]; ;
+                    if (_useServiceNet)
+                    {
+                        storageUrl = storageUrl.MakeServiceNet();
+                    }
+
+                    string authToken = getAuthenticationResponse.Headers[Constants.X_AUTH_TOKEN];
+                    string cdnManagementUrl = getAuthenticationResponse.Headers[Constants.X_CDN_MANAGEMENT_URL];
+                    DateTime authTime = DateTime.UtcNow;
+
+                    StorageUrl = storageUrl;
+                    AuthToken = authToken;
+                    CdnManagementUrl = cdnManagementUrl;
+                    AuthenticationTime = authTime;
+
+                    success = true;
+                }
+                else if (!isRetry)
+                {
+                    Log.Warn(this, String.Format("Unepxected HttpStatusCode Returned: {0}", getAuthenticationResponse.Status.ToString()));
+                }
+            }
+            catch (WebException ex)
+            {
+                Log.Error(this, "Failed to Re-Authentication Connection: {0}", ex);
+            }
+
+            if (success)
+            {
+                Interlocked.Exchange(ref _authenticationPending, 0);
+                Log.Debug(this, "Successfully Re-Authenticated the Connection");
+                return;
+            }
+
+            if (errorWas401)
+            {
+                if (isRetry)
+                {
+                    // Enable the timer, but disable the disable the "periodi behavior" of the timer
+                    // meaning, it will fire once, and then need to be re-enabled before it will fire
+                    // again.
+                    Interlocked.Exchange(ref _authenticationPending, 0);
+                    _reAuthenticateTimer.Change(_reAuthenticationInterval, TimeSpan.Zero);
+                }
+                else
+                {
+                    Log.Error(this, "Authentication Attempt Failed: Unauthorized");
+                    ThreadPool.QueueUserWorkItem(f => { _reInitAuthSequence(true); });
+                }
+            }
+            else
+            {
+                if (!isRetry)
+                {
+                    ThreadPool.QueueUserWorkItem
+                    (
+                        f =>
+                        {
+                            _reInitAuthSequence(true);
+                        }
+                    );
+                }
+                else
+                {
+                    Interlocked.Exchange(ref _authenticationPending, 0);
+
+                    // Enable the timer, but disable the disable the "periodi behavior" of the timer
+                    // meaning, it will fire once, and then need to be re-enabled before it will fire
+                    // again.
+                    _reAuthenticateTimer.Change(_reAuthenticationInterval, TimeSpan.Zero);
+                }
+            }
+
+            return;
         }
 
         private XmlDocument BuildAccountXml()
@@ -2145,8 +2387,13 @@ namespace Rackspace.CloudFiles
             }
             if (response != null && response.StatusCode == HttpStatusCode.Conflict)
                 throw new ContainerNotEmptyException("The container you are trying to delete is not empty");
+
             if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                _reInitAuthSequence();
                 throw new AuthenticationFailedException(ex.Message);
+            }
+
             if (response != null && response.StatusCode == HttpStatusCode.PreconditionFailed)
                 throw new PreconditionFailedException(ex.Message);
             if (response != null && response.StatusCode == HttpStatusCode.BadRequest)
@@ -2165,8 +2412,13 @@ namespace Rackspace.CloudFiles
                 throw new ContainerNotFoundException("The requested container does not exist");
             if (response != null && response.StatusCode == HttpStatusCode.Conflict)
                 throw new ContainerNotEmptyException("The container you are trying to delete is not empty");
+            
             if (response != null && response.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                _reInitAuthSequence();
                 throw new AuthenticationFailedException(ex.Message);
+            }
+            
             if (response != null && response.StatusCode == HttpStatusCode.PreconditionFailed)
                 throw new PreconditionFailedException(ex.Message);
             if (response != null && response.StatusCode == HttpStatusCode.BadRequest)

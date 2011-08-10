@@ -24,6 +24,8 @@ namespace Rackspace.CloudFiles.Domain.Request
 
         private readonly ProxyCredentials _proxyCredentials;
 
+        private TimeSpan? _timeout;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="CloudFilesRequest"/> class.
         /// </summary>
@@ -192,6 +194,39 @@ namespace Rackspace.CloudFiles.Domain.Request
         }
 
         /// <summary>
+        /// Gets/Sets the request timeout.
+        /// </summary>
+        /// <remarks>
+        /// If the specified value (converted to Milliseconds) exceeds Int32.MaxValue
+        /// or is less than 0 and not equal to System.Threading.Timeout.Infinite,
+        /// an ArgumentOutOfRangeException will be thrown.
+        /// Setting the Timeout to null causes the System.Threading.Timeout.Inifinite
+        /// value to be used.
+        /// </remarks>
+        public TimeSpan? Timeout
+        {
+            get { return _timeout; }
+            set
+            {
+                if (value.HasValue)
+                {
+                    if (value.Value.TotalMilliseconds > Int32.MaxValue)
+                    {
+                        throw new ArgumentOutOfRangeException("Timeout.TotalMilliseconds cannot exceed Int32.MaxValue");
+                    }
+
+                    if ((value.Value.TotalMilliseconds < 0) &&
+                        (value.Value.TotalMilliseconds != System.Threading.Timeout.Infinite))
+                    {
+                        throw new ArgumentOutOfRangeException("Timeout is less than 0 and is not Infinite");
+                    }
+                }
+
+                _timeout = value;
+            }
+        }
+
+        /// <summary>
         /// Stringifies bytes to MD5.
         /// </summary>
         /// <param name="bytes">The bytes.</param>
@@ -237,7 +272,7 @@ namespace Rackspace.CloudFiles.Domain.Request
         /// <returns>A HttpWebRequest object that has all the information to make a request against CloudFiles</returns>
         public ICloudFilesResponse GetResponse()
         {
-            _httpWebRequest.Timeout = Constants.CONNECTION_TIMEOUT;
+            _httpWebRequest.Timeout = (_timeout.HasValue) ? (int)_timeout.Value.TotalMilliseconds : (System.Threading.Timeout.Infinite);
             _httpWebRequest.UserAgent = Constants.USER_AGENT;
 
             ////   HandleIsModifiedSinceHeaderRequestFieldFor(_httpWebRequest);

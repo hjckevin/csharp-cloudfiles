@@ -35,6 +35,21 @@ namespace Rackspace.CloudFiles.Domain.Request
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="GetAuthentication"/> class.
+        /// </summary>
+        /// <param name="userCreds">the UserCredentials instace to use when attempting authentication</param>
+        /// <param name="timeout">The amount of time to wait for the request to complete.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown if userCreds parameter is null</exception>
+        public GetAuthentication(UserCredentials userCreds, TimeSpan? timeout)
+        {
+            if (userCreds == null)
+            {
+                throw new ArgumentNullException();
+            }
+            _userCredentials = userCreds;
+        }
+
+        /// <summary>
         /// Creates the corresponding URI using user credentials for authentication.
         /// </summary>
         /// <returns>A new URI</returns>
@@ -64,6 +79,17 @@ namespace Rackspace.CloudFiles.Domain.Request
             request.Method = "GET";
             request.Headers.Add(Constants.X_AUTH_USER, _userCredentials.Username.Encode());
             request.Headers.Add(Constants.X_AUTH_KEY, _userCredentials.Api_access_key.Encode());
+
+            request.Timeout = this.Timeout;
         }
+
+        /// <summary>
+        /// Gets/Sets the request timeout.
+        /// </summary>
+        /// <remarks>
+        /// If Timeout is set to null, System.Threading.Timeout.Infinite 
+        /// will be used as the timeout.
+        /// </remarks>
+        public TimeSpan? Timeout { get; set; }
     }
 }

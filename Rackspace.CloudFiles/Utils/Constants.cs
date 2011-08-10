@@ -18,7 +18,11 @@ namespace Rackspace.CloudFiles.Utils
         public const string USER_AGENT = "csharp-cloudfiles";
         public const string META_DATA_HEADER = "X-Object-Meta-";
         public const int CHUNK_SIZE = 4096; //in bytes
-        public const int CONNECTION_TIMEOUT = 2147483646; //Maximum value maintained so that connection does not timeout.
+
+        // The timeout is now set to a caller defined value (in IAddToWebRequest.Apply()) or defaults
+        // to System.Threading.Timeout.Infinite
+        //public const int CONNECTION_TIMEOUT = 2147483646; //Maximum value maintained so that connection does not timeout.
+        
         public const string X_AUTH_USER = "X-Auth-User";
         public const string X_AUTH_KEY = "X-Auth-Key";
         public const string X_ACCOUNT_CONTAINER_COUNT = "X-Account-Container-Count";
