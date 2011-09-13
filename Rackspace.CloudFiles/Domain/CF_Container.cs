@@ -25,6 +25,8 @@ namespace Rackspace.CloudFiles.Domain
         string[] GetObjectNames();
         string[] GetObjectNames(Dictionary<GetListParameters, string> parameters);
         Uri PublicUrl { get; set; }
+		Uri PublicSSLUrl { get; set; }
+		Uri PublicStreamingUrl { get; set; }
         string JSON { get; }
         XmlDocument XML { get; }
     }
@@ -89,8 +91,9 @@ namespace Rackspace.CloudFiles.Domain
             return CloudFilesGetContainer(parameters);
         }
 
-        public Uri PublicUrl { get; set; }
-
+        public Uri PublicUrl { get;  set; }
+		public Uri PublicSSLUrl { get; set; }
+		public Uri PublicStreamingUrl { get; set; }
         public IObject AddObject(string objectName)
         {
             return AddObject(objectName, new Dictionary<string, string>());

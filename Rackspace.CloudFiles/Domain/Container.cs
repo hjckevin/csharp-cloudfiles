@@ -65,6 +65,11 @@ namespace Rackspace.CloudFiles.Domain
         /// The SSL URI one can use to access objects in this container via the CDN.
         /// </summary>
         public string CdnSslUri { get; set; }
+		
+		/// <summary>
+        /// The Streaming URI one can use to access objects in this container via the CDN.
+        /// </summary>
+		public string CdnStreamingUri { get; set; }
 
         /// <summary>
         /// Gets/Sets the metadata associated with the container.

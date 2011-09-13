@@ -2615,7 +2615,8 @@ namespace Rackspace.CloudFiles
                        : new Container(containerName)
                              {
                                  CdnUri = response.Headers[Constants.X_CDN_URI], 
-                                 CdnSslUri = response.Headers[Constants.X_CDN_SSL_URI], 
+                                 CdnSslUri = response.Headers[Constants.X_CDN_SSL_URI],
+				                 CdnStreamingUri = response.Headers[Constants.X_CDN_STREAMING_URI],
                                  TTL = Convert.ToInt32(response.Headers[Constants.X_CDN_TTL])
                              };
         }
