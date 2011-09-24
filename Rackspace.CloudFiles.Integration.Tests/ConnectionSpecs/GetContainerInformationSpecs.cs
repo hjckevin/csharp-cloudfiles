@@ -95,13 +95,12 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerInf
             }
 		
 		}
-		[Test, Ignore("currently failing because xml version returned from CloudFiles is 1.1, mentioned in Issue 47 on Github")]
+		[Test]
 		public void should_have_serialized_xml()
 		{
 
             var expectedSubString = "<container name=\"" + Constants.CONTAINER_NAME + "\"><object><name>" + Constants.StorageItemNameJpg + "</name><hash>b44a59383b3123a747d139bd0e71d2df</hash><bytes>105542</bytes><content_type>image/jpeg</content_type><last_modified>" + String.Format("{0:yyyy-MM}", DateTime.Now);
 
-//		    Console.WriteLine(xmlReturnValue.InnerXml);
             Assert.That(Regex.Match(xmlReturnValue.InnerXml, expectedSubString).Success, Is.True);
 		
 		}
