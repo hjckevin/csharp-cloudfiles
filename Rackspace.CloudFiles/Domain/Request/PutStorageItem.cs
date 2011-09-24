@@ -8,14 +8,12 @@ using Rackspace.CloudFiles.Utils;
 
 namespace Rackspace.CloudFiles.Domain.Request
 {
-    #region
     using System;
     using System.Collections.Generic;
     using System.IO;
     using Request.Interfaces;
     using Exceptions;
     using Utils;
-    #endregion
 
     /// <summary>
     /// A class to represent putting a storage item with a web request
@@ -180,6 +178,7 @@ namespace Rackspace.CloudFiles.Domain.Request
         /// <param name="request">The request.</param>
         public void Apply(ICloudFilesRequest request)
         {
+            _fileToSend.Position = 0;
             request.Method = "PUT";
 
             if (_metadata != null && _metadata.Count > 0)
