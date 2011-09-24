@@ -1,5 +1,12 @@
 # History
 
+## v2.0.0.9 (2011-9-23)
+#### New Features
+ * Update README
+ * Put comment in AssemblyInfo.cs to let people know that the version is updating by our continuous integration process.
+### Bugfixes
+ * Fix broken tests
+
 ## v2.0.0.0 (2011-7-22)
 #### New Features
  * Changed namespaces from com.mosso.cloudfiles.* to Rackspace.CloudFiles.* (Closes gh-26)

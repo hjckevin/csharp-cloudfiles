@@ -7,14 +7,23 @@ Cloud Files is a reliable, scalable and affordable web-based storage hosting for
 Cloud Files is the first and only cloud service that leverages a tier one CDN provider to create such an easy and complete storage-to-delivery 
 solution for media content.
 
-## **Creating Issues**
+## Contributing
+
+1. Your code **WILL NOT** be accepted without tests.  period.
+2. Please make sure your autocrlf setting is false
+
+	git config core.autocrlf false
+
+3. [Fork](http://help.github.com/fork-a-repo/) the repository, clone, code, push, and then issue a [pull request](http://help.github.com/send-pull-requests/)
+
+## Creating Issues
 
 Please read the [wiki](http://wiki.github.com/rackspace/csharp-cloudfiles/) about what information is best to help people fix your issues, 
 then create an issue on the [issues tab](http://github.com/rackspace/csharp-cloudfiles/issues).
 
 ## Getting dll and using in your project
 
-Go to the [downloads page](http://github.com/rackspace/csharp-cloudfiles/downloads) and download the latest version.  
+Go to the [downloads page](http://github.com/rackspace/csharp-cloudfiles/downloads) and download the latest "stable" version or go and grab the latest build from our [continuous integration server (TeamCity)](http://teamcity.codebetter.com/viewType.html?tab=buildTypeStatusDiv&buildTypeId=bt320)  
 Unzip the file, unzip the bin zip, and grab the following files:
 
 	Rackspace.Cloudfiles.dll
@@ -43,8 +52,7 @@ We currently use the 1.8.6 version.  After that is installed you will need to in
 
 ## Getting source, compiling, and using in your project
 
-Follow the instructions [here](http://help.github.com/win-git-installation/) to install msysgit (Git for Windows users) 
-and the instructions [here](http://help.github.com/msysgit-key-setup/) on how to get your ssh keys setup for using Github.
+Follow the instructions [here](http://lostechies.com/jasonmeridth/2009/06/01/git-for-windows-developers-git-series-part-1) to install msysgit [Git for Windows users] and get your ssh keys setup for using Github.
 
 	git clone git://github.com/rackspace/csharp-cloudfiles.git
 
@@ -80,7 +88,7 @@ Please reference the [log4net documentation](http://logging.apache.org/log4net/r
 
 ## Testing
 
-Once installed you need to create your integration tests credentials config file.
+Once Ruby/Rake are installed you need to create your integration tests credentials config file.
 
 Run 
 
@@ -92,12 +100,14 @@ from the project solution directory.  This will create a Credentials.config file
   <credentials>
     <username>PUT USERNAME HERE</username>
     <api_key>PUT API KEY HERE</api_key>
+	<auth_endpoint>https://auth.api.rackspacecloud.com/v1.0</auth_endpoint>
+	<!-- <auth_endpoint>https://lon.auth.api.rackspacecloud.com/v1.0</auth_endpoint> -->
   </credentials>
 
 Just replace the placeholder text.  This file *is not* under source control.  It is ignored by the .gitignore file.
 
 
-# Examples coming soon on our [wiki](http://wiki.github.com/rackspace/csharp-cloudfiles/).  prior examples were out of date
+## Examples coming soon on our [wiki](http://wiki.github.com/rackspace/csharp-cloudfiles/).  prior examples were out of date 
 
 ## Committers
 
