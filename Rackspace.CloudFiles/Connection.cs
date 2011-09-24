@@ -2011,7 +2011,7 @@ namespace Rackspace.CloudFiles
         private bool IsAuthenticated()
         {
             return !string.IsNullOrEmpty(AuthToken) && !string.IsNullOrEmpty(StorageUrl) && _usercreds != null &&
-                ((AuthenticationTime.HasValue) && (AuthenticationTime.Value.Add(_authenticationTimeout) < DateTime.UtcNow));
+                ((AuthenticationTime.HasValue) && (AuthenticationTime.Value.Add(_authenticationTimeout) > DateTime.UtcNow));
         }
 
         private string GetContainerCdnUri(Container container)
