@@ -950,7 +950,7 @@ namespace Rackspace.CloudFiles
         /// <param name="localFilePath">The complete file path of the storage object to be uploaded</param>
         /// <param name="metadata">An optional parameter containing a dictionary of meta tags to associate with the storage object</param>
         /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
-        public void PutStorageItem(string containerName, string localFilePath, Dictionary<string, string> metadata)
+        public void PutStorageItem(string containerName, string localFilePath, string remoteStorageItemName, Dictionary<string, string> metadata)
         {
             if (string.IsNullOrEmpty(containerName) ||
                 string.IsNullOrEmpty(localFilePath))
@@ -958,11 +958,16 @@ namespace Rackspace.CloudFiles
 
             StartProcess
                 .ByLoggingMessage("Putting storage item into container '"+ containerName + "' for user "+ _usercreds.Username)
-                .ThenDoing(() => putStorageItem(containerName, localFilePath, metadata))
+                .ThenDoing(() => putStorageItem(containerName, localFilePath, remoteStorageItemName, metadata))
                 .AndIfErrorThrownIs<WebException>()
                 .Do(ex => DetermineReasonForStorageItemError(ex, true))
                 .AndLogError("Error putting storage item "+ localFilePath + " with metadata into container '"+ containerName + "' for user "+ _usercreds.Username)
                 .Now();
+        }
+
+        public void PutStorageItem(string containerName, string localFilePath, Dictionary<string, string> metadata)
+        {
+            PutStorageItem(containerName, localFilePath, null, metadata);
         }
 
         public void PutStorageItem(string containerName, string localFilePath, Dictionary<string, string> metadata, EventHandler<UploadProgress> callback, Object context)
@@ -996,6 +1001,11 @@ namespace Rackspace.CloudFiles
         public void PutStorageItem(string containerName, string localFilePath)
         {
             PutStorageItem(containerName, localFilePath, new Dictionary<string, string>());
+        }
+
+        public void PutStorageItem(string containerName, string localFilePath, string remoteStorageItemName)
+        {
+            PutStorageItem(containerName, localFilePath, remoteStorageItemName, new Dictionary<string, string>());
         }
 
         /// <summary>
@@ -2558,7 +2568,12 @@ namespace Rackspace.CloudFiles
 
         private void putStorageItem(string containerName, string localFilePath, Dictionary<string, string> metadata)
         {
-            var remoteName = Path.GetFileName(localFilePath);
+            putStorageItem(containerName, localFilePath, null, metadata);
+        }
+
+        private void putStorageItem(string containerName, string localFilePath, string remoteName, Dictionary<string, string> metadata)
+        {
+            remoteName = string.IsNullOrEmpty(remoteName) ?  Path.GetFileName(localFilePath) : remoteName;
             var localName = localFilePath.Replace("/", "\\");
             var putStorageItem = new PutStorageItem(StorageUrl, containerName, remoteName, localName, metadata);
             foreach (var callback in _callbackFuncs)

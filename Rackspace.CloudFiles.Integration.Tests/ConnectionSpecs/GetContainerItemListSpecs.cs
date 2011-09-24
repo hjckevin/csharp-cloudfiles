@@ -46,4 +46,40 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
             Assert.That(containerItems.Count, Is.EqualTo(0));
         }
     }
+
+    [TestFixture]
+    public class When_retrieving_a_list_of_items_from_a_container_using_the_marker_list_parameter : TestBase
+    {
+        [Test]
+        public void Should_return_a_list_of_items_in_the_container()
+        {
+            List<string> containerItems;
+
+            try
+            {
+                connection.CreateContainer(Constants.CONTAINER_NAME);
+                for (var i = 0; i < 10; i++ )
+                {
+                    connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, i + Constants.StorageItemName);
+                }
+                var fullList = connection.GetContainerItemList(Constants.CONTAINER_NAME);
+                Assert.That(fullList.Count, Is.EqualTo(10));
+
+                containerItems = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetListParameters, string>
+                                                                                               {
+                                                                                                   {GetListParameters.Marker, "5"}
+                                                                                               });
+            }
+            finally
+            {
+                for (var i = 0; i < 10; i++)
+                {
+                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, i + Constants.StorageItemName);
+                }
+                connection.DeleteContainer(Constants.CONTAINER_NAME);
+            }
+
+            Assert.That(containerItems.Count, Is.EqualTo(5));
+        }
+    }
 }
