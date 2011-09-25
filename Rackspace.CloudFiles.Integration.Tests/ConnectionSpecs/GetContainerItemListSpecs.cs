@@ -84,6 +84,45 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
     }
 
     [TestFixture]
+    public class When_retrieving_a_list_of_items_from_a_container_using_the_delimiter_list_parameter : TestBase
+    {
+        [Test]
+        public void Should_return_a_list_of_items_in_the_container()
+        {
+            List<string> containerItems;
+
+            try
+            {
+                connection.CreateContainer(Constants.CONTAINER_NAME);
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo1"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4"));
+                var fullList = connection.GetContainerItemList(Constants.CONTAINER_NAME);
+                Assert.That(fullList.Count, Is.EqualTo(4));
+
+                containerItems = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetListParameters, string>
+                                                                                               {
+                                                                                                   {GetListParameters.Delimiter, "/"}
+                                                                                               });
+            }
+            finally
+            {
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo1"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo2"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("movieobject"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos/movieobj4"));
+                connection.DeleteContainer(Constants.CONTAINER_NAME);
+            }
+
+            Assert.That(containerItems.Count, Is.EqualTo(3));
+            Assert.That(containerItems[0], Is.EqualTo("movieobject"));
+            Assert.That(containerItems[1], Is.EqualTo("photos/"));
+            Assert.That(containerItems[2], Is.EqualTo("videos/"));
+        }
+    }
+
+    [TestFixture]
     public class When_retrieving_a_list_of_items_from_a_container_and_some_of_them_start_with_a_pound_sign : TestBase
     {
         [Test]

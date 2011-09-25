@@ -31,7 +31,8 @@ namespace Rackspace.CloudFiles
         Limit,
         Marker,
         Prefix,
-        Path
+        Path,
+        Delimiter
     }
 
     public class UploadProgress : EventArgs
