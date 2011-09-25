@@ -2,20 +2,14 @@
 // See COPYING file for licensing information
 //----------------------------------------------
 
-using Rackspace.CloudFiles.Domain.Request.Interfaces;
-using Rackspace.CloudFiles.Exceptions;
-using Rackspace.CloudFiles.Utils;
-
 namespace Rackspace.CloudFiles.Domain.Request
 {
 
-    #region Using
     using System;
-    using Request.Interfaces;
+    using Interfaces;
     using Exceptions;
     using Utils;
     using System.Collections.Generic;
-    #endregion
 
     /// <summary>
     /// A class to represent creating a container in a web request

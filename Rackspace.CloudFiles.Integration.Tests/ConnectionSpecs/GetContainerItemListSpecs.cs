@@ -82,4 +82,31 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
             Assert.That(containerItems.Count, Is.EqualTo(5));
         }
     }
+
+    [TestFixture]
+    public class When_retrieving_a_list_of_items_from_a_container_and_some_of_them_start_with_a_pound_sign : TestBase
+    {
+        [Test]
+        public void Should_return_a_list_of_items_in_the_container()
+        {
+            try
+            {
+                connection.CreateContainer(Constants.CONTAINER_NAME);
+                for (var i = 0; i < 10; i++)
+                {
+                    connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("#{0}{1}",i,Constants.StorageItemName));
+                }
+                var list = connection.GetContainerItemList(Constants.CONTAINER_NAME);
+                Assert.That(list.Count, Is.EqualTo(10));
+            }
+            finally
+            {
+                for (var i = 0; i < 10; i++)
+                {
+                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("#{0}{1}", i, Constants.StorageItemName));
+                }
+                connection.DeleteContainer(Constants.CONTAINER_NAME);
+            }
+        }
+    }
 }
