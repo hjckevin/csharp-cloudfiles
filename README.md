@@ -16,6 +16,14 @@ solution for media content.
 
 3. [Fork](http://help.github.com/fork-a-repo/) the repository, clone, code, push, and then issue a [pull request](http://help.github.com/send-pull-requests/)
 
+## Issues vs Inquiries/Questions
+
+Please put issues on Github and ask questions/inquiries on the mailing list
+
+## Mailing List
+
+The [mailing list](http://groups.google.com/group/csharp-cloudfiles)
+
 ## Creating Issues
 
 Please read the [wiki](http://wiki.github.com/rackspace/csharp-cloudfiles/) about what information is best to help people fix your issues, 
