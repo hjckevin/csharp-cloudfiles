@@ -130,7 +130,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerInf
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }
 
-            Assert.That(container.Metadata.Count, Is.GreaterThan(1));  //can't be exact due to caching
+            Assert.That(container.Metadata.Count, Is.GreaterThanOrEqualTo(1));  //can't be exact due to caching
             Assert.That(container.Metadata[Constants.MetadataKey], Is.EqualTo(Constants.MetadataValue));
         }
 
@@ -156,7 +156,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerInf
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }
 
-            Assert.That(container.Metadata.Count, Is.EqualTo(3));
+            Assert.That(container.Metadata.Count, Is.GreaterThanOrEqualTo(3));
             Assert.That(container.Metadata["UserID"], Is.EqualTo(Constants.MetadataValue));
             Assert.That(container.Metadata["UserFriendlyName"], Is.EqualTo(Constants.MetadataValue));
             Assert.That(container.Metadata["ALLCAPSKEY"], Is.EqualTo(Constants.MetadataValue));

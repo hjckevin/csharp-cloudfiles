@@ -45,7 +45,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetStorageItemI
                 Assert.That(storageItemInformation.ContentLength, Is.EqualTo("34"));
                 Assert.That(storageItemInformation.ContentType.Contains("text/plain"), Is.True);
                 Assert.That(storageItemInformation.ETag, Is.EqualTo("5c66108b7543c6f16145e25df9849f7f"));
-                Assert.That(storageItemInformation.Metadata.Count, Is.GreaterThan(1));  //can't be exact due to caching
+                Assert.That(storageItemInformation.Metadata.Count, Is.GreaterThanOrEqualTo(1));  //can't be exact due to caching
                 Assert.That(storageItemInformation.Metadata[Constants.MetadataKey], Is.EqualTo(Constants.MetadataValue));
             }
             finally
@@ -70,7 +70,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetStorageItemI
                 connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, metadata);
                 var storageItemInformation = connection.GetStorageItemInformation(Constants.CONTAINER_NAME, Constants.StorageItemName);
 
-                Assert.That(storageItemInformation.Metadata.Count, Is.GreaterThan(1));  //can't be exact due to caching
+                Assert.That(storageItemInformation.Metadata.Count, Is.GreaterThanOrEqualTo(1));  //can't be exact due to caching
                 Assert.That(storageItemInformation.Metadata["UserID"], Is.EqualTo(Constants.MetadataValue));
                 Assert.That(storageItemInformation.Metadata["UserFriendlyName"], Is.EqualTo(Constants.MetadataValue));
                 Assert.That(storageItemInformation.Metadata["ALLCAPSKEY"], Is.EqualTo(Constants.MetadataValue));
