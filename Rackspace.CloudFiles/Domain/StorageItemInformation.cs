@@ -3,6 +3,7 @@
 //----------------------------------------------
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using Rackspace.CloudFiles.Utils;
 
@@ -52,16 +53,10 @@ namespace Rackspace.CloudFiles.Domain
         {
             get
             {
-                Dictionary<string, string> tags = new Dictionary<string, string>();
-                foreach (string s in headers.Keys)
+                var tags = new Dictionary<string, string>();
+                foreach (string s in from string s in headers.Keys where s.StartsWith(Constants.META_DATA_HEADER, System.StringComparison.InvariantCultureIgnoreCase) where s.Length > Constants.META_DATA_HEADER.Length select s)
                 {
-                    if (s.StartsWith(Constants.META_DATA_HEADER, System.StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        if (s.Length > Constants.META_DATA_HEADER.Length)
-                        {
-                            tags[s.Substring(Constants.META_DATA_HEADER.Length)] = headers[s];
-                        }
-                    }
+                    tags[s.Substring(Constants.META_DATA_HEADER.Length)] = headers[s];
                 }
                 return tags;
             }

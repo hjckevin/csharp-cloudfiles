@@ -14,6 +14,7 @@ namespace Rackspace.CloudFiles
         Boolean HasCDN();
         XmlDocument GetAccountInformationXml();
         void CreateContainer(string containerName);
+        void CreateContainer(string containerName, Dictionary<string, string> metadata);
         void DeleteContainer(string continerName);
         void PurgePublicContainer(string continerName, string[] emailAddresses);
         void PurgePublicContainer(string continerName);

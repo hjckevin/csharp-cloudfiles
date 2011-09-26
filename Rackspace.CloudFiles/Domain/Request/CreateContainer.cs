@@ -2,6 +2,8 @@
 // See COPYING file for licensing information
 //----------------------------------------------
 
+using System.Linq;
+
 namespace Rackspace.CloudFiles.Domain.Request
 {
 
@@ -78,13 +80,8 @@ namespace Rackspace.CloudFiles.Domain.Request
 
             if ((_metadata != null) && (_metadata.Count > 0))
             {
-                foreach (var m in _metadata)
+                foreach (var m in _metadata.Where(m => (!String.IsNullOrEmpty(m.Key)) && (!String.IsNullOrEmpty(m.Value))))
                 {
-                    if ((String.IsNullOrEmpty(m.Key)) || (String.IsNullOrEmpty(m.Value)))
-                    {
-                        continue;
-                    }
-
                     if (m.Key.ToLower().StartsWith(Constants.X_CONTAINTER_META_DATA_HEADER))
                     {
                         // make sure the metadata item isn't just the container metadata prefix string

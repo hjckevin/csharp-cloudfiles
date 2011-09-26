@@ -106,5 +106,61 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerInf
 		}
 
     }
+
+    [TestFixture]
+    public class When_creating_a_new_container_with_metadata : TestBase
+    {
+        [Test]
+        public void Should_create_container()
+        {
+
+            Container container;
+
+            try
+            {
+                connection.CreateContainer(Constants.CONTAINER_NAME, new Dictionary<string, string>
+                                                                         {
+                                                                             {Constants.MetadataKey, Constants.MetadataValue}
+                                                                         });
+                container = connection.GetContainerInformation(Constants.CONTAINER_NAME);
+
+            }
+            finally
+            {
+                connection.DeleteContainer(Constants.CONTAINER_NAME);
+            }
+
+            Assert.That(container.Metadata.Count, Is.EqualTo(1));
+            Assert.That(container.Metadata[Constants.MetadataKey], Is.EqualTo(Constants.MetadataValue));
+        }
+
+        [Test, Ignore("The Keys are being capitalized (first letter capital, remaining lowercase).  Issue #42")]
+        public void Should_get_metadata_keys_with_same_casing_that_was_submitted_originally()
+        {
+
+            Container container;
+
+            try
+            {
+                connection.CreateContainer(Constants.CONTAINER_NAME, new Dictionary<string, string>
+                                                                         {
+                                                                             {"UserID", Constants.MetadataValue},
+                                                                             {"UserFriendlyName", Constants.MetadataValue},
+                                                                             {"ALLCAPSKEY", Constants.MetadataValue}
+                                                                         });
+                container = connection.GetContainerInformation(Constants.CONTAINER_NAME);
+
+            }
+            finally
+            {
+                connection.DeleteContainer(Constants.CONTAINER_NAME);
+            }
+
+            Assert.That(container.Metadata.Count, Is.EqualTo(3));
+            Assert.That(container.Metadata["UserID"], Is.EqualTo(Constants.MetadataValue));
+            Assert.That(container.Metadata["UserFriendlyName"], Is.EqualTo(Constants.MetadataValue));
+            Assert.That(container.Metadata["ALLCAPSKEY"], Is.EqualTo(Constants.MetadataValue));
+        }
+    }
 	 
 }

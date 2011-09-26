@@ -5,12 +5,10 @@
 namespace Rackspace.CloudFiles.Domain.Request
 {
 
-    #region Using
     using System;
     using Interfaces;
     using Exceptions;
     using Utils;
-    #endregion
 
     /// <summary>
     /// A class to represent getting a set of public containers in a web request
