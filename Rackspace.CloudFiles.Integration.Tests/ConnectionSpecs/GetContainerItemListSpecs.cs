@@ -48,6 +48,47 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
     }
 
     [TestFixture]
+    public class When_retrieving_a_list_of_items_from_a_container_and_folders_are_present : TestBase
+    {
+
+        [Test]
+        public void Should_return_all_objects_including_directory_marker_objects()
+        {
+            List<string> list;
+            try
+            {
+                connection.CreateContainer(Constants.CONTAINER_NAME);
+                connection.MakePath(Constants.CONTAINER_NAME, "photos");
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo1"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject"));
+                connection.MakePath(Constants.CONTAINER_NAME, "videos");
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4"));
+                list = connection.GetContainerItemList(Constants.CONTAINER_NAME);
+            }
+            finally
+            {
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo1"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo2"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("movieobject"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos/movieobj4"));
+                connection.DeleteContainer(Constants.CONTAINER_NAME);
+            }
+
+            Assert.That(list.Count, Is.EqualTo(6));
+            Assert.That(list[0], Is.EqualTo("movieobject"));
+            Assert.That(list[1], Is.EqualTo("photos"));
+            Assert.That(list[2], Is.EqualTo("photos/photo1"));
+            Assert.That(list[3], Is.EqualTo("photos/photo2"));
+            Assert.That(list[4], Is.EqualTo("videos"));
+            Assert.That(list[5], Is.EqualTo("videos/movieobj4"));
+        }
+    }
+
+
+    [TestFixture]
     public class When_retrieving_a_list_of_items_from_a_container_using_the_marker_list_parameter : TestBase
     {
         [Test]
