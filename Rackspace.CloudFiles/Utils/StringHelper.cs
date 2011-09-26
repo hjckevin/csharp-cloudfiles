@@ -16,13 +16,12 @@ namespace Rackspace.CloudFiles.Utils
 
         public static string Capitalize(this bool booleanValue)
         {
-            
             return booleanValue ? "True" : "False";
         }
 
         public static string Encode(this string stringToEncode)
         {
-            if (String.IsNullOrEmpty(stringToEncode))  
+            if (stringToEncode == null)  
                 throw new ArgumentNullException();
 
             return HttpUtility.UrlEncode(stringToEncode).Replace("+", "%20").Replace("%3a", ":");

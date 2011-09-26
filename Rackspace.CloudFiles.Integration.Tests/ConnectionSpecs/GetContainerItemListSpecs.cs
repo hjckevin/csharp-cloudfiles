@@ -54,6 +54,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
         public void Should_return_a_list_of_items_in_the_container()
         {
             List<string> containerItems;
+            List<string> fullList;
 
             try
             {
@@ -62,9 +63,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
                 {
                     connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, i + Constants.StorageItemName);
                 }
-                var fullList = connection.GetContainerItemList(Constants.CONTAINER_NAME);
-                Assert.That(fullList.Count, Is.EqualTo(10));
-
+                fullList = connection.GetContainerItemList(Constants.CONTAINER_NAME);
                 containerItems = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetListParameters, string>
                                                                                                {
                                                                                                    {GetListParameters.Marker, "5"}
@@ -79,6 +78,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }
 
+            Assert.That(fullList.Count, Is.EqualTo(10));
             Assert.That(containerItems.Count, Is.EqualTo(5));
         }
     }
@@ -90,7 +90,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
         public void Should_return_a_list_of_items_in_the_container()
         {
             List<string> containerItems;
-
+            List<string> fullList;
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
@@ -98,9 +98,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
                 connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2"));
                 connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject"));
                 connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4"));
-                var fullList = connection.GetContainerItemList(Constants.CONTAINER_NAME);
-                Assert.That(fullList.Count, Is.EqualTo(4));
-
+                fullList = connection.GetContainerItemList(Constants.CONTAINER_NAME);
                 containerItems = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetListParameters, string>
                                                                                                {
                                                                                                    {GetListParameters.Delimiter, "/"}
@@ -115,10 +113,47 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }
 
+            Assert.That(fullList.Count, Is.EqualTo(4));
             Assert.That(containerItems.Count, Is.EqualTo(3));
             Assert.That(containerItems[0], Is.EqualTo("movieobject"));
             Assert.That(containerItems[1], Is.EqualTo("photos/"));
             Assert.That(containerItems[2], Is.EqualTo("videos/"));
+        }
+    }
+
+    [TestFixture]
+    public class When_retrieving_a_list_of_items_from_a_container_using_the_path_list_parameter : TestBase
+    {
+        [Test]
+        public void Should_return_a_list_of_items_in_the_container()
+        {
+            List<string> containerItems;
+            List<string> fullList;
+            try
+            {
+                connection.CreateContainer(Constants.CONTAINER_NAME);
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo1"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4"));
+                fullList = connection.GetContainerItemList(Constants.CONTAINER_NAME);
+                containerItems = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetListParameters, string>
+                                                                                               {
+                                                                                                   {GetListParameters.Path, ""}
+                                                                                               });
+            }
+            finally
+            {
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo1"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo2"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("movieobject"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos/movieobj4"));
+                connection.DeleteContainer(Constants.CONTAINER_NAME);
+            }
+
+            Assert.That(fullList.Count, Is.EqualTo(4));
+            Assert.That(containerItems.Count, Is.EqualTo(1));
+            Assert.That(containerItems[0], Is.EqualTo("movieobject"));
         }
     }
 
@@ -128,6 +163,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
         [Test]
         public void Should_return_a_list_of_items_in_the_container()
         {
+            List<string> list;
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
@@ -135,8 +171,8 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
                 {
                     connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("#{0}{1}",i,Constants.StorageItemName));
                 }
-                var list = connection.GetContainerItemList(Constants.CONTAINER_NAME);
-                Assert.That(list.Count, Is.EqualTo(10));
+                list = connection.GetContainerItemList(Constants.CONTAINER_NAME);
+                
             }
             finally
             {
@@ -146,6 +182,8 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
                 }
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }
+
+            Assert.That(list.Count, Is.EqualTo(10));
         }
     }
 }
