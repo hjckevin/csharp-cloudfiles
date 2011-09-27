@@ -765,7 +765,7 @@ namespace Rackspace.CloudFiles
         }
 
         /// <summary>
-        /// This method retrieves the contents of a container
+        /// This method retrieves the objects of a container, excluding folders
         /// </summary>
         /// <example>
         /// <code>
@@ -779,12 +779,17 @@ namespace Rackspace.CloudFiles
         /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
         public List<string> GetContainerItemList(string containerName)
         {
+            return GetContainerItemList(containerName, false);
+        }
+
+        public List<string> GetContainerItemList(string containerName, bool includeFolders)
+        {
             if (string.IsNullOrEmpty(containerName))
                 throw new ArgumentNullException();
 
             return StartProcess
                 .ByLoggingMessage("Getting container item list for container '" + containerName + "' for user " + _usercreds.Username)
-                .ThenDoing(() => GetContainerItemList(containerName, null))
+                .ThenDoing(() => GetContainerItemList(containerName, null, includeFolders))
                 .AndIfErrorThrownIs<Exception>()
                 .Do(Nothing)
                 .AndLogError("Error getting item list for container '" + containerName + "' for user " + _usercreds.Username)
@@ -839,17 +844,24 @@ namespace Rackspace.CloudFiles
         /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
         public List<string> GetContainerItemList(string containerName, Dictionary<GetListParameters, string> parameters)
         {
+            return GetContainerItemList(containerName, parameters, false);
+        }
+
+        public List<string> GetContainerItemList(string containerName, Dictionary<GetListParameters, string> parameters, bool includeFolders)
+        {
             if (string.IsNullOrEmpty(containerName))
                 throw new ArgumentNullException();
 
             return StartProcess
-                .ByLoggingMessage("Getting container item list for container '"+ containerName + "' for user "+ _usercreds.Username)
-                .ThenDoing(() => getContainerItemList(containerName, parameters))
+                .ByLoggingMessage("Getting container item list for container '" + containerName + "' for user " + _usercreds.Username)
+                .ThenDoing(() => getContainerItemList(containerName, parameters, includeFolders))
                 .AndIfErrorThrownIs<WebException>()
                 .Do(DetermineReasonForContainerError)
-                .AndLogError("Error getting containers item list for container '"+ containerName + "' for user "+ _usercreds.Username)
+                .AndLogError("Error getting containers item list for container '" + containerName + "' for user " + _usercreds.Username)
                 .Now();
         }
+
+
 
         /// <summary>
         /// This method retrieves the number of storage objects in a container, and the total size, in bytes, of the container
@@ -2452,7 +2464,7 @@ namespace Rackspace.CloudFiles
             }
         }
 
-        private List<string> getContainerItemList(string containerName, Dictionary<GetListParameters, string> parameters)
+        private List<string> getContainerItemList(string containerName, Dictionary<GetListParameters, string> parameters, bool includeFolders)
         {
             var containerItemList = new List<string>();
             var getContainerItemList = new GetContainerItemList(StorageUrl, containerName, parameters);
@@ -2460,6 +2472,10 @@ namespace Rackspace.CloudFiles
             if (getContainerItemListResponse.Status == HttpStatusCode.OK)
             {
                 containerItemList.AddRange(getContainerItemListResponse.ContentBody);
+            }
+            if(!includeFolders)
+            {
+                containerItemList = containerItemList.Where(Path.HasExtension).ToList();
             }
             return containerItemList;
         }

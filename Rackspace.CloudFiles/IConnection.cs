@@ -21,7 +21,9 @@ namespace Rackspace.CloudFiles
         List<string> GetContainers();
         List<string> GetContainers(Dictionary<GetListParameters, string> parameters);
         List<string> GetContainerItemList(string containerName);
+        List<string> GetContainerItemList(string containerName, bool includeFolders);
         List<string> GetContainerItemList(string containerName, Dictionary<GetListParameters, string> parameters);
+        List<string> GetContainerItemList(string containerName, Dictionary<GetListParameters, string> parameters, bool includeFolders);
         Container GetContainerInformation(string containerName);
         string GetContainerInformationJson(string containerName);
         XmlDocument GetContainerInformationXml(string containerName);

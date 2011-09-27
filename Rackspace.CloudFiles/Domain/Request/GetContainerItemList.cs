@@ -2,20 +2,14 @@
 // See COPYING file for licensing information
 //----------------------------------------------
 
-using Rackspace.CloudFiles.Domain.Request.Interfaces;
-using Rackspace.CloudFiles.Exceptions;
-using Rackspace.CloudFiles.Utils;
-
 namespace Rackspace.CloudFiles.Domain.Request
 {
-    #region Using
     using System;
     using System.Collections.Generic;
     using System.Text;
     using Request.Interfaces;
     using Exceptions;
     using Utils;
-    #endregion
 
     /// <summary>
     /// A class to represent getting a container's item list in a web request
@@ -60,7 +54,7 @@ namespace Rackspace.CloudFiles.Domain.Request
 
             _stringBuilder = new StringBuilder();
 
-            foreach (GetListParameters param in requestParameters.Keys)
+            foreach (var param in requestParameters.Keys)
             {
                 var paramName = param.ToString().ToLower();
 

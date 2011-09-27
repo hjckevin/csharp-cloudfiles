@@ -52,38 +52,71 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
     {
 
         [Test]
-        public void Should_return_all_objects_including_directory_marker_objects()
+        public void Should_return_all_objects_excluding_directory_marker_objects_by_default()
         {
             List<string> list;
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
                 connection.MakePath(Constants.CONTAINER_NAME, "photos");
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo1"));
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2"));
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo1.jpg"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2.jpg"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject.mov"));
                 connection.MakePath(Constants.CONTAINER_NAME, "videos");
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4.mov"));
                 list = connection.GetContainerItemList(Constants.CONTAINER_NAME);
             }
             finally
             {
                 connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo1"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo2"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("movieobject"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo1.jpg"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo2.jpg"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("movieobject.mov"));
                 connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos/movieobj4"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos/movieobj4.mov"));
+                connection.DeleteContainer(Constants.CONTAINER_NAME);
+            }
+
+            Assert.That(list.Count, Is.EqualTo(4));
+            Assert.That(list[0], Is.EqualTo("movieobject.mov"));
+            Assert.That(list[1], Is.EqualTo("photos/photo1.jpg"));
+            Assert.That(list[2], Is.EqualTo("photos/photo2.jpg"));
+            Assert.That(list[3], Is.EqualTo("videos/movieobj4.mov"));
+        }
+
+        [Test]
+        public void Should_return_all_objects_including_directory_marker_objects_when_set_to()
+        {
+            List<string> list;
+            try
+            {
+                connection.CreateContainer(Constants.CONTAINER_NAME);
+                connection.MakePath(Constants.CONTAINER_NAME, "photos");
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo1.jpg"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2.jpg"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject.mov"));
+                connection.MakePath(Constants.CONTAINER_NAME, "videos");
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4.mov"));
+                list = connection.GetContainerItemList(Constants.CONTAINER_NAME, true);
+            }
+            finally
+            {
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo1.jpg"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo2.jpg"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("movieobject.mov"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos"));
+                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos/movieobj4.mov"));
                 connection.DeleteContainer(Constants.CONTAINER_NAME);
             }
 
             Assert.That(list.Count, Is.EqualTo(6));
-            Assert.That(list[0], Is.EqualTo("movieobject"));
+            Assert.That(list[0], Is.EqualTo("movieobject.mov"));
             Assert.That(list[1], Is.EqualTo("photos"));
-            Assert.That(list[2], Is.EqualTo("photos/photo1"));
-            Assert.That(list[3], Is.EqualTo("photos/photo2"));
+            Assert.That(list[2], Is.EqualTo("photos/photo1.jpg"));
+            Assert.That(list[3], Is.EqualTo("photos/photo2.jpg"));
             Assert.That(list[4], Is.EqualTo("videos"));
-            Assert.That(list[5], Is.EqualTo("videos/movieobj4"));
+            Assert.That(list[5], Is.EqualTo("videos/movieobj4.mov"));
         }
     }
 
