@@ -44,8 +44,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetStorageItemS
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
 
@@ -62,8 +61,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetStorageItemS
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
 
             Assert.That(storageItem, Is.Not.Null);
@@ -90,7 +88,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetStorageItemS
             }
             finally
             {
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
             Assert.That(exceptionWasThrown, Is.True);
         }
@@ -111,8 +109,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetStorageItemS
             finally
             {
                 if (si != null) si.Dispose();
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
     }
@@ -140,8 +137,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetStorageItemS
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
 
             Assert.That(storageItem, Is.Not.Null);
@@ -170,7 +166,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetStorageItemS
             }
             finally
             {
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
     }
@@ -200,8 +196,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetStorageItemS
             }
             catch (Exception)
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
 

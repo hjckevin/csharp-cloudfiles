@@ -30,7 +30,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs
                 }
                 finally
                 {
-                    connection.DeleteContainer(Constants.CONTAINER_NAME);
+                    connection.DeleteContainer(Constants.CONTAINER_NAME, true);
                 }
 
                 Assert.That(exceptionWasThrown, Is.True);

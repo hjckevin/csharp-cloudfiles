@@ -15,6 +15,7 @@ namespace Rackspace.CloudFiles.Domain
         long BytesUsed { get; }
         IContainer CreateContainer(string containerName);
         void DeleteContainer(string containerName);
+        void DeleteContainer(string containerName, bool emptyContainerBeforeDelete);
         IContainer GetContainer(string containerName);
         bool ContainerExists(string containerName);
         string JSON { get; }
@@ -102,7 +103,12 @@ namespace Rackspace.CloudFiles.Domain
 
         public void DeleteContainer(string containerName)
         {
-            CloudFilesDeleteContainer(containerName);
+            DeleteContainer(containerName, false);
+        }
+
+        public void DeleteContainer(string containerName, bool emptyContainerBeforeDelete)
+        {
+            CloudFilesDeleteContainer(containerName, emptyContainerBeforeDelete);
             if (containers.Find(x => x.Name == containerName) == null)
                 throw new ContainerNotFoundException();
             containers.Remove(containers.Find(x => x.Name == containerName));
@@ -149,9 +155,9 @@ namespace Rackspace.CloudFiles.Domain
             }
         }
 
-        protected virtual void CloudFilesDeleteContainer(string containerName)
+        protected virtual void CloudFilesDeleteContainer(string containerName, bool emptyContainerBeforeDelete)
         {
-            connection.DeleteContainer(containerName);
+            connection.DeleteContainer(containerName, emptyContainerBeforeDelete);
         }
 
         protected virtual IContainer CloudFilesGetContainer(string containerName)

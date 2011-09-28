@@ -16,6 +16,7 @@ namespace Rackspace.CloudFiles
         void CreateContainer(string containerName);
         void CreateContainer(string containerName, Dictionary<string, string> metadata);
         void DeleteContainer(string continerName);
+        void DeleteContainer(string continerName, bool emptyContainerBeforeDelete);
         void PurgePublicContainer(string continerName, string[] emailAddresses);
         void PurgePublicContainer(string continerName);
         List<string> GetContainers();

@@ -46,13 +46,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
             }
             finally
             {
-                var storageItems = connection.GetContainerItemList(Constants.CONTAINER_NAME);
-
-                if (storageItems.Contains(Constants.StorageItemName))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-
-                if (connection.GetContainerInformation(Constants.CONTAINER_NAME) != null)
-                    connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
 
@@ -71,8 +65,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
     }
@@ -98,8 +91,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
             finally
             {
                 if (storageItem != null && storageItem.ObjectStream.CanRead) storageItem.ObjectStream.Close();
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNameJpg);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
 
@@ -108,31 +100,6 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
         {
             
             connection.CreateContainer(Constants.CONTAINER_NAME);
-            //var webrequest =
-            //    (HttpWebRequest)
-            //    WebRequest.Create( 
-            //       "https://storage.clouddrive.com/v1/MossoCloudFS_5d8f3dca-7eb9-4453-aa79-2eea1b980353/integration.tests.container/TestStorageItem.txt");
-            //webrequest.Method = "PUT";
-            //webrequest.ContentType = "text/plain";
-            //webrequest.ContentLength = 34;
-            //webrequest.UserAgent = "csharp-cloudfiles";
-          
-            //webrequest.Headers.Add("ETag"," 5c66108b7543c6f16145e25df9849f7f");
-     
-            //webrequest.Headers.Add("X-Auth-Token","0addec49-1212-422d-8b1a-5c6091b3b3d9");
-    
-            
-           
-            //var writer = new BinaryWriter(webrequest.GetRequestStream());
-            //var bytes = File.ReadAllBytes(Constants.StorageItemName);
-            //foreach (var b in bytes)
-            //{
-            //    writer.Write(b);
-            //}
-            //writer.Flush();
-            //writer.Close();
-            
-            //var response = webrequest.GetResponse();
             StorageItem storageItem = null;
             try
             {
@@ -147,8 +114,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
             finally
             {
                 if (storageItem != null && storageItem.ObjectStream.CanRead) storageItem.ObjectStream.Close();
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNamePdf);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
 
@@ -180,8 +146,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
             finally
             {
                 if (storageItem != null && storageItem.ObjectStream.CanRead) storageItem.ObjectStream.Close();
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNameJpg);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
 
@@ -208,8 +173,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
             finally
             {
                 if (storageItem != null && storageItem.ObjectStream.CanRead) storageItem.ObjectStream.Close();
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNameJpg);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
     }
@@ -242,8 +206,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
             }
             catch (Exception)
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
 
@@ -272,9 +235,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
             catch (Exception e)
             {
                 System.Diagnostics.Debug.WriteLine(e.ToString());
-                //Make sure to always clean up
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNamePdf);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
 
@@ -287,15 +248,13 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
 
         private void operationCompletePDF()
         {
-            connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNamePdf);
-            connection.DeleteContainer(Constants.CONTAINER_NAME);
+            connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             operationCompleted = true;
         }
 
         private void operationComplete()
         {
-            connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-            connection.DeleteContainer(Constants.CONTAINER_NAME);
+            connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             operationCompleted = true;
         }
 
@@ -309,6 +268,9 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
 
     }
 
+// DO NOT DELETE
+// USED FOR EDGE CASE TESTING WITH BIG FILES
+// DO NOT WANT RUN ON CI
 //    [TestFixture]
 //    public class When_putting_a_object_greater_than_2_GB_into_cloud_files : TestBase
 //    {

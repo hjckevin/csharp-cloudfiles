@@ -33,8 +33,6 @@ namespace Rackspace.CloudFiles.Integration.Tests
         }
 
 
-        protected virtual void SetUp()
-        {
-        }
+        protected virtual void SetUp(){}
     }
 }

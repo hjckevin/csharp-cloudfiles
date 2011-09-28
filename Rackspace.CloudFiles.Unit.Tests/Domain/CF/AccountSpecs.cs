@@ -158,7 +158,7 @@ namespace Rackspace.CloudFiles.Unit.Tests.Domain.CF.AccountSpecs
             if (containers.Contains(containers.Find(x => x.Name == containerName))) throw new ContainerAlreadyExistsException();
         }
 
-        protected override void CloudFilesDeleteContainer(string containerName)
+        protected override void CloudFilesDeleteContainer(string containerName, bool emptyContainerBeforeDelete)
         {
             if (containers.Find(x => x.Name == containerName) == null)
                 throw new ContainerNotFoundException();

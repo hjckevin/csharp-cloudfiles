@@ -16,7 +16,6 @@ namespace Rackspace.CloudFiles.Integration.Tests.domain.GetAccountSpecs
         [Test]
         public void should_return_number_of_containers_and_bytes_used()
         {
-            
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);

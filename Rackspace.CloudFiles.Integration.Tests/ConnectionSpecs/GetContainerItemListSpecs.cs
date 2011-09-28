@@ -68,13 +68,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo1.jpg"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo2.jpg"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("movieobject.mov"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos/movieobj4.mov"));
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
 
             Assert.That(list.Count, Is.EqualTo(4));
@@ -101,13 +95,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo1.jpg"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo2.jpg"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("movieobject.mov"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos/movieobj4.mov"));
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
 
             Assert.That(list.Count, Is.EqualTo(6));
@@ -145,11 +133,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
             }
             finally
             {
-                for (var i = 0; i < 10; i++)
-                {
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, i + Constants.StorageItemName);
-                }
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
 
             Assert.That(fullList.Count, Is.EqualTo(10));
@@ -168,28 +152,24 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo1"));
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2"));
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject"));
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo1.jpg"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2.jpg"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject.mov"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4.jpg"));
                 fullList = connection.GetContainerItemList(Constants.CONTAINER_NAME);
                 containerItems = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetListParameters, string>
                                                                                                {
                                                                                                    {GetListParameters.Delimiter, "/"}
-                                                                                               });
+                                                                                               }, true);
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo1"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo2"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("movieobject"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos/movieobj4"));
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
 
             Assert.That(fullList.Count, Is.EqualTo(4));
             Assert.That(containerItems.Count, Is.EqualTo(3));
-            Assert.That(containerItems[0], Is.EqualTo("movieobject"));
+            Assert.That(containerItems[0], Is.EqualTo("movieobject.mov"));
             Assert.That(containerItems[1], Is.EqualTo("photos/"));
             Assert.That(containerItems[2], Is.EqualTo("videos/"));
         }
@@ -206,10 +186,10 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
             try
             {
                 connection.CreateContainer(Constants.CONTAINER_NAME);
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo1"));
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2"));
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject"));
-                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo1.jpg"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("photos/photo2.jpg"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("movieobject.mov"));
+                connection.PutStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName, string.Format("videos/movieobj4.jpg"));
                 fullList = connection.GetContainerItemList(Constants.CONTAINER_NAME);
                 containerItems = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetListParameters, string>
                                                                                                {
@@ -218,16 +198,12 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo1"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("photos/photo2"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("movieobject"));
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("videos/movieobj4"));
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
 
             Assert.That(fullList.Count, Is.EqualTo(4));
             Assert.That(containerItems.Count, Is.EqualTo(1));
-            Assert.That(containerItems[0], Is.EqualTo("movieobject"));
+            Assert.That(containerItems[0], Is.EqualTo("movieobject.mov"));
         }
     }
 
@@ -250,11 +226,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerIte
             }
             finally
             {
-                for (var i = 0; i < 10; i++)
-                {
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, string.Format("#{0}{1}", i, Constants.StorageItemName));
-                }
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
 
             Assert.That(list.Count, Is.EqualTo(10));

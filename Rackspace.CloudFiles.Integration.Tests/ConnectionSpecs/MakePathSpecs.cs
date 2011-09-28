@@ -32,16 +32,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.MakePathSpecs
             }
             finally
             {
-                var storageItems = connection.GetContainerItemList(Constants.CONTAINER_NAME);
-                if(storageItems.Contains("dir1"))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1");
-                if (storageItems.Contains("dir1/dir2"))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2");
-                if (storageItems.Contains("dir1/dir2/dir3"))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2/dir3");
-
-                if (connection.GetContainerInformation(Constants.CONTAINER_NAME) != null)
-                    connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
         [Test]
@@ -68,17 +59,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.MakePathSpecs
             }
             finally
             {
-                var storageItems = connection.GetContainerItemList(Constants.CONTAINER_NAME);
-                if (storageItems.Contains("dir1"))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1");
-                if (storageItems.Contains("dir1/dir2"))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2");
-                if (storageItems.Contains("dir1/dir2/subdir.sub"))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2/subdir.sub");
-                
-
-                if (connection.GetContainerInformation(Constants.CONTAINER_NAME) != null)
-                    connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
         [Test]
@@ -96,34 +77,12 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.MakePathSpecs
                 connection.PutStorageItem(Constants.CONTAINER_NAME, new MemoryStream(new byte[0]), "/dir1/dir2/dir3/" + Constants.StorageItemNameGif);
                 connection.PutStorageItem(Constants.CONTAINER_NAME, new MemoryStream(new byte[0]), "/dir1/dir2/dir3/" + Constants.StorageItemNameJpg);
 
-                var items = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetListParameters, string> {{GetListParameters.Path, "dir1"}});
+                var items = connection.GetContainerItemList(Constants.CONTAINER_NAME, new Dictionary<GetListParameters, string> {{GetListParameters.Path, "dir1"}}, true);
                 Assert.That(items.Count, Is.EqualTo(2));
             }
             finally
             {
-                var storageItems = connection.GetContainerItemList(Constants.CONTAINER_NAME);
-
-                if (storageItems.Contains("dir1"))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1");
-                if (storageItems.Contains("dir1/" + Constants.StorageItemName))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/" + Constants.StorageItemName);
-                if (storageItems.Contains("dir1/dir2"))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2");
-                if (storageItems.Contains("dir1/dir2/" + Constants.StorageItemName))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2/" + Constants.StorageItemName);
-                if (storageItems.Contains("dir1/dir2/" + Constants.StorageItemNameGif))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2/" + Constants.StorageItemNameGif);
-                if (storageItems.Contains("dir1/dir2/dir3"))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2/dir3");
-                if (storageItems.Contains("dir1/dir2/dir3/" + Constants.StorageItemName))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2/dir3/" + Constants.StorageItemName);
-                if (storageItems.Contains("dir1/dir2/dir3/" + Constants.StorageItemNameGif))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2/dir3/" + Constants.StorageItemNameGif);
-                if (storageItems.Contains("dir1/dir2/dir3/" + Constants.StorageItemNameJpg))
-                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "dir1/dir2/dir3/" + Constants.StorageItemNameJpg);
-
-                if (connection.GetContainerInformation(Constants.CONTAINER_NAME) != null)
-                    connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
     }

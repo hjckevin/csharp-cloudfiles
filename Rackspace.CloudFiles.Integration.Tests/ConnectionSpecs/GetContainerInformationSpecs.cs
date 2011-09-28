@@ -30,7 +30,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerInf
             }
             finally
             {
-                connection.DeleteContainer(containerName);
+                connection.DeleteContainer(containerName, true);
             }
         }
 
@@ -58,8 +58,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerInf
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNameJpg);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
 		}
         [Test]
@@ -90,8 +89,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.GetContainerInf
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemNameJpg);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
 		
 		}

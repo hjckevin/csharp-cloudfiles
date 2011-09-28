@@ -36,7 +36,7 @@ namespace Rackspace.CloudFiles.Integration.Tests
 
         public void DeleteItemFromContainer(string storageItemName)
         {
-            var deleteStorageItem = new CloudFiles.Domain.Request.DeleteStorageItem(storageUrl, containerName, storageItemName);
+            var deleteStorageItem = new DeleteStorageItem(storageUrl, containerName, storageItemName);
             var deleteStorageItemResponse = new GenerateRequestByType().Submit(deleteStorageItem, authToken);
             Assert.That(deleteStorageItemResponse.Status, Is.EqualTo(HttpStatusCode.NoContent));
         }
@@ -44,7 +44,7 @@ namespace Rackspace.CloudFiles.Integration.Tests
         public void AddMetadataToItem(string storageItemName)
         {
             var metadata = new Dictionary<string, string> {{"Test", "test"}, {"Test2", "test2"}};
-            var setStorageItemMetaInformation = new CloudFiles.Domain.Request.SetStorageItemMetaInformation(storageUrl, containerName, storageItemName, metadata);
+            var setStorageItemMetaInformation = new SetStorageItemMetaInformation(storageUrl, containerName, storageItemName, metadata);
             var postStorageItemResponse = new GenerateRequestByType().Submit(setStorageItemMetaInformation, authToken);
             Assert.That(postStorageItemResponse.Status, Is.EqualTo(HttpStatusCode.Accepted));
             Assert.That(Regex.Match(postStorageItemResponse.Headers["Content-Type"], "text/(plain|html)").Success, Is.True);
@@ -59,7 +59,7 @@ namespace Rackspace.CloudFiles.Integration.Tests
 
         public void PutItemInContainer(string storageItemName, string remoteName)
         {
-            var putStorageItem = new CloudFiles.Domain.Request.PutStorageItem(storageUrl, containerName, remoteName, storageItemName);
+            var putStorageItem = new PutStorageItem(storageUrl, containerName, remoteName, storageItemName);
             var putStorageItemResponse = new GenerateRequestByType().Submit(putStorageItem, authToken);
             Assert.That(putStorageItemResponse.Status, Is.EqualTo(HttpStatusCode.Created));
         }
@@ -76,7 +76,7 @@ namespace Rackspace.CloudFiles.Integration.Tests
 
         private void CreateContainer()
         {
-            var createContainer = new CloudFiles.Domain.Request.CreateContainer(storageUrl, containerName);
+            var createContainer = new CreateContainer(storageUrl, containerName);
             var putContainerResponse = new GenerateRequestByType().Submit(createContainer, authToken);
             Assert.That(putContainerResponse.Status, Is.EqualTo(HttpStatusCode.Created));
         }

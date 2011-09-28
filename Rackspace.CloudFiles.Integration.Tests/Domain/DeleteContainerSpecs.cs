@@ -41,8 +41,6 @@ namespace Rackspace.CloudFiles.Integration.Tests.domain.DeleteContainerSpecs
                 {
                     var putStorageItem = new PutStorageItem(storageUrl, Constants.CONTAINER_NAME, Constants.StorageItemName, Constants.StorageItemName);
                     
-                 //   Assert.That(putStorageItem.ContentLength, Is.GreaterThan(0));
-
                   var putStorageItemResponse=  new GenerateRequestByType().Submit(putStorageItem, authToken);
                     Assert.That(putStorageItemResponse.Status, Is.EqualTo(HttpStatusCode.Created));
                 }

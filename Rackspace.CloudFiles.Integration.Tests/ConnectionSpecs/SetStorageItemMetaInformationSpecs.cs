@@ -25,8 +25,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.SetStorageItemM
             }
             finally
             {
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
     }
@@ -53,7 +52,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.SetStorageItemM
             }
             finally
             {
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
     }

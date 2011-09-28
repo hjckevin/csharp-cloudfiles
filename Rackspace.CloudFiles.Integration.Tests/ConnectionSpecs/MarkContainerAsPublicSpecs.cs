@@ -19,8 +19,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.MarkContainerAs
             }
             finally
             {
-                connection.MarkContainerAsPrivate(Constants.CONTAINER_NAME);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
 
@@ -39,8 +38,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.MarkContainerAs
             }
             finally
             {
-                connection.MarkContainerAsPrivate(Constants.CONTAINER_NAME);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
 
@@ -66,8 +64,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.MarkContainerAs
                 }
                 finally
                 {
-                    connection.MarkContainerAsPrivate(containerName);
-                    connection.DeleteContainer(containerName);
+                    connection.DeleteContainer(containerName, true);
                 }
             }
         }
@@ -94,8 +91,7 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.MarkContainerAs
             }
             finally
             {
-                connection.MarkContainerAsPrivate(Constants.CONTAINER_NAME);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
     }

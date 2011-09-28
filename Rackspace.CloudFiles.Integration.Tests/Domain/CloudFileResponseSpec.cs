@@ -37,8 +37,7 @@ namespace Rackspace.CloudFiles.integration.tests.Domain
                 if (getStorageItemResponse != null) getStorageItemResponse.Close();
                 if (stream != null) stream.Close();
                 if (streamcopy != null) streamcopy.Close();
-                connection.DeleteStorageItem(Constants.CONTAINER_NAME, Constants.StorageItemName);
-                connection.DeleteContainer(Constants.CONTAINER_NAME);
+                connection.DeleteContainer(Constants.CONTAINER_NAME, true);
             }
         }
     }

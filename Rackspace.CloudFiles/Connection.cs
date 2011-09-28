@@ -649,12 +649,17 @@ namespace Rackspace.CloudFiles
         /// <exception cref="ArgumentNullException">Thrown when any of the reference parameters are null</exception>
         public void DeleteContainer(string containerName)
         {
+            DeleteContainer(containerName, false);
+        }
+
+        public void DeleteContainer(string containerName, bool emptyContainerBeforeDelete)
+        {
             if (string.IsNullOrEmpty(containerName))
                 throw new ArgumentNullException();
 
             StartProcess
                 .ByLoggingMessage("Deleting container '" + containerName + "' for user " + _usercreds.Username)
-                .ThenDoing(() => deleteContainer(StorageUrl, containerName))
+                .ThenDoing(() => deleteContainer(StorageUrl, containerName, emptyContainerBeforeDelete))
                 .AndIfErrorThrownIs<WebException>()
                 .Do(DetermineReasonForContainerError)
                 .AndLogError("Error deleting container '" + containerName + "' for user " + _usercreds.Username)
@@ -2370,8 +2375,19 @@ namespace Rackspace.CloudFiles
                 throw new ContainerAlreadyExistsException("The container already exists");
         }
 
-        private void deleteContainer(string url, string containerName)
+        private void deleteContainer(string url, string containerName, bool emptyContainerBeforeDelete)
         {
+            if(emptyContainerBeforeDelete)
+            {
+                var list = getContainerItemList(containerName, null, true);
+                if(list.Count > 0)
+                {
+                    foreach(var item in list)
+                    {
+                        deleteStorageItem(containerName, item);       
+                    }
+                }
+            }
             var deleteContainer = new DeleteContainer(url, containerName, null);
             _requestfactory.Submit(deleteContainer, AuthToken, _usercreds.ProxyCredentials);
         }

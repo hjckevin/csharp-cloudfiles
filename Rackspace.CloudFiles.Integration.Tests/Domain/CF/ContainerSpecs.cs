@@ -28,14 +28,8 @@ namespace Rackspace.CloudFiles.Integration.Tests.Domain.CF.ContainerSpecs
         [TearDown]
         public void TearDown()
         {
-            if (container.ObjectExists(Constants.StorageItemName))
-                container.DeleteObject(Constants.StorageItemName);
-
-            if (container.ObjectExists(Constants.HeadStorageItemName))
-                container.DeleteObject(Constants.HeadStorageItemName);
-
             if (account.ContainerExists(Constants.CONTAINER_NAME))
-                account.DeleteContainer(Constants.CONTAINER_NAME);
+                account.DeleteContainer(Constants.CONTAINER_NAME, true);
         } 
     }
 
