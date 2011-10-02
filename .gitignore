@@ -14,6 +14,7 @@ _ReSharper.*
 test-results
 *.pidb
 /Build
+/packages
 NDependOut
 Credentials.config
 coverage.xml
