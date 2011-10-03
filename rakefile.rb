@@ -16,6 +16,7 @@ task :default => [:clean, :compile, :tests, :zip]
 desc "Clean build artifacts, etc"
 task :clean do |asm|
   FileUtils.rm_rf BUILDS_DIR if File.directory?(BUILDS_DIR)
+  Dir.mkdir BUILDS_DIR if !File.directory?(BUILDS_DIR)  
 end
 
 
@@ -98,7 +99,7 @@ zip do |zip|
   zip.directories_to_zip CORE_DLL_DIR
   zip.output_file = file
 
-  puts "ZIP CREATION COMPLETE"
+  puts "ZIP FILE #{file} CREATED SUCCESSFULLY"
 end
 
 ##################
