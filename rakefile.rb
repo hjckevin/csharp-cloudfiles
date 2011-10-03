@@ -7,7 +7,7 @@ desc "compiles, runs tests and creates zip file"
 task :all => [:default]
 
 desc "compiles, runs tests and creates zip file"
-task :default => [:clean, :compile, :tests, :zip]
+task :default => [:clean, :compile, :nuget, :tests, :zip]
 
 ################
 #  CLEANUP
@@ -42,6 +42,15 @@ msbuild :compile => :assemblyinfo do |msb|
   msb.targets :Rebuild
   msb.verbosity = "minimal"
   msb.solution = SLN_FILE
+end
+
+################
+# CREATE NUGET PACKAGE
+################
+
+desc "Create NuGet package"
+task :nuget do |n|
+  system(".nuget/NuGet.exe pack csharp-cloudfiles.nuspec -Version #{RELEASE_BUILD_NUMBER} -OutputDirectory #{BUILDS_DIR}")
 end
 
 ################
