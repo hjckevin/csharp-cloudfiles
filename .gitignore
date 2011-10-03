@@ -22,3 +22,4 @@ coverage.xml.bkp
 com.mosso.cloudfiles.*
 csharp-cloudfiles-unit-tests-results.xml
 csharp-cloudfiles-integration-tests-results.xml
+*.nupkg

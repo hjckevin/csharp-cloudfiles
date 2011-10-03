@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using NUnit.Framework;
@@ -268,31 +269,35 @@ namespace Rackspace.CloudFiles.Integration.Tests.ConnectionSpecs.PutStorageItemS
 
     }
 
-// DO NOT DELETE
-// USED FOR EDGE CASE TESTING WITH BIG FILES
-// DO NOT WANT RUN ON CI
-//    [TestFixture]
-//    public class When_putting_a_object_greater_than_2_GB_into_cloud_files : TestBase
-//    {
-//        [Test]
-//        public void Should_upload_the_file_successfully()
-//        {
-//            
-//            connection.CreateContainer(Constants.CONTAINER_NAME);
-//
-//            try
-//            {
-//                connection.PutStorageItem(Constants.CONTAINER_NAME, @"C:\TestStorageItem.iso");
-//
-//                var items = connection.GetContainerItemList(Constants.CONTAINER_NAME);
-//                Assert.That(items.Contains("TestStorageItem.iso"), Is.True);
-//            }
-//            finally
-//            {
-//                if(connection.GetContainerItemList(Constants.CONTAINER_NAME).Contains("TestStorageItem.iso"))
-//                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "TestStorageItem.iso");
-//                connection.DeleteContainer(Constants.CONTAINER_NAME);
-//            }
-//        }
-//    }
+    [TestFixture]
+    [NUnit.Framework.Category("LongRunningIntegrationTest")]
+    public class When_putting_a_object_greater_than_2_GB_into_cloud_files : TestBase
+    {
+        [Test]
+        public void Should_upload_the_file_successfully()
+        {
+            const string largeFilePath = @"C:\TestStorageItem.iso";
+
+            if(!File.Exists(largeFilePath))
+            {
+                Assert.Ignore("Large file not found at {0}", largeFilePath);
+            }
+
+            connection.CreateContainer(Constants.CONTAINER_NAME);
+
+            try
+            {
+                connection.PutStorageItem(Constants.CONTAINER_NAME, largeFilePath);
+
+                var items = connection.GetContainerItemList(Constants.CONTAINER_NAME);
+                Assert.That(items.Contains("TestStorageItem.iso"), Is.True);
+            }
+            finally
+            {
+                if(connection.GetContainerItemList(Constants.CONTAINER_NAME).Contains("TestStorageItem.iso"))
+                    connection.DeleteStorageItem(Constants.CONTAINER_NAME, "TestStorageItem.iso");
+                connection.DeleteContainer(Constants.CONTAINER_NAME);
+            }
+        }
+    }
 }
