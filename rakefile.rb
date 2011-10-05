@@ -53,7 +53,6 @@ task :nuget do |n|
   file = "csharp-cloudfiles.#{RELEASE_BUILD_NUMBER}.nupkg"
   fullpath = File.join(BUILDS_DIR,file)
   File.delete(fullpath) if File.exists?(fullpath)
-  puts "CREATING #{fullpath}"
   system(".nuget/NuGet.exe pack csharp-cloudfiles.nuspec -Version #{RELEASE_BUILD_NUMBER} -OutputDirectory #{BUILDS_DIR}")
 end
 
