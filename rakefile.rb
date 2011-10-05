@@ -108,6 +108,8 @@ zip do |zip|
   fullpath = File.join(BUILDS_DIR,file)
   File.delete(fullpath) if File.exists?(fullpath)
 
+  puts "IGNORED: The #{CORE_DLL_DIR} does not exist.  Nothing to zip" if !File.exists?(CORE_DLL_DIR)  
+  exit
   zip.output_path = BUILDS_DIR
   zip.directories_to_zip CORE_DLL_DIR
   zip.output_file = file
