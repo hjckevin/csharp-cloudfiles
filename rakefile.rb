@@ -50,6 +50,10 @@ end
 
 desc "Create NuGet package"
 task :nuget do |n|
+  file = "csharp-cloudfiles.#{RELEASE_BUILD_NUMBER}.nupkg"
+  fullpath = File.join(BUILDS_DIR,file)
+  File.delete(fullpath) if File.exists?(fullpath)
+  puts "CREATING #{fullpath}"
   system(".nuget/NuGet.exe pack csharp-cloudfiles.nuspec -Version #{RELEASE_BUILD_NUMBER} -OutputDirectory #{BUILDS_DIR}")
 end
 
@@ -69,9 +73,9 @@ end
 desc "Run integration tests"
 nunit :integration_tests => :compile  do |nunit|
   if ENV['CRED_FILE_LOC']
-	puts "ENVIRONMENT VARIABLE: #{ENV['CRED_FILE_LOC']}"
+    puts "ENVIRONMENT VARIABLE: #{ENV['CRED_FILE_LOC']}"
     puts "copying file from #{ENV['CRED_FILE_LOC']} to #{INTEGRATION_TESTS_CONFIG_FILE}"
-	copy(ENV['CRED_FILE_LOC'], INTEGRATION_TESTS_CONFIG_FILE)
+    copy(ENV['CRED_FILE_LOC'], INTEGRATION_TESTS_CONFIG_FILE)
   end
   
 
@@ -102,13 +106,12 @@ zip do |zip|
   puts "CREATING ZIP"
   Dir.mkdir BUILDS_DIR if !File.directory?(BUILDS_DIR)  
   file = "#{ZIP_FILE_PREFIX}-bin-#{RELEASE_BUILD_NUMBER}.zip"
-  File.delete(file) if File.exists?(file)
+  fullpath = File.join(BUILDS_DIR,file)
+  File.delete(fullpath) if File.exists?(fullpath)
 
   zip.output_path = BUILDS_DIR
   zip.directories_to_zip CORE_DLL_DIR
   zip.output_file = file
-
-  puts "ZIP FILE #{file} CREATED SUCCESSFULLY"
 end
 
 ##################
