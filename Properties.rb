@@ -1,6 +1,6 @@
 ABSOLUTE_PATH = File.expand_path(File.dirname(__FILE__))
 
-COMPILE_TARGET = 'release'
+COMPILE_TARGET = 'debug'
 INTEGRATION_TESTS_CONFIG_FILE = File.join(ABSOLUTE_PATH, 'Rackspace.CloudFiles.Integration.Tests','bin',COMPILE_TARGET,'Credentials.config')
 PRODUCT = "csharp-cloudfiles"
 COPYRIGHT = "Copyright (c) 2008, 2009 2010, 2011, Rackspace Managed Hosting.  All Rights Reserved";
