@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{91EBCB65-912A-46E7-AD80-155488E450EF}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Rackspace.Cloudfiles</RootNamespace>
+    <AssemblyName>Rackspace.Cloudfiles</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="nunit.framework, Version=2.6.0.12017, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\nunit\nunit.framework.dll</HintPath>
+    </Reference>
+    <Reference Include="csharp-swift, Version=1.0.4426.38633, Culture=neutral, PublicKeyToken=null">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>lib\csharp-client\csharp-swift.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="CF_Account.cs" />
+    <Compile Include="CF_Container.cs" />
+    <Compile Include="CF_Object.cs" />
+    <Compile Include="Connection.cs" />
+    <Compile Include="CF_Connection.cs" />
+    <Compile Include="CF_Client.cs" />
+    <Compile Include="Common.cs" />
+    <Compile Include="UserCredentials.cs" />
+    <Compile Include="Exceptions.cs" />
+    <Compile Include="tests\UnitTestCF_Connection.cs" />
+    <Compile Include="tests\FakeClient.cs" />
+    <Compile Include="tests\UnitTestCF_Client.cs" />
+    <Compile Include="tests\UnitTestCommon.cs" />
+    <Compile Include="tests\UnitTestCF_Account.cs" />
+    <Compile Include="tests\UnitTestCF_Container.cs" />
+    <Compile Include="tests\UnitTestCF_Object.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="lib\" />
+    <Folder Include="tests\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="lib\csharp-client\csharp-swift.dll" />
+    <None Include="lib\csharp-client\csharp-swift.dll.config" />
+    <None Include="lib\nunit\nunit.framework.dll" />
+  </ItemGroup>
+</Project>
