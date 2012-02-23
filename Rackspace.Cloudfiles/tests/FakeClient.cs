@@ -12,13 +12,14 @@ namespace Rackspace.Cloudfiles
 		private int _retries = 0;
 		public override AuthResponse GetAuth(string url, string user, string key, Dictionary<string, string> headers, Dictionary<string, string> query, bool snet)
 		{
-            switch (key)
+		    Dictionary<string, string> rheaders;
+		    switch (key)
 			{
 			    case "fail-auth":
 				    if (this._retries == 1)
 				    {
 					    this._retries = 0;
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("x-auth-token", "foo");
 				        rheaders.Add("x-storage-url", "https://foo.com");
 				        rheaders.Add("x-cdn-management-url", "https://foo.com");
@@ -33,26 +34,30 @@ namespace Rackspace.Cloudfiles
 				    throw new ClientException("FAIL!", 500);
 			    case "auth":
 			    default:
-				    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+				    rheaders = new Dictionary<string, string>();
 				    rheaders.Add("x-auth-token", "foo");
 				    rheaders.Add("x-storage-url", "https://foo.com");
 				    rheaders.Add("x-cdn-management-url", "https://foo.com");
 				    return new AuthResponse(rheaders, "Foo", 201);
 			}
 		}
-		public override AccountResponse GetAccount (string url, string token, Dictionary<string, string> headers, Dictionary<string, string> query, bool full_listing)
-		{
-            switch (token)
+
+	    public override AccountResponse GetAccount (string url, string token, Dictionary<string, string> headers, Dictionary<string, string> query, bool full_listing)
+	    {
+	        List<Dictionary<string, string>> containers;
+	        Dictionary<string, string> container;
+	        Dictionary<string, string> rheaders;
+	        switch (token)
 			{
 			    case "fail-get-account":
 				    if (this._retries == 1)
 				    {
 					    this._retries = 0;
-	                    List<Dictionary<string, string>> containers = new List<Dictionary<string, string>>();
-					    Dictionary<string, string> container = new Dictionary<string, string>();
+	                    containers = new List<Dictionary<string, string>>();
+					    container = new Dictionary<string, string>();
 					    container.Add("name", "foo");
 					    containers.Add(container);
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("x-account-container-count", "1");
 				        rheaders.Add("x-account-object-count", "1");
 				        rheaders.Add("x-account-bytes-used", "1");
@@ -72,27 +77,29 @@ namespace Rackspace.Cloudfiles
 				    throw new ClientException("FAIL!", -1);
 			    case "get-account":
 			    default:
-	                    List<Dictionary<string, string>> containers = new List<Dictionary<string, string>>();
-					    Dictionary<string, string> container = new Dictionary<string, string>();
+	                    containers = new List<Dictionary<string, string>>();
+					    container = new Dictionary<string, string>();
 					    container.Add("name", "foo");
 					    containers.Add(container);
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("x-account-container-count", "1");
 				        rheaders.Add("x-account-object-count", "1");
 				        rheaders.Add("x-account-bytes-used", "1");
 				        rheaders.Add("x-account-meta-foo", "foo");
 				        return new AccountResponse(rheaders, "Foo", 200, containers);  
 			}
-		}
-		public override AccountResponse HeadAccount (string url, string token, Dictionary<string, string> headers, Dictionary<string, string> query)
-		{
-			switch (token)
+	    }
+
+	    public override AccountResponse HeadAccount (string url, string token, Dictionary<string, string> headers, Dictionary<string, string> query)
+	    {
+	        Dictionary<string, string> rheaders;
+	        switch (token)
 			{
 			    case "fail-head-account":
 				    if (this._retries == 1)
 				    {
 					    this._retries = 0;
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("x-account-container-count", "1");
 				        rheaders.Add("x-account-object-count", "1");
 				        rheaders.Add("x-account-bytes-used", "1");
@@ -111,7 +118,7 @@ namespace Rackspace.Cloudfiles
 				    throw new ClientException("FAIL!", -1);
 			    case "head-account":
 			    default:
-				    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+				    rheaders = new Dictionary<string, string>();
 				    rheaders.Add("x-account-container-count", "1");
 				    rheaders.Add("x-account-object-count", "1");
 				    rheaders.Add("x-account-bytes-used", "1");
@@ -119,8 +126,9 @@ namespace Rackspace.Cloudfiles
 					rheaders.Add("blah", "foo");
 				    return new AccountResponse(rheaders, "Foo", 201, null);
 			}
-		}
-		public override AccountResponse PostAccount (string url, string token, Dictionary<string, string> headers, Dictionary<string, string> query)
+	    }
+
+	    public override AccountResponse PostAccount (string url, string token, Dictionary<string, string> headers, Dictionary<string, string> query)
 		{
 			switch (token)
 			{
@@ -148,17 +156,20 @@ namespace Rackspace.Cloudfiles
 		}
 		public override ContainerResponse GetContainer (string url, string token, string container, Dictionary<string, string> headers, Dictionary<string, string> query, bool full_listing)
 		{
-            switch (token)
+		    List<Dictionary<string, string>> objects;
+		    Dictionary<string, string> robject;
+		    Dictionary<string, string> rheaders;
+		    switch (token)
 			{
 			    case "fail-get-container":
 				    if (this._retries == 1)
 				    {
 					    this._retries = 0;
-					    List<Dictionary<string, string>> objects = new List<Dictionary<string, string>>();
-				        Dictionary<string, string> robject = new Dictionary<string, string>();
+					    objects = new List<Dictionary<string, string>>();
+				        robject = new Dictionary<string, string>();
 					    robject.Add("name", "foo");
 					    objects.Add(robject);
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("x-container-object-count", "1");
 				        rheaders.Add("x-container-bytes-used", "1");
 				        rheaders.Add("x-container-meta-foo", "foo");
@@ -179,26 +190,28 @@ namespace Rackspace.Cloudfiles
 				    throw new ClientException("FAIL!", -1);
 			    case "get-container":
 			    default:
-					    List<Dictionary<string, string>> objects = new List<Dictionary<string, string>>();
-				        Dictionary<string, string> robject = new Dictionary<string, string>();
+					    objects = new List<Dictionary<string, string>>();
+				        robject = new Dictionary<string, string>();
 					    robject.Add("name", "foo");
 					    objects.Add(robject);
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("x-container-object-count", "1");
 				        rheaders.Add("x-container-bytes-used", "1");
 				        rheaders.Add("x-container-meta-foo", "foo");
 				        return new ContainerResponse(rheaders, "Foo", 201, objects);    
 			}
 		}
-		public override ContainerResponse HeadContainer (string url, string token, string container, Dictionary<string, string> headers, Dictionary<string, string> query)
-		{
-            switch (token)
+
+	    public override ContainerResponse HeadContainer (string url, string token, string container, Dictionary<string, string> headers, Dictionary<string, string> query)
+	    {
+	        Dictionary<string, string> rheaders;
+	        switch (token)
 			{
 			    case "fail-head-container":
 				    if (this._retries == 1)
 				    {
 					    this._retries = 0;
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("x-container-object-count", "1");
 				        rheaders.Add("x-container-bytes-used", "1");
 				        rheaders.Add("x-container-meta-foo", "foo");
@@ -213,7 +226,7 @@ namespace Rackspace.Cloudfiles
 				    if (this._retries == 1)
 				    {
 					    this._retries = 0;
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("x-cdn-uri", "http://foo.com");
 				        rheaders.Add("x-cdn-ssl-uri", "https://foo.com");
 				        rheaders.Add("x-cdn-streaming-uri", "http://foo.com");
@@ -236,7 +249,7 @@ namespace Rackspace.Cloudfiles
 			    case "fail-timeout":
 				    throw new ClientException("FAIL!", -1);
 			    case "head-cdn-container":
-				    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+				    rheaders = new Dictionary<string, string>();
 				    rheaders.Add("x-cdn-uri", "http://foo.com");
 				    rheaders.Add("x-cdn-ssl-uri", "https://foo.com");
 				    rheaders.Add("x-cdn-streaming-uri", "http://foo.com");
@@ -252,8 +265,9 @@ namespace Rackspace.Cloudfiles
 				    jheaders.Add("x-container-meta-foo", "foo");
 				    return new ContainerResponse(jheaders, "Foo", 201, null);
 			}
-		}
-		public override ContainerResponse PostContainer (string url, string token, string container, Dictionary<string, string> headers, Dictionary<string, string> query)
+	    }
+
+	    public override ContainerResponse PostContainer (string url, string token, string container, Dictionary<string, string> headers, Dictionary<string, string> query)
 		{
             switch (token)
 			{
@@ -342,13 +356,14 @@ namespace Rackspace.Cloudfiles
 			Stream stream = new MemoryStream();
 			stream.Write(UnicodeEncoding.UTF8.GetBytes("a"), 0, 1);
 			stream.Seek(0, SeekOrigin.Begin);
-            switch (token)
+		    Dictionary<string, string> rheaders;
+		    switch (token)
 			{
 			    case "fail-get-object":
 				    if (this._retries == 1)
 				    {
 					    this._retries = 0;
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("content-length", "1");
 				        rheaders.Add("content-type", "foo");
 				        rheaders.Add("x-object-meta-foo", "foo");
@@ -370,7 +385,7 @@ namespace Rackspace.Cloudfiles
 				    throw new ClientException("FAIL!", -1);
 			    case "get-object":
 			    default:
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("content-length", "1");
 				        rheaders.Add("content-type", "foo");
 				        rheaders.Add("x-object-meta-foo", "foo");
@@ -380,13 +395,14 @@ namespace Rackspace.Cloudfiles
 		}
 		public override ObjectResponse HeadObject (string url, string token, string container, string name, Dictionary<string, string> headers, Dictionary<string, string> query)
 		{
-            switch (token)
+		    Dictionary<string, string> rheaders;
+		    switch (token)
 			{
 			    case "fail-head-object":
 				    if (this._retries == 1)
 				    {
 					    this._retries = 0;
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("content-length", "1");
 				        rheaders.Add("content-type", "foo");
 				        rheaders.Add("x-object-meta-foo", "foo");
@@ -408,7 +424,7 @@ namespace Rackspace.Cloudfiles
 				    throw new ClientException("FAIL!", -1);
 			    case "head-object":
 			    default:
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("content-length", "1");
 				        rheaders.Add("content-type", "foo");
 				        rheaders.Add("x-object-meta-foo", "foo");
@@ -416,7 +432,8 @@ namespace Rackspace.Cloudfiles
 				        return new ObjectResponse(rheaders, "Foo", 200, null);  
 			}
 		}
-		public override ObjectResponse PostObject (string url, string token, string container, string name, Dictionary<string, string> headers, Dictionary<string, string> query)
+
+	    public override ObjectResponse PostObject (string url, string token, string container, string name, Dictionary<string, string> headers, Dictionary<string, string> query)
 		{
             switch (token)
 			{
@@ -504,17 +521,20 @@ namespace Rackspace.Cloudfiles
 		}
 		public override AccountResponse GetCDNAccount (string url, string token, Dictionary<string, string> headers, Dictionary<string, string> query, bool full_listing)
 		{
-            switch (token)
+		    List<Dictionary<string, string>> objects;
+		    Dictionary<string, string> robject;
+		    Dictionary<string, string> rheaders;
+		    switch (token)
 			{
 			    case "fail-get-container":
 				    if (this._retries == 1)
 				    {
 					    this._retries = 0;
-					    List<Dictionary<string, string>> objects = new List<Dictionary<string, string>>();
-				        Dictionary<string, string> robject = new Dictionary<string, string>();
+					    objects = new List<Dictionary<string, string>>();
+				        robject = new Dictionary<string, string>();
 					    robject.Add("name", "foo");
 					    objects.Add(robject);
-					    Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					    rheaders = new Dictionary<string, string>();
 				        rheaders.Add("x-container-object-count", "1");
 				        rheaders.Add("x-container-bytes-used", "1");
 				        rheaders.Add("x-container-meta-foo", "foo");
@@ -533,11 +553,11 @@ namespace Rackspace.Cloudfiles
 				    throw new ClientException("FAIL!", -1);
 			    case "get-container":
 			    default:
-					List<Dictionary<string, string>> objects = new List<Dictionary<string, string>>();
-				    Dictionary<string, string> robject = new Dictionary<string, string>();
+					objects = new List<Dictionary<string, string>>();
+				    robject = new Dictionary<string, string>();
 					robject.Add("name", "foo");
 					objects.Add(robject);
-					Dictionary<string, string> rheaders = new Dictionary<string, string>();
+					rheaders = new Dictionary<string, string>();
 				    rheaders.Add("x-container-object-count", "1");
 				    rheaders.Add("x-container-bytes-used", "1");
 				    rheaders.Add("x-container-meta-foo", "foo");
