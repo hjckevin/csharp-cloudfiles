@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rackspace.Cloudfiles", "Rackspace.Cloudfiles\Rackspace.Cloudfiles.csproj", "{91EBCB65-912A-46E7-AD80-155488E450EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Rackspace.Cloudfiles.Tests", "..\tests\Rackspace.Cloudfiles.Tests\Rackspace.Cloudfiles.Tests.csproj", "{2249577F-8FDB-42CD-BE0D-DD432ACA7E3E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{91EBCB65-912A-46E7-AD80-155488E450EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{91EBCB65-912A-46E7-AD80-155488E450EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{91EBCB65-912A-46E7-AD80-155488E450EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{91EBCB65-912A-46E7-AD80-155488E450EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2249577F-8FDB-42CD-BE0D-DD432ACA7E3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2249577F-8FDB-42CD-BE0D-DD432ACA7E3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2249577F-8FDB-42CD-BE0D-DD432ACA7E3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2249577F-8FDB-42CD-BE0D-DD432ACA7E3E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Rackspace.Cloudfiles.csproj
+	EndGlobalSection
+EndGlobal

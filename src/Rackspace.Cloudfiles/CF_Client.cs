@@ -1,11 +1,6 @@
 using System;
-using System.Net;
-using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using System.Xml;
-using System.Web;
-using System.Text;
 using Openstack.Swift;
 namespace Rackspace.Cloudfiles
 {

@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-namespace Rackspace.Cloudfiles
+
+namespace Rackspace.Cloudfiles.Tests
 {
 	[TestFixture]
 	public class UnitTestCF_Container

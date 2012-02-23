@@ -1,15 +1,13 @@
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using Openstack.Swift;
-using Rackspace.Cloudfiles;
-namespace Rackspace.Cloudfiles
+
+namespace Rackspace.Cloudfiles.Tests
 {
-	public class FakeClient : Rackspace.Cloudfiles.Client 
+	public class FakeClient : Client 
 	{
-		public FakeClient () { }
-		private int _retries = 0;
+	    private int _retries;
 		public override AuthResponse GetAuth(string url, string user, string key, Dictionary<string, string> headers, Dictionary<string, string> query, bool snet)
 		{
 		    Dictionary<string, string> rheaders;
