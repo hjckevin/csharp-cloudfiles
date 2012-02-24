@@ -1,10 +1,10 @@
-using System;
 using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Openstack.Swift;
-namespace Rackspace.Cloudfiles.Unit.Tests
+
+namespace Rackspace.Cloudfiles.Tests
 {
 	[TestFixture]
 	public class TestCF_Client

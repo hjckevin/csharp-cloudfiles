@@ -1,7 +1,8 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-namespace Rackspace.Cloudfiles.Unit.Tests
+
+namespace Rackspace.Cloudfiles.Tests
 {
 	[TestFixture]
 	public class TestCommon

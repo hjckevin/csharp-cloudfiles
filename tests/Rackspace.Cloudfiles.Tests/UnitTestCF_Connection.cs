@@ -1,6 +1,6 @@
-using System;
 using NUnit.Framework;
-namespace Rackspace.Cloudfiles
+
+namespace Rackspace.Cloudfiles.Tests
 {
     [TestFixture]
 	public class UnitTestCF_Connection
