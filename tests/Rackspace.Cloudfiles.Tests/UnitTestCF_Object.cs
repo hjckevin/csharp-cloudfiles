@@ -8,6 +8,7 @@ namespace Rackspace.Cloudfiles.Tests
 	public class UnitTestCF_Object
 	{
 		[Test]
+        [Category("OnlyWorkWithMono")]
 		public void TestSaveToFile()
 		{
 			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -24,6 +25,7 @@ namespace Rackspace.Cloudfiles.Tests
 			File.Delete(file_name);
 		}
 		[Test]
+        [Category("OnlyWorkWithMono")]
 		public void TestFailSaveToObject()
 		{
 			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
