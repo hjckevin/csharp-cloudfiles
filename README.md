@@ -10,9 +10,11 @@ solution for media content.
 ## Contributing
 
 1. Your code **WILL NOT** be accepted without tests.  period.
-2. Please make sure your autocrlf setting is false
+2. Please make sure your autocrlf setting is true
 
-	git config core.autocrlf false
+	git config core.autocrlf true
+	
+   We have to do this because one of the primary maintainers is using Mono (Linux) to develop this library.
 
 3. [Fork](http://help.github.com/fork-a-repo/) the repository, clone, code, push, and then issue a [pull request](http://help.github.com/send-pull-requests/)
 
