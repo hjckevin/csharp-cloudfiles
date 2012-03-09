@@ -7,6 +7,10 @@ Cloud Files is a reliable, scalable and affordable web-based storage hosting for
 Cloud Files is the first and only cloud service that leverages a tier one CDN provider to create such an easy and complete storage-to-delivery 
 solution for media content.
 
+## NuGet
+
+PM> Install-Package csharp-cloudfiles
+
 ## Contributing
 
 1. Your code **WILL NOT** be accepted without tests.  period.
@@ -30,10 +34,6 @@ The [mailing list](http://groups.google.com/group/csharp-cloudfiles)
 
 Please read the [wiki](http://wiki.github.com/rackspace/csharp-cloudfiles/) about what information is best to help people fix your issues, 
 then create an issue on the [issues tab](http://github.com/rackspace/csharp-cloudfiles/issues).
-
-## NuGet
-
-PM> Install-Package csharp-cloudfiles
 
 ## Getting dll and using in your project
 
