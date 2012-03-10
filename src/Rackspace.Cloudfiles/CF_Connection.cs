@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Openstack.Swift;
+using OpenStack.Swift;
 namespace Rackspace.Cloudfiles
 {
 	/// <summary>

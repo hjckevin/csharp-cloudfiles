@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.IO;
-using Openstack.Swift;
+using OpenStack.Swift;
 namespace Rackspace.Cloudfiles.Depricated
 {
 	[Obsolete]
@@ -11,8 +11,8 @@ namespace Rackspace.Cloudfiles.Depricated
 		public const string US_AUTH_URL = "https://auth.api.rackspacecloud.com/v1.0";
         public const string UK_AUTH_URL = "https://lon.auth.api.rackspacecloud.com/v1.0";
 		public const string DEFAULT_AUTH_URL = US_AUTH_URL;
-		private Openstack.Swift.ProgressCallback callbacks = null;
-		private Openstack.Swift.OperationCompleteCallback operation_complete_callback = null;
+		private OpenStack.Swift.ProgressCallback callbacks = null;
+		private OpenStack.Swift.OperationCompleteCallback operation_complete_callback = null;
 		private string username = null;
 		private string api_key = null;
 		private string auth_token = null;
@@ -109,7 +109,7 @@ namespace Rackspace.Cloudfiles.Depricated
 			return !string.IsNullOrEmpty(CdnMangementUrl);
 		}
 		[Obsolete]
-		public void AddProgessWatcher(Openstack.Swift.ProgressCallback 
+		public void AddProgessWatcher(OpenStack.Swift.ProgressCallback 
 		                              callback)
 		{
 			if (this.callbacks == null)
@@ -122,7 +122,7 @@ namespace Rackspace.Cloudfiles.Depricated
 			}
 		}
 		[Obsolete]
-		public void AddOperationCompleteCallback(Openstack.Swift.
+		public void AddOperationCompleteCallback(OpenStack.Swift.
 		                                         OperationCompleteCallback 
 		                                         callback)
 		{

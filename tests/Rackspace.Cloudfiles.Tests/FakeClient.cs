@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-using Openstack.Swift;
+using OpenStack.Swift;
 
 namespace Rackspace.Cloudfiles.Tests
 {

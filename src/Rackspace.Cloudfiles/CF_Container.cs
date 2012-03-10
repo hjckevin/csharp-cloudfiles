@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Openstack.Swift;
+using OpenStack.Swift;
 namespace Rackspace.Cloudfiles
 {
 	/// <summary>
@@ -228,7 +228,7 @@ namespace Rackspace.Cloudfiles
 				this._reload_properties = false;
 				return res;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -296,7 +296,7 @@ namespace Rackspace.Cloudfiles
 					return false;
 				}
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -383,7 +383,7 @@ namespace Rackspace.Cloudfiles
 			{
 			    this._client.HeadObject(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this.Name, object_name, _headers, new Dictionary<string, string>());
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -513,7 +513,7 @@ namespace Rackspace.Cloudfiles
 				}
 				return objects;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -637,7 +637,7 @@ namespace Rackspace.Cloudfiles
 			{
 				return this._client.GetContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this._name, headers, queryp, full_listing).Objects;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -698,7 +698,7 @@ namespace Rackspace.Cloudfiles
 			    this._client.DeleteObject(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this.Name, object_name, headers, new Dictionary<string, string>());
 				this._reload_properties = true;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -793,7 +793,7 @@ namespace Rackspace.Cloudfiles
 			    this._client.PostContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken.ToString(), this.Name, headers, new Dictionary<string, string>());
 				this._reload_properties = true;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -863,7 +863,7 @@ namespace Rackspace.Cloudfiles
 			    this._client.PostContainer(this._conn.UserCreds.CdnMangementUrl.ToString(), this._conn.UserCreds.AuthToken.ToString(), this.Name, headers, new Dictionary<string, string>());
 				this._reload_properties = true;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -972,7 +972,7 @@ namespace Rackspace.Cloudfiles
 				this._cdn_log_retention = log_retention;
 				this._cdn_enabled = true;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -1037,7 +1037,7 @@ namespace Rackspace.Cloudfiles
 			    this._client.PostContainer(this._conn.UserCreds.CdnMangementUrl.ToString(), this._conn.UserCreds.AuthToken.ToString(), this.Name, headers, new Dictionary<string, string>());
 				this._cdn_enabled = false;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{

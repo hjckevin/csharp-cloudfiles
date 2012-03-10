@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Xml;
-using Openstack.Swift;
+using OpenStack.Swift;
 namespace Rackspace.Cloudfiles
 {
 	public class CF_Client : Client

@@ -2,7 +2,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using NUnit.Framework;
-using Openstack.Swift;
+using OpenStack.Swift;
 
 namespace Rackspace.Cloudfiles.Tests
 {

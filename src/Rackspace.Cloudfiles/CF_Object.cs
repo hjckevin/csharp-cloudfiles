@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Collections.Generic;
 using System.Security.Cryptography;
-using Openstack.Swift;
+using OpenStack.Swift;
 namespace Rackspace.Cloudfiles
 {
 	/// <summary>
@@ -237,7 +237,7 @@ namespace Rackspace.Cloudfiles
 				this._reload_properties = false;
 				return res;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -340,7 +340,7 @@ namespace Rackspace.Cloudfiles
 					}
 				}
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -453,7 +453,7 @@ namespace Rackspace.Cloudfiles
 		    {
 			    this._client.PutObject(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this._cont.Name, this.Name, data, headers, new Dictionary<string, string>());
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -515,7 +515,7 @@ namespace Rackspace.Cloudfiles
 			{
 				return this._client.GetObject(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this._cont.Name, this.Name, headers, new Dictionary<string, string>()).ObjectData;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -587,7 +587,7 @@ namespace Rackspace.Cloudfiles
 			{
 			    this._client.PostObject(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this._cont.Name, this._name, headers, new Dictionary<string, string>());
 			}
-		    catch (Openstack.Swift.ClientException e)
+		    catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -687,7 +687,7 @@ namespace Rackspace.Cloudfiles
 			{
 				this._client.DeleteObject(this._conn.UserCreds.CdnMangementUrl.ToString(), this._conn.UserCreds.AuthToken, this._cont.Name, this._name, headers, new Dictionary<string, string>());
 			}
-		    catch (Openstack.Swift.ClientException e)
+		    catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{

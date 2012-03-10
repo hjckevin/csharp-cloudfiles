@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Openstack.Swift;
+using OpenStack.Swift;
 namespace Rackspace.Cloudfiles
 {
 	/// <summary>
@@ -145,7 +145,7 @@ namespace Rackspace.Cloudfiles
 				this._reload_properties = false;
 				return res.Headers;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -225,7 +225,7 @@ namespace Rackspace.Cloudfiles
 			{
 			    this._client.PutContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, container_name, headers, new Dictionary<string, string>());
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -291,7 +291,7 @@ namespace Rackspace.Cloudfiles
 			{
 			    this._client.HeadContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, container_name, headers, new Dictionary<string, string>());
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -419,7 +419,7 @@ namespace Rackspace.Cloudfiles
 				}
 				return containers;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -539,7 +539,7 @@ namespace Rackspace.Cloudfiles
 			{
 				return this._client.GetAccount(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, headers, queryp, full_listing).Containers;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -659,7 +659,7 @@ namespace Rackspace.Cloudfiles
 			{
 				return this._client.GetCDNAccount(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, headers, queryp, full_listing).Containers;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -721,7 +721,7 @@ namespace Rackspace.Cloudfiles
 			{
 			    this._client.DeleteContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, container_name, headers, new Dictionary<string, string>());
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
@@ -818,7 +818,7 @@ namespace Rackspace.Cloudfiles
 			    this._client.PostAccount(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, headers, new Dictionary<string, string>());
 				this._reload_properties = true;
 			}
-			catch (Openstack.Swift.ClientException e)
+			catch (OpenStack.Swift.ClientException e)
 			{
 				switch (e.Status)
 				{
