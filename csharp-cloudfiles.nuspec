@@ -2,7 +2,7 @@
   <package xmlns='http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd'>
     <metadata>
       <id>csharp-cloudfiles</id>
-      <version>3.0.2</version>
+      <version>3.0.2.1</version>
       <title>csharp-cloudfiles</title>
       <authors>Jason Meridth,Conrad Weidenkeller</authors>
       <description>C# .NET API for Rackspace Cloud Files Cloud Storage</description>
@@ -13,7 +13,7 @@
       <requireLicenseAcceptance>false</requireLicenseAcceptance>
     </metadata>
     <files>
-      <file src='src\Rackspace.CloudFiles\bin\Debug\csharp-swift.dll' target='lib\net40\csharp-swift.dll'/>
+      <file src='src\Rackspace.CloudFiles\bin\Debug\OpenStack.Swift.dll' target='lib\net40\OpenStack.Swift.dll'/>
       <file src='src\Rackspace.CloudFiles\bin\Debug\Rackspace.CloudFiles.dll' target='lib\net40\Rackspace.CloudFiles.dll'/>
     </files>
   </package>
