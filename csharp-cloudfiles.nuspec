@@ -16,6 +16,6 @@
       </dependencies>
     </metadata>
     <files>
-      <file src='src\Rackspace.Cloudfiles\bin\Debug\Rackspace.Cloudfiles.dll' target='lib\net40\Rackspace.CloudFiles.dll'/>
+      <file src='src\Rackspace.Cloudfiles\bin\Debug\Rackspace.Cloudfiles.dll' target='lib\net40\Rackspace.Cloudfiles.dll'/>
     </files>
   </package>
