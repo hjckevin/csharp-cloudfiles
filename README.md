@@ -9,7 +9,7 @@ solution for media content.
 
 ## NuGet
 
-PM> Install-Package csharp-cloudfiles
+![Install-Pacakage csharp-cloudfiles](http://c42202.r2.cf0.rackcdn.com/nuget-csharp-cloudfiles.PNG)
 
 ## Contributing
 
