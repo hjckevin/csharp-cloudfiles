@@ -55,7 +55,7 @@ Reference them from your application.  Look at the examples below once you've do
 
 Visual Studio 2010 and .NET 3.5/.NET 4.0 (depending on the zip file you chose)
 
-## [Examples][https://github.com/rackspace/csharp-cloudfiles/wiki/Code-Examples] 
+## [Examples](https://github.com/rackspace/csharp-cloudfiles/wiki/Code-Examples)
 
 ## Committers
 
