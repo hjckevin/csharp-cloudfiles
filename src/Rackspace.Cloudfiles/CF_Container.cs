@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using OpenStack.Swift;
 namespace Rackspace.Cloudfiles
 {
@@ -8,6 +10,24 @@ namespace Rackspace.Cloudfiles
 	/// </summary>
 	public class CF_Container : Container
 	{
+        private readonly string _name;
+        private int _retires;
+        private int _num_retries_attempted;
+        private bool _reload_properties = true;
+	    private const bool _reload_cdn_properties = true;
+	    private bool _cdn_log_retention;
+        private bool _cdn_enabled;
+        private Uri _cdn_uri;
+        private Uri _cdn_ssl_uri;
+        private Uri _cdn_streaming_uri;
+        private Dictionary<string, string> _metadata;
+        private Dictionary<string, string> _headers;
+        private Dictionary<string, string> _cdn_headers;
+        private long _object_count = -1;
+        private long _bytes_used = -1;
+        private long _ttl = -1;
+        private readonly Client _client;
+        private readonly Connection _conn;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Rackspace.Cloudfiles.CF_Container"/> class.
 		/// </summary>
@@ -23,9 +43,9 @@ namespace Rackspace.Cloudfiles
 		public CF_Container(Connection conn, Client client, string container_name)
 		{
 			Common.ValidateContainerName(container_name);
-			this._client = client;
-			this._conn = conn;
-			this._name = container_name;
+			_client = client;
+			_conn = conn;
+			_name = container_name;
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Rackspace.Cloudfiles.CF_Container"/> class.
@@ -39,37 +59,20 @@ namespace Rackspace.Cloudfiles
 		public CF_Container (Connection conn, string container_name)
 		{
 			Common.ValidateContainerName(container_name);
-			this._client = new CF_Client();
-			this._conn = conn;
-			this._name = container_name;
+			_client = new CF_Client();
+			_conn = conn;
+			_name = container_name;
 		}
-		private string _name = null;
-		private int _retires = 0;
-		private int _num_retries_attempted = 0;
-		private bool _reload_properties = true;
-		private bool _reload_cdn_properties = true;
-		private bool _cdn_log_retention = false;
-		private bool _cdn_enabled = false;
-		private Uri _cdn_uri = null;
-		private Uri _cdn_ssl_uri = null;
-		private Uri _cdn_streaming_uri = null;
-		private Dictionary<string, string> _metadata = null;
-		private Dictionary<string, string> _headers = null;
-		private Dictionary<string, string> _cdn_headers = null;
-		private long _object_count = -1;
-		private long _bytes_used = -1;
-		private long _ttl = -1;
-		private Client _client;
-		private Connection _conn;
+		
 		/// <summary>
 		/// Gets the Container Name.
 		/// </summary>
 		/// <value>
 		/// The name.
 		/// </value>
-		public override string Name
+		public string Name
 		{
-			get { return this._name; }
+			get { return _name; }
 		}
 		/// <summary>
 		/// Gets Raw headers.
@@ -77,9 +80,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The headers.
 		/// </value>
-		public override Dictionary<string, string> Headers
+		public Dictionary<string, string> Headers
 		{
-			get { return this._reload_properties ? Common.ProcessMetadata(this._head_container().Headers)["headers"] : this._headers; }
+			get { return _reload_properties ? Common.ProcessMetadata(_head_container().Headers)["headers"] : _headers; }
 		}
 		/// <summary>
 		/// Gets the cdn headers.
@@ -87,9 +90,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The cdn headers.
 		/// </value>
-		public override Dictionary<string, string> CdnHeaders
+		public Dictionary<string, string> CdnHeaders
 		{
-			get { return this._reload_cdn_properties ? (this._head_cdn_container() ? this._cdn_headers : null) : this._cdn_headers; }
+			get { return (_head_cdn_container() ? _cdn_headers : null); }
 		}
 		/// <summary>
 		/// Gets the metadata.
@@ -97,9 +100,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The metadata.
 		/// </value>
-		public override Dictionary<string, string> Metadata
+		public Dictionary<string, string> Metadata
 		{
-			get { return this._reload_properties ? Common.ProcessMetadata(this._head_container().Headers)["metadata"] : this._metadata; }
+			get { return _reload_properties ? Common.ProcessMetadata(_head_container().Headers)["metadata"] : _metadata; }
 		}
 		/// <summary>
 		/// Gets the object count.
@@ -107,9 +110,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The object count.
 		/// </value>
-		public override long ObjectCount
+		public long ObjectCount
 		{
-			get { return this._reload_properties ? long.Parse(this._head_container().Headers["x-container-object-count"]) : this._object_count; }
+			get { return _reload_properties ? long.Parse(_head_container().Headers["x-container-object-count"]) : _object_count; }
 		}
 		/// <summary>
 		/// Gets the bytes used.
@@ -117,9 +120,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The bytes used.
 		/// </value>
-		public override long BytesUsed
+		public long BytesUsed
 		{
-			get { return this._reload_properties ? long.Parse(this._head_container().Headers["x-container-bytes-used"]) : this._bytes_used; }
+			get { return _reload_properties ? long.Parse(_head_container().Headers["x-container-bytes-used"]) : _bytes_used; }
 		}
 		/// <summary>
 		/// Gets the TT.
@@ -127,9 +130,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The TT.
 		/// </value>
-		public override long TTL
+		public long TTL
 		{
-			get { return this._reload_cdn_properties ? (this._head_cdn_container() ? this._ttl : -1) : this._ttl; }
+			get { return (_head_cdn_container() ? _ttl : -1); }
 		}
 		/// <summary>
 		/// Gets or sets the retries.
@@ -137,10 +140,10 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The retries.
 		/// </value>
-		public override int Retries
+		public int Retries
 		{
-			get { return this._retires; }
-			set { this._retires = value; }
+			get { return _retires; }
+			set { _retires = value; }
 		}
 		/// <summary>
 		/// Gets the storage URL.
@@ -148,9 +151,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The storage URL.
 		/// </value>
-		public override Uri StorageUrl
+		public Uri StorageUrl
 		{
-			get { return new Uri(this._conn.UserCreds.StorageUrl.ToString() + this.Name); }
+			get { return new Uri(_conn.UserCreds.StorageUrl + Name); }
 		}
 		/// <summary>
 		/// Gets the cdn management URL.
@@ -158,9 +161,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The cdn management URL.
 		/// </value>
-		public override Uri CdnManagementUrl
+		public Uri CdnManagementUrl
 		{
-			get { return this._conn.HasCDN ? new Uri(this._conn.UserCreds.CdnMangementUrl.ToString() + this.Name) : null; }
+			get { return _conn.HasCDN ? new Uri(_conn.UserCreds.CdnMangementUrl + Name) : null; }
 		}
 		/// <summary>
 		/// Gets the cdn URI.
@@ -168,9 +171,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The cdn URI.
 		/// </value>
-		public override Uri CdnUri
+		public Uri CdnUri
 		{
-			get { return this._reload_cdn_properties ? (this._head_cdn_container() ? this._cdn_uri : null) : this._cdn_uri; }
+			get { return (_head_cdn_container() ? _cdn_uri : null); }
 		}
 		/// <summary>
 		/// Gets the cdn ssl URI.
@@ -178,9 +181,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The cdn ssl URI.
 		/// </value>
-		public override Uri CdnSslUri
+		public Uri CdnSslUri
 		{
-			get { return this._reload_cdn_properties ? (this._head_cdn_container() ? this._cdn_ssl_uri : null) : this._cdn_ssl_uri; }
+			get { return (_head_cdn_container() ? _cdn_ssl_uri : null); }
 		}
 		/// <summary>
 		/// Gets the cdn streaming URI.
@@ -188,9 +191,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The cdn streaming URI.
 		/// </value>
-		public override Uri CdnStreamingUri
+		public Uri CdnStreamingUri
 		{
-			get { return this._reload_cdn_properties ? (this._head_cdn_container() ? this._cdn_streaming_uri : null) : this._cdn_streaming_uri; }
+			get { return (_head_cdn_container() ? _cdn_streaming_uri : null); }
 		}
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Rackspace.Cloudfiles.CF_Container"/> cdn enabled.
@@ -198,9 +201,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// <c>true</c> if cdn enabled; otherwise, <c>false</c>.
 		/// </value>
-		public override bool CdnEnabled
+		public bool CdnEnabled
 		{
-			get { return this._reload_cdn_properties ? (this._head_cdn_container() ? this._cdn_enabled : false) : this._cdn_enabled; }
+			get { return (_head_cdn_container() && _cdn_enabled); }
 		}
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Rackspace.Cloudfiles.CF_Container"/> cdn log retention.
@@ -208,46 +211,45 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// <c>true</c> if cdn log retention; otherwise, <c>false</c>.
 		/// </value>
-		public override bool CdnLogRetention
+		public bool CdnLogRetention
 		{
-			get { return this._reload_cdn_properties ? (this._head_cdn_container() ? this._cdn_log_retention : false) : this._cdn_log_retention; }
+			get { return (_head_cdn_container() && _cdn_log_retention); }
 		}
 		private ContainerResponse _head_container()
 		{
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-			this._client.Timeout = this._conn.Timeout;
+			var headers = new Dictionary<string, string> {{"user-agent", _conn.UserAgent}};
+		    _client.Timeout = _conn.Timeout;
 		    try
 		    {
-			    ContainerResponse res = this._client.HeadContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this.Name, headers, new Dictionary<string, string>());
-				this._object_count = long.Parse(res.Headers["x-container-object-count"]);
-				this._bytes_used = long.Parse(res.Headers["x-container-bytes-used"]);
-				Dictionary<string, Dictionary<string, string>> processed_headers = Common.ProcessMetadata(res.Headers);
-				this._headers = processed_headers["headers"];
-				this._metadata = processed_headers["metadata"];
-				this._reload_properties = false;
+			    var res = _client.HeadContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, Name, headers, new Dictionary<string, string>());
+				_object_count = long.Parse(res.Headers["x-container-object-count"]);
+				_bytes_used = long.Parse(res.Headers["x-container-bytes-used"]);
+				var processed_headers = Common.ProcessMetadata(res.Headers);
+				_headers = processed_headers["headers"];
+				_metadata = processed_headers["metadata"];
+				_reload_properties = false;
 				return res;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this._head_container();
+						    ++ _num_retries_attempted;
+						    return _head_container();
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this._head_container();
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return _head_container();
 					    }
 					    else
 					    {
@@ -256,39 +258,38 @@ namespace Rackspace.Cloudfiles
 				    case 404:
 					     throw new ContainerNotFoundException();
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this._head_container();
+						    ++ _num_retries_attempted;
+						    return _head_container();
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		private bool _head_cdn_container()
 		{
 		    try
 			{
-				if (this._conn.HasCDN)
+				if (_conn.HasCDN)
 				{
-				    Dictionary<string, string> headers = new Dictionary<string, string>();
-	        		headers["user-agent"] = this._conn.UserAgent;
-			        this._client.Timeout = this._conn.Timeout;
-			        ContainerResponse res = this._client.HeadContainer(this._conn.UserCreds.CdnMangementUrl.ToString(), this._conn.UserCreds.AuthToken, this.Name, headers, new Dictionary<string, string>());
-				    this._cdn_uri = new Uri(res.Headers["x-cdn-uri"]);
-				    this._cdn_ssl_uri = new Uri(res.Headers["x-cdn-ssl-uri"]);
-				    this._cdn_streaming_uri = new Uri(res.Headers["x-cdn-streaming-uri"]);
-					this._ttl = long.Parse(res.Headers["x-ttl"]);
-					this._cdn_enabled = bool.Parse(res.Headers["x-cdn-enabled"]);
-					this._cdn_log_retention = bool.Parse(res.Headers["x-log-retention"]);
-					this._cdn_headers = res.Headers;
+				    var headers = new Dictionary<string, string> {{"user-agent", _conn.UserAgent}};
+				    _client.Timeout = _conn.Timeout;
+			        var res = _client.HeadContainer(_conn.UserCreds.CdnMangementUrl.ToString(), _conn.UserCreds.AuthToken, Name, headers, new Dictionary<string, string>());
+				    _cdn_uri = new Uri(res.Headers["x-cdn-uri"]);
+				    _cdn_ssl_uri = new Uri(res.Headers["x-cdn-ssl-uri"]);
+				    _cdn_streaming_uri = new Uri(res.Headers["x-cdn-streaming-uri"]);
+					_ttl = long.Parse(res.Headers["x-ttl"]);
+					_cdn_enabled = bool.Parse(res.Headers["x-cdn-enabled"]);
+					_cdn_log_retention = bool.Parse(res.Headers["x-log-retention"]);
+					_cdn_headers = res.Headers;
 					return true;
 				}
 				else
@@ -296,26 +297,26 @@ namespace Rackspace.Cloudfiles
 					return false;
 				}
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this._head_cdn_container();
+						    ++ _num_retries_attempted;
+						    return _head_cdn_container();
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this._head_cdn_container();
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return _head_cdn_container();
 					    }
 					    else
 					    {
@@ -324,20 +325,20 @@ namespace Rackspace.Cloudfiles
 				    case 404:
 					    return false;
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this._head_cdn_container();
+						    ++ _num_retries_attempted;
+						    return _head_cdn_container();
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
@@ -352,14 +353,14 @@ namespace Rackspace.Cloudfiles
 		/// <exception cref='ArgumentNullException'>
 		/// Is thrown when an argument passed to a method is invalid because it is <see langword="null" /> .
 		/// </exception>
-	    public override StorageObject CreateObject(string object_name)
+	    public StorageObject CreateObject(string object_name)
 		{
 			if (object_name == null)
 			{
 				throw new ArgumentNullException();
 			}
 			Common.ValidateObjectName(object_name);
-			return new CF_Object(this._conn, this._name, object_name);
+			return new CF_Object(_conn, _name, object_name);
 		}
 		/// <summary>
 		/// Creates the Object.
@@ -370,39 +371,37 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="StorageObject"/>
 		/// </returns>
-		public override StorageObject GetObject(string object_name)
+		public StorageObject GetObject(string object_name)
 		{
 			if (object_name == null)
 			{
 				throw new ArgumentNullException();
 			}
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
 			Common.ValidateObjectName(object_name);
 			try
 			{
-			    this._client.HeadObject(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this.Name, object_name, _headers, new Dictionary<string, string>());
+			    _client.HeadObject(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, Name, object_name, _headers, new Dictionary<string, string>());
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetObject(object_name);
+						    ++ _num_retries_attempted;
+						    return GetObject(object_name);
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this.GetObject(object_name);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return GetObject(object_name);
 					    }
 					    else
 					    {
@@ -411,22 +410,22 @@ namespace Rackspace.Cloudfiles
 				    case 404:
 					    throw new ObjectNotFoundException();
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetObject(object_name);
+						    ++ _num_retries_attempted;
+						    return GetObject(object_name);
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
-			return new CF_Object(this._conn, this._name, object_name);
+			return new CF_Object(_conn, _name, object_name);
 		}
 		/// <summary>
 		/// Gets a list of StorageObject objects.
@@ -434,9 +433,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// The objects.
 		/// </returns>
-		public override List<StorageObject> GetObjects()
+		public List<StorageObject> GetObjects()
 		{
-			return this.GetObjects(false);
+			return GetObjects(false);
 		}
 		/// <summary>
 		/// Gets a list of StorageObject objects.
@@ -447,9 +446,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<StorageObject>"/>
 		/// </returns>
-		public override List<StorageObject> GetObjects(bool full_listing)
+		public List<StorageObject> GetObjects(bool full_listing)
 		{
-			return this.GetObjects(full_listing, new Dictionary<ObjectQuery, string>());
+			return GetObjects(full_listing, new Dictionary<ObjectQuery, string>());
 		}
 		/// <summary>
 		/// Gets a list of StorageObject objects.
@@ -460,9 +459,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<StorageObject>"/>
 		/// </returns>
-		public override List<StorageObject> GetObjects(Dictionary<ObjectQuery, string> query)
+		public List<StorageObject> GetObjects(Dictionary<ObjectQuery, string> query)
 		{
-			return this.GetObjects(false, query);
+			return GetObjects(false, query);
 		}
 		/// <summary>
 		/// Gets a list of StorageObject objects.
@@ -476,17 +475,16 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<StorageObject>"/>
 		/// </returns>
-		public override List<StorageObject> GetObjects(bool full_listing, Dictionary<ObjectQuery, string> query)
+		public List<StorageObject> GetObjects(bool full_listing, Dictionary<ObjectQuery, string> query)
 		{
 			if (query == null)
 			{
 				throw new ArgumentNullException();
 			}
-			this._client.Timeout = this._conn.Timeout;
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-			Dictionary<string, string> queryp = new Dictionary<string, string>();
-			foreach (KeyValuePair<ObjectQuery, string> q in query)
+			_client.Timeout = _conn.Timeout;
+            var headers = new Dictionary<string, string> {{ "user-agent", _conn.UserAgent}};
+			var queryp = new Dictionary<string, string>();
+			foreach (var q in query)
 			{
 				switch (q.Key)
 				{
@@ -506,33 +504,28 @@ namespace Rackspace.Cloudfiles
 			}
 			try
 			{
-				List<StorageObject> objects = new List<StorageObject>();
-				foreach (Dictionary<string, string> obj in this._client.GetContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this._name, headers, queryp, full_listing).Objects)
-				{
-					objects.Add(new CF_Object(this._conn, this._name, obj["name"]));
-				}
-				return objects;
+			    return _client.GetContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, _name, headers, queryp, full_listing).Objects.Select(obj => new CF_Object(_conn, _name, obj["name"])).Cast<StorageObject>().ToList();
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetObjects(full_listing, query);
+						    ++ _num_retries_attempted;
+						    return GetObjects(full_listing, query);
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this.GetObjects(full_listing, query);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return GetObjects(full_listing, query);
 					    }
 					    else
 					    {
@@ -541,20 +534,20 @@ namespace Rackspace.Cloudfiles
 				    case 404:
 					    throw new ContainerNotFoundException();
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetObjects(full_listing, query);
+						    ++ _num_retries_attempted;
+						    return GetObjects(full_listing, query);
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
@@ -563,9 +556,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetObjectList()
+		public List<Dictionary<string, string>> GetObjectList()
 		{
-			return this.GetObjectList(false);
+			return GetObjectList(false);
 		}
 		/// <summary>
 		/// Gets a list of Dictionaries that contain storage object info.
@@ -576,9 +569,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetObjectList(bool full_listing)
+		public List<Dictionary<string, string>> GetObjectList(bool full_listing)
 		{
-			return this.GetObjectList(full_listing, new Dictionary<ObjectQuery, string>());
+			return GetObjectList(full_listing, new Dictionary<ObjectQuery, string>());
 		}
 		/// <summary>
 		/// Gets a list of Dictionaries that contain storage object info.
@@ -589,9 +582,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetObjectList(Dictionary<ObjectQuery, string> query)
+		public List<Dictionary<string, string>> GetObjectList(Dictionary<ObjectQuery, string> query)
 		{
-			return this.GetObjectList(false, query);
+			return GetObjectList(false, query);
 		}
 		/// <summary>
 		/// Gets a list of Dictionaries that contain storage object info.
@@ -605,17 +598,16 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetObjectList(bool full_listing, Dictionary<ObjectQuery, string> query)
+		public List<Dictionary<string, string>> GetObjectList(bool full_listing, Dictionary<ObjectQuery, string> query)
 		{
 			if (query == null)
 			{
 				throw new ArgumentNullException();
 			}
-			this._client.Timeout = this._conn.Timeout;
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-			Dictionary<string, string> queryp = new Dictionary<string, string>();
-			foreach (KeyValuePair<ObjectQuery, string> q in query)
+			_client.Timeout = _conn.Timeout;
+            var headers = new Dictionary<string, string> { { "user-agent", _conn.UserAgent } };
+			var queryp = new Dictionary<string, string>();
+			foreach (var q in query)
 			{
 				switch (q.Key)
 				{
@@ -635,28 +627,28 @@ namespace Rackspace.Cloudfiles
 			}
 			try
 			{
-				return this._client.GetContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this._name, headers, queryp, full_listing).Objects;
+				return _client.GetContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, _name, headers, queryp, full_listing).Objects;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetObjectList(full_listing, query);
+						    ++ _num_retries_attempted;
+						    return GetObjectList(full_listing, query);
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this.GetObjectList(full_listing, query);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return GetObjectList(full_listing, query);
 					    }
 					    else
 					    {
@@ -665,20 +657,20 @@ namespace Rackspace.Cloudfiles
 				    case 404:
 					    throw new ContainerNotFoundException();
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetObjectList(full_listing, query);
+						    ++ _num_retries_attempted;
+						    return GetObjectList(full_listing, query);
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
@@ -687,26 +679,25 @@ namespace Rackspace.Cloudfiles
 		/// <param name="object_name">
 		/// A <see cref="System.String"/>
 		/// </param>
-		public override void DeleteObject(string object_name)
+		public void DeleteObject(string object_name)
 		{
 			Common.ValidateObjectName(object_name);
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-			this._client.Timeout = this._conn.Timeout;
+			var headers = new Dictionary<string, string> {{ "user-agent", _conn.UserAgent }};
+			_client.Timeout = _conn.Timeout;
 			try
 			{
-			    this._client.DeleteObject(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, this.Name, object_name, headers, new Dictionary<string, string>());
-				this._reload_properties = true;
+			    _client.DeleteObject(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, Name, object_name, headers, new Dictionary<string, string>());
+				_reload_properties = true;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.DeleteObject(object_name);
+						    ++ _num_retries_attempted;
+						    DeleteObject(object_name);
 						    break;
 					    }
 					    else
@@ -714,11 +705,11 @@ namespace Rackspace.Cloudfiles
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    this.DeleteObject(object_name);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    DeleteObject(object_name);
 						    break;
 					    }
 					    else
@@ -728,21 +719,21 @@ namespace Rackspace.Cloudfiles
 				    case 404:
 					    throw new ObjectNotFoundException();
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.DeleteObject(object_name);
+						    ++ _num_retries_attempted;
+						    DeleteObject(object_name);
                             break;
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
@@ -754,13 +745,13 @@ namespace Rackspace.Cloudfiles
 		/// <exception cref='ArgumentNullException'>
 		/// Is thrown when an argument passed to a method is invalid because it is <see langword="null" /> .
 		/// </exception>
-		public override void AddMetadata(Dictionary<string, string> metadata)
+		public void AddMetadata(Dictionary<string, string> metadata)
 		{
 			if (metadata.Equals(null))
 			{
 				throw new ArgumentNullException();
 			}
-			Dictionary<string, string> headers = new Dictionary<string, string>();
+			var headers = new Dictionary<string, string>();
 			foreach (KeyValuePair<string, string> m in metadata)
 			{
 				if (m.Key.Contains("x-contaner-meta-"))
@@ -772,7 +763,7 @@ namespace Rackspace.Cloudfiles
 					headers.Add("x-container-meta-" + m.Key, m.Value);
 				}
 			}
-			this.AddHeaders(headers);
+			AddHeaders(headers);
 		}
 		/// <summary>
 		/// Adds Headers.
@@ -780,28 +771,28 @@ namespace Rackspace.Cloudfiles
 		/// <param name="headers">
 		/// A <see cref="Dictionary<System.String, System.String>"/>
 		/// </param>
-		public override void AddHeaders(Dictionary<string, string> headers)
+		public void AddHeaders(Dictionary<string, string> headers)
 		{
 			if (headers == null)
 			{
 				throw new ArgumentNullException();
 			}
-		    this._client.Timeout = this._conn.Timeout;
-			headers["user-agent"] = this._conn.UserAgent;
+		    _client.Timeout = _conn.Timeout;
+			headers["user-agent"] = _conn.UserAgent;
 			try
 			{
-			    this._client.PostContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken.ToString(), this.Name, headers, new Dictionary<string, string>());
-				this._reload_properties = true;
+			    _client.PostContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, Name, headers, new Dictionary<string, string>());
+				_reload_properties = true;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.AddHeaders(headers);
+						    ++ _num_retries_attempted;
+						    AddHeaders(headers);
 						    break;
 					    }
 					    else
@@ -809,11 +800,11 @@ namespace Rackspace.Cloudfiles
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    this.AddHeaders(headers);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    AddHeaders(headers);
 						    break;
 					    }
 					    else
@@ -823,21 +814,21 @@ namespace Rackspace.Cloudfiles
 				    case 404:
 					    throw new ObjectNotFoundException();
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.AddHeaders(headers);
+						    ++ _num_retries_attempted;
+						    AddHeaders(headers);
 						    break;
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
@@ -846,32 +837,32 @@ namespace Rackspace.Cloudfiles
 		/// <param name="headers">
 		/// A <see cref="Dictionary<System.String, System.String>"/>
 		/// </param>
-		public override void AddCdnHeaders(Dictionary<string, string> headers)
+		public void AddCdnHeaders(Dictionary<string, string> headers)
 		{
 			if (headers == null)
 			{
 				throw new ArgumentNullException();
 			}
-			if (!this._conn.HasCDN)
+			if (!_conn.HasCDN)
 			{
 				throw new CDNNotEnabledException();
 			}
-		    this._client.Timeout = this._conn.Timeout;
-			headers["user-agent"] = this._conn.UserAgent;
+		    _client.Timeout = _conn.Timeout;
+			headers["user-agent"] = _conn.UserAgent;
 			try
 			{
-			    this._client.PostContainer(this._conn.UserCreds.CdnMangementUrl.ToString(), this._conn.UserCreds.AuthToken.ToString(), this.Name, headers, new Dictionary<string, string>());
-				this._reload_properties = true;
+			    _client.PostContainer(_conn.UserCreds.CdnMangementUrl.ToString(), _conn.UserCreds.AuthToken.ToString(), Name, headers, new Dictionary<string, string>());
+				_reload_properties = true;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.AddCdnHeaders(headers);
+						    ++ _num_retries_attempted;
+						    AddCdnHeaders(headers);
 						    break;
 					    }
 					    else
@@ -879,11 +870,11 @@ namespace Rackspace.Cloudfiles
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    this.AddCdnHeaders(headers);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    AddCdnHeaders(headers);
 						    break;
 					    }
 					    else
@@ -893,29 +884,29 @@ namespace Rackspace.Cloudfiles
 				    case 404:
 					    throw new CDNNotEnabledException();
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.AddCdnHeaders(headers);
+						    ++ _num_retries_attempted;
+						    AddCdnHeaders(headers);
 						    break;
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
 		/// Makes the container public.
 		/// </summary>
-		public override void MakePublic()
+		public void MakePublic()
 		{
-			this.MakePublic(259200, false);
+			MakePublic(259200, false);
 		}
 		/// <summary>
 		/// Makes the container public.
@@ -923,9 +914,9 @@ namespace Rackspace.Cloudfiles
 		/// <param name='ttl'>
 		/// Ttl.
 		/// </param>
-		public override void MakePublic(long ttl)
+		public void MakePublic(long ttl)
 		{
-			this.MakePublic(ttl, false);
+			MakePublic(ttl, false);
 		}
 		/// <summary>
 		/// Makes the container public.
@@ -933,9 +924,9 @@ namespace Rackspace.Cloudfiles
 		/// <param name='log_retention'>
 		/// Log_retention.
 		/// </param>
-		public override void MakePublic(bool log_retention)
+		public void MakePublic(bool log_retention)
 		{
-			this.MakePublic(259200, log_retention);
+			MakePublic(259200, log_retention);
 		}
 		/// <summary>
 		/// Makes the container public.
@@ -946,41 +937,43 @@ namespace Rackspace.Cloudfiles
 		/// <param name="log_retention">
 		/// A <see cref="System.Boolean"/>
 		/// </param>
-		public override void MakePublic(long ttl, bool log_retention)
+		public void MakePublic(long ttl, bool log_retention)
 		{
 			if (ttl.Equals(null) || log_retention.Equals(null))
 			{
 				throw new ArgumentNullException();
 			}
-			if (!this._conn.HasCDN)
+			if (!_conn.HasCDN)
 			{
 				throw new CDNNotEnabledException();
 			}
 			if (ttl > 1577836800 || ttl < 900)
 			{
-				throw new TTLLengthException("TTL range must be 900 to 1577836800 seconds TTL: " + ttl.ToString());
+				throw new TTLLengthException("TTL range must be 900 to 1577836800 seconds TTL: " + ttl.ToString(CultureInfo.InvariantCulture));
 			}
-		    this._client.Timeout = this._conn.Timeout;
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-			headers["x-ttl"] = ttl.ToString();
-			headers["x-log-retention"] = log_retention.ToString();
-			try
+		    _client.Timeout = _conn.Timeout;
+			var headers = new Dictionary<string, string>
+                {
+                    {"user-agent", _conn.UserAgent},
+                    {"x-ttl", ttl.ToString(CultureInfo.InvariantCulture)},
+                    {"x-log-retention", log_retention.ToString(CultureInfo.InvariantCulture)}
+                };
+		    try
 			{
-			    this._client.PutContainer(this._conn.UserCreds.CdnMangementUrl.ToString(), this._conn.UserCreds.AuthToken, this.Name, headers, new Dictionary<string, string>());
-				this._ttl = ttl;
-				this._cdn_log_retention = log_retention;
-				this._cdn_enabled = true;
+			    _client.PutContainer(_conn.UserCreds.CdnMangementUrl.ToString(), _conn.UserCreds.AuthToken, Name, headers, new Dictionary<string, string>());
+				_ttl = ttl;
+				_cdn_log_retention = log_retention;
+				_cdn_enabled = true;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.MakePublic(ttl, log_retention);
+						    ++ _num_retries_attempted;
+						    MakePublic(ttl, log_retention);
 						    break;
 					    }
 					    else
@@ -988,11 +981,11 @@ namespace Rackspace.Cloudfiles
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    this.MakePublic(ttl, log_retention);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    MakePublic(ttl, log_retention);
 						    break;
 					    }
 					    else
@@ -1000,52 +993,54 @@ namespace Rackspace.Cloudfiles
 						    throw new UnauthorizedException();
 					    }
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.MakePublic(ttl, log_retention);
+						    ++ _num_retries_attempted;
+						    MakePublic(ttl, log_retention);
 						    break;
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-                this._num_retries_attempted = 0;
-				this._ttl = ttl;
-				this._cdn_log_retention = log_retention;
+                _num_retries_attempted = 0;
+				_ttl = ttl;
+				_cdn_log_retention = log_retention;
 			}
 		}
 		/// <summary>
 		/// Makes the Container private.
 		/// </summary>
-		public override void MakePrivate()
+		public void MakePrivate()
 		{
-			if (!this._conn.HasCDN)
+			if (!_conn.HasCDN)
 			{
 				throw new CDNNotEnabledException();
 			}
-		    this._client.Timeout = this._conn.Timeout;
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-			headers["x-cdn-enabled"] = "false";
-			try
+		    _client.Timeout = _conn.Timeout;
+			var headers = new Dictionary<string, string>
+			                  {
+			                      {"user-agent", _conn.UserAgent},
+                                  {"x-cdn-enabled", "false"}
+			                  };
+		    try
 			{
-			    this._client.PostContainer(this._conn.UserCreds.CdnMangementUrl.ToString(), this._conn.UserCreds.AuthToken.ToString(), this.Name, headers, new Dictionary<string, string>());
-				this._cdn_enabled = false;
+			    _client.PostContainer(_conn.UserCreds.CdnMangementUrl.ToString(), _conn.UserCreds.AuthToken.ToString(), Name, headers, new Dictionary<string, string>());
+				_cdn_enabled = false;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.MakePrivate();
+						    ++ _num_retries_attempted;
+						    MakePrivate();
 						    break;
 					    }
 					    else
@@ -1053,11 +1048,11 @@ namespace Rackspace.Cloudfiles
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    this.MakePrivate();
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    MakePrivate();
 						    break;
 					    }
 					    else
@@ -1067,21 +1062,21 @@ namespace Rackspace.Cloudfiles
 				    case 404:
 					    throw new CDNNotEnabledException();
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.MakePrivate();
+						    ++ _num_retries_attempted;
+						    MakePrivate();
 						    break;
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-                this._num_retries_attempted = 0;
+                _num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
@@ -1090,9 +1085,9 @@ namespace Rackspace.Cloudfiles
 		/// <param name="ttl">
 		/// A <see cref="System.Int64"/>
 		/// </param>
-		public override void SetTTL(long ttl)
+		public void SetTTL(long ttl)
 		{
-			if (!this._conn.HasCDN)
+			if (!_conn.HasCDN)
 			{
 				throw new CDNNotEnabledException();
 			}
@@ -1100,9 +1095,8 @@ namespace Rackspace.Cloudfiles
 			{
 				throw new TTLLengthException("TTL range must be 900 to 1577836800 seconds TTL: " + ttl.ToString());
 			}
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["x-ttl"] = ttl.ToString();
-			this.AddCdnHeaders(headers);
+			var headers = new Dictionary<string, string> {{"x-ttl",ttl.ToString(CultureInfo.InvariantCulture)}};
+			AddCdnHeaders(headers);
 
 		}
 		/// <summary>
@@ -1111,58 +1105,57 @@ namespace Rackspace.Cloudfiles
 		/// <param name="log_retention">
 		/// A <see cref="System.Boolean"/>
 		/// </param>
-		public override void SetCdnLogRetention(bool log_retention)
+		public void SetCdnLogRetention(bool log_retention)
 		{
 			if (log_retention.Equals(null))
 			{
 				throw new ArgumentNullException();
 			}
-			if (!this._conn.HasCDN)
+			if (!_conn.HasCDN)
 			{
 				throw new CDNNotEnabledException();
 			}
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["x-log-retention"] = log_retention.ToString();
-			this.AddCdnHeaders(headers);
+            var headers = new Dictionary<string, string> {{"x-log-retention",log_retention.ToString(CultureInfo.InvariantCulture)}};
+			AddCdnHeaders(headers);
 		}
 	}
-	public abstract class Container
+	public interface Container
 	{
-		public abstract string Name { get; }
-		public abstract Dictionary<string, string> Headers { get; }
-		public abstract Dictionary<string, string> CdnHeaders { get; }
-		public abstract Dictionary<string, string> Metadata { get; }
-        public abstract int Retries { get; set; }
-		public abstract long ObjectCount { get;}
-		public abstract long BytesUsed { get; }
-		public abstract long TTL { get; }
-		public abstract Uri StorageUrl { get; }
-		public abstract Uri CdnManagementUrl { get; }
-		public abstract Uri CdnUri { get; }
-		public abstract Uri CdnSslUri { get; }
-		public abstract Uri CdnStreamingUri { get; }
-		public abstract bool CdnEnabled { get; }
-		public abstract bool CdnLogRetention { get; }
-	    public abstract StorageObject CreateObject(string object_name);
-		public abstract StorageObject GetObject(string object_name);
-		public abstract List<StorageObject> GetObjects();
-		public abstract List<StorageObject> GetObjects(bool full_listing);
-		public abstract List<StorageObject> GetObjects(Dictionary<ObjectQuery, string> query);
-		public abstract List<StorageObject> GetObjects(bool full_listing, Dictionary<ObjectQuery, string> query);
-		public abstract List<Dictionary<string, string>> GetObjectList();
-		public abstract List<Dictionary<string, string>> GetObjectList(bool full_listing);
-		public abstract List<Dictionary<string, string>> GetObjectList(Dictionary<ObjectQuery, string> query);
-		public abstract List<Dictionary<string, string>> GetObjectList(bool full_listing, Dictionary<ObjectQuery, string> query);
-		public abstract void DeleteObject(string object_name);
-		public abstract void AddMetadata(Dictionary<string, string> metadata);
-		public abstract void AddHeaders(Dictionary<string, string> headers);
-		public abstract void AddCdnHeaders(Dictionary<string, string> headers);
-		public abstract void MakePublic();
-		public abstract void MakePublic(long ttl);
-		public abstract void MakePublic(bool log_retention);
-		public abstract void MakePublic(long ttl, bool log_retention);
-		public abstract void MakePrivate();		
-	    public abstract void SetTTL(long ttl);
-		public abstract void SetCdnLogRetention(bool log_retention);
+		string Name { get; }
+		Dictionary<string, string> Headers { get; }
+		Dictionary<string, string> CdnHeaders { get; }
+		Dictionary<string, string> Metadata { get; }
+        int Retries { get; set; }
+		long ObjectCount { get;}
+		long BytesUsed { get; }
+		long TTL { get; }
+		Uri StorageUrl { get; }
+		Uri CdnManagementUrl { get; }
+		Uri CdnUri { get; }
+		Uri CdnSslUri { get; }
+		Uri CdnStreamingUri { get; }
+		bool CdnEnabled { get; }
+		bool CdnLogRetention { get; }
+	    StorageObject CreateObject(string object_name);
+		StorageObject GetObject(string object_name);
+		List<StorageObject> GetObjects();
+		List<StorageObject> GetObjects(bool full_listing);
+		List<StorageObject> GetObjects(Dictionary<ObjectQuery, string> query);
+		List<StorageObject> GetObjects(bool full_listing, Dictionary<ObjectQuery, string> query);
+		List<Dictionary<string, string>> GetObjectList();
+		List<Dictionary<string, string>> GetObjectList(bool full_listing);
+		List<Dictionary<string, string>> GetObjectList(Dictionary<ObjectQuery, string> query);
+		List<Dictionary<string, string>> GetObjectList(bool full_listing, Dictionary<ObjectQuery, string> query);
+		void DeleteObject(string object_name);
+		void AddMetadata(Dictionary<string, string> metadata);
+		void AddHeaders(Dictionary<string, string> headers);
+		void AddCdnHeaders(Dictionary<string, string> headers);
+		void MakePublic();
+		void MakePublic(long ttl);
+		void MakePublic(bool log_retention);
+		void MakePublic(long ttl, bool log_retention);
+		void MakePrivate();		
+	    void SetTTL(long ttl);
+		void SetCdnLogRetention(bool log_retention);
 	}
 }

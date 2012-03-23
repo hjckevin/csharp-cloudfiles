@@ -13,9 +13,8 @@ namespace Rackspace.Cloudfiles.Tests
 		public void TestGetCDNAccount()
 		{
 			Client client = new CF_Client(new FakeHttpRequestFactory());
-			Dictionary<string, string> headers  = new Dictionary<string, string>();
-			headers.Add("request-type", "cdn-account");
-			AccountResponse res = client.GetCDNAccount("foo", "foo", headers, new Dictionary<string, string>(), false);
+			var headers  = new Dictionary<string, string> {{"request-type", "cdn-account"}};
+		    var res = client.GetCDNAccount("foo", "foo", headers, new Dictionary<string, string>(), false);
 			Assert.AreEqual(res.Containers[0]["name"], "foo");
 			Assert.AreEqual(res.Containers[0]["ttl"], "1");
 			Assert.AreEqual(res.Containers[0]["cdn_url"], "http://foo.bar");
@@ -30,9 +29,8 @@ namespace Rackspace.Cloudfiles.Tests
 		public void TestGetCDNAccountFail()
 		{
 			Client client = new CF_Client(new FakeHttpRequestFactory());
-			Dictionary<string, string> headers  = new Dictionary<string, string>();
-			headers.Add("request-type", "cdn-account-fail");
-			client.GetCDNAccount("foo", "foo", headers, new Dictionary<string, string>(), false);
+			var headers  = new Dictionary<string, string> {{"request-type", "cdn-account-fail"}};
+		    client.GetCDNAccount("foo", "foo", headers, new Dictionary<string, string>(), false);
 		}
 	}
     public class FakeHttpRequestFactory : IHttpRequestFactory
@@ -46,11 +44,11 @@ namespace Rackspace.Cloudfiles.Tests
     {
         public FakeHttpRequest(string method, Dictionary<string, string> headers)
 	    {
-		    this._headers = headers;
-			this._method = method;
+		    _headers = headers;
+			_method = method;
 		}
-		private Dictionary<string, string> _headers;
-		private string _method;
+		private readonly Dictionary<string, string> _headers;
+		private readonly string _method;
         public bool AllowWriteStreamBuffering{ set; get; }
 		public bool SendChunked { set; get; }
 		public long ContentLength { set; get; }
@@ -60,27 +58,28 @@ namespace Rackspace.Cloudfiles.Tests
 		}
 		public IHttpResponse GetResponse()
 		{
-		    return new FakeHttpResponse(this._method, this._headers);
+		    return new FakeHttpResponse(_method, _headers);
 		}
     }
     public class FakeHttpResponse : IHttpResponse
     {
-		private int _status = -1;
-		public int Status { get { return this._status; } }
-		private string _reason = "foo";
-		public string Reason { get { return this._reason; } }
-	    private Stream _stream;
-		public Stream ResponseStream { get {return this._stream;} }
-	    private Dictionary<string, string> _headers = new Dictionary<string, string>();
-		public Dictionary<string, string> Headers { get {return this._headers;} }
+        private readonly int _status = -1;
+		public int Status { get { return _status; } }
+        private const string _reason = "foo";
+        public string Reason { get { return _reason; } }
+	    private readonly Stream _stream;
+		public Stream ResponseStream { get {return _stream;} }
+	    private readonly Dictionary<string, string> _headers = new Dictionary<string, string>();
+		public Dictionary<string, string> Headers { get {return _headers;} }
 		public void Close() {}
 	    public FakeHttpResponse(string method, Dictionary<string, string> headers)
-		{
-			switch(headers["request-type"])
+	    {
+	        Method = method;
+	        switch(headers["request-type"])
 			{
 			    case "cdn-account":
-		            this._status = 200;
-		    	    this._stream = this._to_stream("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
+		            _status = 200;
+		    	    _stream = _to_stream("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
 		    		                               "<account>\n" +
                                                    "<container>\n" + 
 		    				                       "<name>foo</name>\n" +
@@ -96,9 +95,11 @@ namespace Rackspace.Cloudfiles.Tests
 			    case "cdn-account-fail":
 				    throw new ClientException("I am a teapot", 418);
 			}
+	    }
 
-		}
-		private Stream _to_stream(string to_stream)
+        public string Method { get; set; }
+
+        private Stream _to_stream(string to_stream)
 		{
 			return new MemoryStream(Encoding.UTF8.GetBytes(to_stream));
 		}

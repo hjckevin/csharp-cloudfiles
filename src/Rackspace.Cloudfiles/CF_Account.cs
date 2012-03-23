@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using OpenStack.Swift;
 namespace Rackspace.Cloudfiles
 {
@@ -8,10 +10,10 @@ namespace Rackspace.Cloudfiles
 	/// </summary>
 	public class CF_Account : Account
 	{
-		private Client _client;
-		private Connection _conn;
-		private int _retires = 0;
-		private int _num_retries_attempted = 0;
+		private readonly Client _client;
+		private readonly Connection _conn;
+		private int _retires;
+		private int _num_retries_attempted;
 		private bool _reload_properties = true;
 		private Dictionary<string, string> _metadata = new Dictionary<string, string>();
 		private Dictionary<string, string> _headers = new Dictionary<string, string>();
@@ -23,8 +25,8 @@ namespace Rackspace.Cloudfiles
 		/// </param>
 		public CF_Account (Connection conn)
 		{
-			this._conn = conn;
-			this._client = new CF_Client();
+			_conn = conn;
+			_client = new CF_Client();
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Rackspace.Cloudfiles.CF_Account"/> class.
@@ -37,8 +39,8 @@ namespace Rackspace.Cloudfiles
 		/// </param>
 		public CF_Account(Connection conn, Client client)
 		{
-			this._conn = conn;
-			this._client = client;
+			_conn = conn;
+			_client = client;
 		}
 		/// <summary>
 		/// Gets a Connection object.
@@ -46,9 +48,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// A Connection Object
 		/// </value>
-		public override Connection Conn
+		public Connection Conn
 		{
-			get { return this._conn; }
+			get { return _conn; }
 		}
 		/// <summary>
 		/// Gets the storage URL.
@@ -56,9 +58,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The storage URL.
 		/// </value>
-		public override Uri StorageUrl
+		public Uri StorageUrl
 		{
-			get { return this._conn.UserCreds.StorageUrl; }
+			get { return _conn.UserCreds.StorageUrl; }
 		}
 		/// <summary>
 		/// Gets the cdn management URL.
@@ -66,9 +68,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The cdn management URL.
 		/// </value>
-		public override Uri CdnManagementUrl
+		public Uri CdnManagementUrl
 		{
-			get { return this._conn.HasCDN ? this._conn.UserCreds.CdnMangementUrl : null; }
+			get { return _conn.HasCDN ? _conn.UserCreds.CdnMangementUrl : null; }
 		}
 		/// <summary>
 		/// Gets the metadata.
@@ -76,9 +78,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The metadata.
 		/// </value>
-		public override Dictionary<string, string> Metadata
+		public Dictionary<string, string> Metadata
 		{
-			get { return this._reload_properties ? Common.ProcessMetadata(this._head_account())["metadata"] : this._metadata; }
+			get { return _reload_properties ? Common.ProcessMetadata(_head_account())["metadata"] : _metadata; }
 		}
 		/// <summary>
 		/// Gets the headers.
@@ -86,9 +88,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The headers.
 		/// </value>
-		public override Dictionary<string, string> Headers
+		public Dictionary<string, string> Headers
 		{
-			get { return this._reload_properties ? Common.ProcessMetadata(this._head_account())["headers"] : this._headers; }
+			get { return _reload_properties ? Common.ProcessMetadata(_head_account())["headers"] : _headers; }
 		}
 		/// <summary>
 		/// Gets the bytes used.
@@ -96,9 +98,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The bytes used.
 		/// </value>
-		public override long BytesUsed
+		public long BytesUsed
 		{
-			get { return this._reload_properties ? long.Parse(this._head_account()["x-account-bytes-used"]) : long.Parse(this._headers["x-account-bytes-used"]); }
+			get { return _reload_properties ? long.Parse(_head_account()["x-account-bytes-used"]) : long.Parse(_headers["x-account-bytes-used"]); }
 		}
 		/// <summary>
 		/// Gets the container count.
@@ -106,9 +108,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The container count.
 		/// </value>
-		public override long ContainerCount
+		public long ContainerCount
 		{			
-		    get { return this._reload_properties ? long.Parse(this._head_account()["x-account-container-count"]) : long.Parse(this._headers["x-account-container-count"]); }
+		    get { return _reload_properties ? long.Parse(_head_account()["x-account-container-count"]) : long.Parse(_headers["x-account-container-count"]); }
 		}
 		/// <summary>
 		/// Gets the object count.
@@ -116,9 +118,9 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The object count.
 		/// </value>
-		public override long ObjectCount
+		public long ObjectCount
 		{			
-		    get { return this._reload_properties ? long.Parse(this._head_account()["x-account-object-count"]) : long.Parse(this._headers["x-account-object-count"]); }
+		    get { return _reload_properties ? long.Parse(_head_account()["x-account-object-count"]) : long.Parse(_headers["x-account-object-count"]); }
 		}
 		/// <summary>
 		/// Gets or sets the retries.
@@ -126,65 +128,64 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The retries.
 		/// </value>
-		public override int Retries
+		public int Retries
 		{
-			get { return this._retires; }
-			set { this._retires = value; }
+			get { return _retires; }
+			set { _retires = value; }
 		}
 		private Dictionary<string, string> _head_account()
 		{
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-			this._client.Timeout = this._conn.Timeout;
+            var headers = new Dictionary<string, string> { { "user-agent", _conn.UserAgent } };
+			_client.Timeout = _conn.Timeout;
 			try
 			{
-			    AccountResponse res = this._client.HeadAccount(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, headers, new Dictionary<string, string>());
-				Dictionary<string, Dictionary<string, string>> processed_headers = Common.ProcessMetadata(res.Headers);
-				this._metadata = processed_headers["metadata"];
-				this._headers = processed_headers["headers"];
-				this._reload_properties = false;
+			    var res = _client.HeadAccount(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, headers, new Dictionary<string, string>());
+				var processed_headers = Common.ProcessMetadata(res.Headers);
+				_metadata = processed_headers["metadata"];
+				_headers = processed_headers["headers"];
+				_reload_properties = false;
 				return res.Headers;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this._head_account();
+						    ++ _num_retries_attempted;
+						    return _head_account();
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this._head_account();
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return _head_account();
 					    }
 					    else
 					    {
 						    throw new AuthenticationFailedException();
 					    }
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this._head_account();
+						    ++ _num_retries_attempted;
+						    return _head_account();
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 	    }
 		/// <summary>
@@ -196,9 +197,9 @@ namespace Rackspace.Cloudfiles
 		/// <param name='container_name'>
 		/// Container_name.
 		/// </param>
-		public override Container CreateContainer(string container_name)
+		public Container CreateContainer(string container_name)
 		{
-			return this.CreateContainer(container_name, new Dictionary<string, string>());
+			return CreateContainer(container_name, new Dictionary<string, string>());
 		}
 		/// <summary>
 		/// Creates a container.
@@ -207,66 +208,66 @@ namespace Rackspace.Cloudfiles
 		/// A <see cref="System.String"/>
 		/// </param>
 		/// <param name="headers">
-		/// A <see cref="Dictionary<System.String, System.String>"/>
+		/// A <see cref="Dictionary{System.String, System.String}"/>
 		/// </param>
 		/// <returns>
 		/// A <see cref="Container"/>
 		/// </returns>
-		public override Container CreateContainer(string container_name, Dictionary<string, string> headers)
+		public Container CreateContainer(string container_name, Dictionary<string, string> headers)
 		{
 			if (String.IsNullOrEmpty(container_name) || headers == null)
 			{
 				throw new ArgumentNullException();
 			}
 			Common.ValidateContainerName(container_name);
-			headers["user-agent"] = this._conn.UserAgent;
-			this._client.Timeout = this._conn.Timeout;
+			headers["user-agent"] = _conn.UserAgent;
+			_client.Timeout = _conn.Timeout;
 			try
 			{
-			    this._client.PutContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, container_name, headers, new Dictionary<string, string>());
+			    _client.PutContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, container_name, headers, new Dictionary<string, string>());
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.CreateContainer(container_name, headers);
+						    ++ _num_retries_attempted;
+						    return CreateContainer(container_name, headers);
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this.CreateContainer(container_name, headers);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return CreateContainer(container_name, headers);
 					    }
 					    else
 					    {
 						    throw new UnauthorizedException();
 					    }
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.CreateContainer(container_name, headers);
+						    ++ _num_retries_attempted;
+						    return CreateContainer(container_name, headers);
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
-			return new CF_Container(this._conn, container_name);
+			return new CF_Container(_conn, container_name);
 		}
 		/// <summary>
 		/// Gets a Container.
@@ -277,40 +278,39 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="Container"/>
 		/// </returns>
-		public override Container GetContainer(string container_name)
+		public Container GetContainer(string container_name)
 		{
 			if (String.IsNullOrEmpty(container_name))
 			{
 				throw new ArgumentNullException();
 			}
 			Common.ValidateContainerName(container_name);
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-			this._client.Timeout = this._conn.Timeout;
+            var headers = new Dictionary<string, string> { { "user-agent", _conn.UserAgent } };
+			_client.Timeout = _conn.Timeout;
 			try
 			{
-			    this._client.HeadContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, container_name, headers, new Dictionary<string, string>());
+			    _client.HeadContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, container_name, headers, new Dictionary<string, string>());
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.CreateContainer(container_name, headers);
+						    ++ _num_retries_attempted;
+						    return CreateContainer(container_name, headers);
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this.CreateContainer(container_name, headers);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return CreateContainer(container_name, headers);
 					    }
 					    else
 					    {
@@ -319,22 +319,22 @@ namespace Rackspace.Cloudfiles
 				    case 404:
 					     throw new ContainerNotFoundException();
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.CreateContainer(container_name, headers);
+						    ++ _num_retries_attempted;
+						    return CreateContainer(container_name, headers);
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
-			return new CF_Container(this._conn, container_name);
+			return new CF_Container(_conn, container_name);
 		}
 		/// <summary>
 		/// Gets a list of container objects
@@ -342,9 +342,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Container>"/>
 		/// </returns>
-		public override List<Container> GetContainers()
+		public List<Container> GetContainers()
 		{
-			return this.GetContainers(false);
+			return GetContainers(false);
 		}
 		/// <summary>
 		/// Gets a list of container objects
@@ -355,10 +355,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Container>"/>
 		/// </returns>
-		public override List<Container> GetContainers(bool full_listing)
+		public List<Container> GetContainers(bool full_listing)
 		{
-			Dictionary<ContainerQuery, string> query = new Dictionary<ContainerQuery, string>();
-			return this.GetContainers(full_listing, query);
+			return GetContainers(full_listing, new Dictionary<ContainerQuery, string>());
 		}
 		/// <summary>
 		/// Gets a list of container objects
@@ -369,9 +368,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Container>"/>
 		/// </returns>
-		public override List<Container> GetContainers(Dictionary<ContainerQuery, string> query)
+		public List<Container> GetContainers(Dictionary<ContainerQuery, string> query)
 		{
-			return this.GetContainers(false, query);
+			return GetContainers(false, query);
 		}
 		/// <summary>
 		/// Gets a list of container objects
@@ -385,17 +384,16 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Container>"/>
 		/// </returns>
-		public override List<Container> GetContainers(bool full_listing, Dictionary<ContainerQuery, string> query)
+		public List<Container> GetContainers(bool full_listing, Dictionary<ContainerQuery, string> query)
 		{
 			if (query == null)
 			{
 				throw new ArgumentNullException();
 			}
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-            this._client.Timeout = this._conn.Timeout;
-			Dictionary<string, string> queryp = new Dictionary<string, string>();
-			foreach (KeyValuePair<ContainerQuery, string> q in query)
+            var headers = new Dictionary<string, string> { { "user-agent", _conn.UserAgent } };
+            _client.Timeout = _conn.Timeout;
+			var queryp = new Dictionary<string, string>();
+			foreach (var q in query)
 			{
 				switch (q.Key)
 				{
@@ -412,53 +410,48 @@ namespace Rackspace.Cloudfiles
 			}
 			try
 			{
-				List<Container> containers = new List<Container>();
-				foreach (Dictionary<string, string> cont in this._client.GetAccount(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, headers, queryp, full_listing).Containers)
-				{
-					containers.Add(new CF_Container(this._conn, cont["name"]));
-				}
-				return containers;
+			    return _client.GetAccount(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, headers, queryp, full_listing).Containers.Select(cont => new CF_Container(_conn, cont["name"])).Cast<Container>().ToList();
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetContainers(full_listing, query);
+						    ++ _num_retries_attempted;
+						    return GetContainers(full_listing, query);
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this.GetContainers(full_listing, query);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return GetContainers(full_listing, query);
 					    }
 					    else
 					    {
 						    throw new UnauthorizedException();
 					    }
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetContainers(full_listing, query);
+						    ++ _num_retries_attempted;
+						    return GetContainers(full_listing, query);
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
@@ -467,9 +460,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetContainerList()
+		public List<Dictionary<string, string>> GetContainerList()
 		{
-			return this.GetContainerList(false);
+			return GetContainerList(false);
 		}
 		/// <summary>
 		/// Gets a list of containers and associated information 
@@ -480,10 +473,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetContainerList(bool full_listing)
+		public List<Dictionary<string, string>> GetContainerList(bool full_listing)
 		{
-			Dictionary<ContainerQuery, string> query = new Dictionary<ContainerQuery, string>();
-			return this.GetContainerList(full_listing, query);
+			return GetContainerList(full_listing, new Dictionary<ContainerQuery, string>());
 		}
 		/// <summary>
 		/// Gets a list of containers and associated information
@@ -494,9 +486,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetContainerList(Dictionary<ContainerQuery, string> query)
+		public List<Dictionary<string, string>> GetContainerList(Dictionary<ContainerQuery, string> query)
 		{
-			return this.GetContainerList(false, query);
+			return GetContainerList(false, query);
 		}
 		/// <summary>
 		/// Gets a list of containers and associated information
@@ -510,17 +502,16 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetContainerList(bool full_listing, Dictionary<ContainerQuery, string> query)
+		public List<Dictionary<string, string>> GetContainerList(bool full_listing, Dictionary<ContainerQuery, string> query)
 		{
 			if (query == null)
 			{
 				throw new ArgumentNullException();
 			}
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-            this._client.Timeout = this._conn.Timeout;
-			Dictionary<string, string> queryp = new Dictionary<string, string>();
-			foreach (KeyValuePair<ContainerQuery, string> q in query)
+            var headers = new Dictionary<string, string> { { "user-agent", _conn.UserAgent } };
+            _client.Timeout = _conn.Timeout;
+			var queryp = new Dictionary<string, string>();
+			foreach (var q in query)
 			{
 				switch (q.Key)
 				{
@@ -537,48 +528,48 @@ namespace Rackspace.Cloudfiles
 			}
 			try
 			{
-				return this._client.GetAccount(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, headers, queryp, full_listing).Containers;
+				return _client.GetAccount(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, headers, queryp, full_listing).Containers;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetContainerList(full_listing, query);
+						    ++ _num_retries_attempted;
+						    return GetContainerList(full_listing, query);
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this.GetContainerList(full_listing, query);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return GetContainerList(full_listing, query);
 					    }
 					    else
 					    {
 						    throw new UnauthorizedException();
 					    }
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetContainerList(full_listing, query);
+						    ++ _num_retries_attempted;
+						    return GetContainerList(full_listing, query);
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
@@ -587,9 +578,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetPublicContainerList()
+		public List<Dictionary<string, string>> GetPublicContainerList()
 		{
-			return this.GetPublicContainerList(false);
+			return GetPublicContainerList(false);
 		}
 		/// <summary>
 		/// Gets a list of public containers and associated information
@@ -600,10 +591,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetPublicContainerList(bool full_listing)
+		public List<Dictionary<string, string>> GetPublicContainerList(bool full_listing)
 		{
-			Dictionary<PublicContainerQuery, string> query = new Dictionary<PublicContainerQuery, string>();
-			return this.GetPublicContainerList(full_listing, query);
+			return GetPublicContainerList(full_listing, new Dictionary<PublicContainerQuery, string>());
 		}
 		/// <summary>
 		/// Gets a list of public containers and associated information
@@ -614,9 +604,9 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetPublicContainerList(Dictionary<PublicContainerQuery, string> query)
+		public List<Dictionary<string, string>> GetPublicContainerList(Dictionary<PublicContainerQuery, string> query)
 		{
-			return this.GetPublicContainerList(false, query);
+			return GetPublicContainerList(false, query);
 		}
 		/// <summary>
 		/// Gets a list of public containers and associated infomation
@@ -630,17 +620,16 @@ namespace Rackspace.Cloudfiles
 		/// <returns>
 		/// A <see cref="List<Dictionary<System.String, System.String>>"/>
 		/// </returns>
-		public override List<Dictionary<string, string>> GetPublicContainerList(bool full_listing, Dictionary<PublicContainerQuery, string> query)
+		public List<Dictionary<string, string>> GetPublicContainerList(bool full_listing, Dictionary<PublicContainerQuery, string> query)
 		{
 			if (query == null)
 			{
 				throw new ArgumentNullException();
 			}
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-            this._client.Timeout = this._conn.Timeout;
-			Dictionary<string, string> queryp = new Dictionary<string, string>();
-			foreach (KeyValuePair<PublicContainerQuery, string> q in query)
+            var headers = new Dictionary<string, string> { { "user-agent", _conn.UserAgent } };
+            _client.Timeout = _conn.Timeout;
+			var queryp = new Dictionary<string, string>();
+			foreach (var q in query)
 			{
 				switch (q.Key)
 				{
@@ -657,48 +646,48 @@ namespace Rackspace.Cloudfiles
 			}
 			try
 			{
-				return this._client.GetCDNAccount(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, headers, queryp, full_listing).Containers;
+				return _client.GetCDNAccount(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, headers, queryp, full_listing).Containers;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetPublicContainerList(full_listing, query);
+						    ++ _num_retries_attempted;
+						    return GetPublicContainerList(full_listing, query);
 					    }
 					    else
 					    {
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    return this.GetPublicContainerList(full_listing, query);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    return GetPublicContainerList(full_listing, query);
 					    }
 					    else
 					    {
 						    throw new UnauthorizedException();
 					    }
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    return this.GetPublicContainerList(full_listing, query);
+						    ++ _num_retries_attempted;
+						    return GetPublicContainerList(full_listing, query);
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
@@ -707,29 +696,28 @@ namespace Rackspace.Cloudfiles
 		/// <param name="container_name">
 		/// A <see cref="System.String"/>
 		/// </param>
-		public override void DeleteContainer(string container_name)
+		public void DeleteContainer(string container_name)
 		{
 			if (String.IsNullOrEmpty(container_name))
 			{
 				throw new ArgumentNullException();
 			}
 			Common.ValidateContainerName(container_name);
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			headers["user-agent"] = this._conn.UserAgent;
-			this._client.Timeout = this._conn.Timeout;
+            var headers = new Dictionary<string, string> { { "user-agent", _conn.UserAgent } };
+			_client.Timeout = _conn.Timeout;
 			try
 			{
-			    this._client.DeleteContainer(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, container_name, headers, new Dictionary<string, string>());
+			    _client.DeleteContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, container_name, headers, new Dictionary<string, string>());
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.DeleteContainer(container_name);
+						    ++ _num_retries_attempted;
+						    DeleteContainer(container_name);
 						    break;
 					    }
 					    else
@@ -737,11 +725,11 @@ namespace Rackspace.Cloudfiles
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    this.DeleteContainer(container_name);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    DeleteContainer(container_name);
 						    break;
 					    }
 					    else
@@ -753,21 +741,21 @@ namespace Rackspace.Cloudfiles
 				    case 409:
 					     throw new ContainerNotEmptyException();
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.DeleteContainer(container_name);
+						    ++ _num_retries_attempted;
+						    DeleteContainer(container_name);
 						    break;
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 		/// <summary>
@@ -779,14 +767,14 @@ namespace Rackspace.Cloudfiles
 		/// <exception cref='ArgumentNullException'>
 		/// Is thrown when an argument passed to a method is invalid because it is <see langword="null" /> .
 		/// </exception>
-		public override void UpdateMetadata(Dictionary<string, string> metadata)
+		public void UpdateMetadata(Dictionary<string, string> metadata)
 		{
 			if (metadata == null)
 			{
 				throw new ArgumentNullException();
 			}			
-			Dictionary<string, string> headers = new Dictionary<string, string>();
-			foreach (KeyValuePair<string, string> m in metadata)
+			var headers = new Dictionary<string, string>();
+			foreach (var m in metadata)
 			{
 				if (m.Key.Contains("x-account-meta-"))
 				{
@@ -797,7 +785,7 @@ namespace Rackspace.Cloudfiles
 					headers.Add("x-account-meta-" + m.Key, m.Value);
 				}
 			}
-            this.UpdateHeaders(headers);
+            UpdateHeaders(headers);
 		}
 		/// <summary>
 		/// Updates Account Headers
@@ -805,28 +793,28 @@ namespace Rackspace.Cloudfiles
 		/// <param name="headers">
 		/// A <see cref="Dictionary<System.String, System.String>"/>
 		/// </param>
-		public override void UpdateHeaders(Dictionary<string, string> headers)
+		public void UpdateHeaders(Dictionary<string, string> headers)
 		{
 			if (headers == null)
 			{
 				throw new ArgumentNullException();
 			}
-		    this._client.Timeout = this._conn.Timeout;
-			headers["user-agent"] = this._conn.UserAgent;
+		    _client.Timeout = _conn.Timeout;
+			headers["user-agent"] = _conn.UserAgent;
 			try
 			{
-			    this._client.PostAccount(this._conn.UserCreds.StorageUrl.ToString(), this._conn.UserCreds.AuthToken, headers, new Dictionary<string, string>());
-				this._reload_properties = true;
+			    _client.PostAccount(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, headers, new Dictionary<string, string>());
+				_reload_properties = true;
 			}
-			catch (OpenStack.Swift.ClientException e)
+			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
 				    case -1:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.UpdateHeaders(headers);
+						    ++ _num_retries_attempted;
+						    UpdateHeaders(headers);
 						    break;
 					    }
 					    else
@@ -834,11 +822,11 @@ namespace Rackspace.Cloudfiles
 						    throw new TimeoutException();
 					    }
 				    case 401:
-					    if (this._num_retries_attempted < this._retires)
+					    if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this._conn.Authenticate();
-						    this.UpdateHeaders(headers);
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    UpdateHeaders(headers);
 						    break;
 					    }
 					    else
@@ -846,52 +834,52 @@ namespace Rackspace.Cloudfiles
 						    throw new UnauthorizedException();
 					    }
 				    default:
-				        if (this._num_retries_attempted < this._retires)
+				        if (_num_retries_attempted < _retires)
 					    {
-						    ++ this._num_retries_attempted;
-						    this.UpdateHeaders(headers);
+						    ++ _num_retries_attempted;
+						    UpdateHeaders(headers);
 						    break;
 					    }
 					    else
 					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString());
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
 					    }
 			    }
 		    }
 			finally
 			{
-				this._num_retries_attempted = 0;
+				_num_retries_attempted = 0;
 			}
 		}
 	}
-	public abstract class Account
+	public interface Account
 	{
-		public abstract Connection Conn { get; }
-		public abstract Uri StorageUrl { get; }
-		public abstract Uri CdnManagementUrl { get; }
-		public abstract Dictionary<string, string> Metadata { get; }
-		public abstract Dictionary<string, string> Headers { get; }
-		public abstract int Retries { get; set; }
-		public abstract long BytesUsed { get; }
-		public abstract long ContainerCount { get; }
-		public abstract long ObjectCount { get; }
-		public abstract Container CreateContainer(string container_name);
-		public abstract Container CreateContainer(string container_name, Dictionary<string, string> headers);
-		public abstract Container GetContainer(string container_name);
-		public abstract List<Container> GetContainers();
-		public abstract List<Container> GetContainers(bool full_listing);
-		public abstract List<Container> GetContainers(Dictionary<ContainerQuery, string> query);
-		public abstract List<Container> GetContainers(bool full_listing, Dictionary<ContainerQuery, string> query);
-		public abstract List<Dictionary<string, string>> GetContainerList();
-		public abstract List<Dictionary<string, string>> GetContainerList(bool full_listing);
-		public abstract List<Dictionary<string, string>> GetContainerList(Dictionary<ContainerQuery, string> query);
-		public abstract List<Dictionary<string, string>> GetContainerList(bool full_listing, Dictionary<ContainerQuery, string> query);
-		public abstract List<Dictionary<string, string>> GetPublicContainerList();
-		public abstract List<Dictionary<string, string>> GetPublicContainerList(bool full_listing);
-		public abstract List<Dictionary<string, string>> GetPublicContainerList(Dictionary<PublicContainerQuery, string> query);
-		public abstract List<Dictionary<string, string>> GetPublicContainerList(bool full_listing, Dictionary<PublicContainerQuery, string> query);
-		public abstract void DeleteContainer(string container_name);
-		public abstract void UpdateMetadata(Dictionary<string, string> metadata);
-		public abstract void UpdateHeaders(Dictionary<string, string> headers);
+		Connection Conn { get; }
+		Uri StorageUrl { get; }
+		Uri CdnManagementUrl { get; }
+		Dictionary<string, string> Metadata { get; }
+		Dictionary<string, string> Headers { get; }
+		int Retries { get; set; }
+		long BytesUsed { get; }
+		long ContainerCount { get; }
+		long ObjectCount { get; }
+		Container CreateContainer(string container_name);
+		Container CreateContainer(string container_name, Dictionary<string, string> headers);
+		Container GetContainer(string container_name);
+		List<Container> GetContainers();
+		List<Container> GetContainers(bool full_listing);
+		List<Container> GetContainers(Dictionary<ContainerQuery, string> query);
+		List<Container> GetContainers(bool full_listing, Dictionary<ContainerQuery, string> query);
+		List<Dictionary<string, string>> GetContainerList();
+		List<Dictionary<string, string>> GetContainerList(bool full_listing);
+		List<Dictionary<string, string>> GetContainerList(Dictionary<ContainerQuery, string> query);
+		List<Dictionary<string, string>> GetContainerList(bool full_listing, Dictionary<ContainerQuery, string> query);
+		List<Dictionary<string, string>> GetPublicContainerList();
+		List<Dictionary<string, string>> GetPublicContainerList(bool full_listing);
+		List<Dictionary<string, string>> GetPublicContainerList(Dictionary<PublicContainerQuery, string> query);
+		List<Dictionary<string, string>> GetPublicContainerList(bool full_listing, Dictionary<PublicContainerQuery, string> query);
+		void DeleteContainer(string container_name);
+		void UpdateMetadata(Dictionary<string, string> metadata);
+		void UpdateHeaders(Dictionary<string, string> headers);
 	}
 }

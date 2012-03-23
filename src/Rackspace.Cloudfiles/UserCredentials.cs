@@ -17,13 +17,13 @@ namespace Rackspace.Cloudfiles
 		/// </param>
 	    public UserCredentials(string username, string api_key)
 		{
-		    this.ApiKey = null;
-		    this.AuthToken = null;
-		    this.StorageUrl = null;
-		    this.CdnMangementUrl = null;
-		    this.AuthUrl = new Uri("https://auth.api.rackspacecloud.com/v1.0");
-	        this.UserName = username;
-		    this.ApiKey = api_key;
+		    ApiKey = null;
+		    AuthToken = null;
+		    StorageUrl = null;
+		    CdnMangementUrl = null;
+		    AuthUrl = new Uri("https://auth.api.rackspacecloud.com/v1.0");
+	        UserName = username;
+		    ApiKey = api_key;
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Rackspace.Cloudfiles.UserCredentials"/> class.
@@ -39,13 +39,13 @@ namespace Rackspace.Cloudfiles
 		/// </param>
 	    public UserCredentials(string username, string api_key, string auth_url)
 		{
-		    this.ApiKey = null;
-		    this.AuthToken = null;
-		    this.StorageUrl = null;
-		    this.CdnMangementUrl = null;
-		    this.AuthUrl = new Uri(auth_url);
-	        this.UserName = username;
-		    this.ApiKey = api_key;
+		    ApiKey = null;
+		    AuthToken = null;
+		    StorageUrl = null;
+		    CdnMangementUrl = null;
+		    AuthUrl = new Uri(auth_url);
+	        UserName = username;
+		    ApiKey = api_key;
 		}
 		/// <summary>
 		/// Adds cached credentials.
@@ -62,9 +62,9 @@ namespace Rackspace.Cloudfiles
 		public void AddCachedCredentials(string auth_token, string storage_url,
 		                       string cdn_management_url)
 		{
-			this.AuthToken = auth_token;
-			this.StorageUrl = new Uri(storage_url);
-			this.CdnMangementUrl = new Uri(cdn_management_url);
+			AuthToken = auth_token;
+			StorageUrl = new Uri(storage_url);
+			CdnMangementUrl = new Uri(cdn_management_url);
 		}
 		/// <summary>
 		/// Adds cached credentials.
@@ -77,15 +77,15 @@ namespace Rackspace.Cloudfiles
 		/// </param>
 		public void AddCachedCredentials(string auth_token, string storage_url)
 		{
-			this.AuthToken = auth_token;
-			this.StorageUrl = new Uri(storage_url);
+			AuthToken = auth_token;
+			StorageUrl = new Uri(storage_url);
 		}
 		/// <summary>
 		/// Switches the auth Url to the UK auth system.
 		/// </summary>
 		public void UkAuth()
 		{
-			this.AuthUrl = new Uri("https://lon.auth.api.rackspacecloud.com/v1.0");
+			AuthUrl = new Uri("https://lon.auth.api.rackspacecloud.com/v1.0");
 		}
 		public string UserName { get; set; }
 		public string ApiKey { get; set; }

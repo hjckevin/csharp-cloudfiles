@@ -8,7 +8,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestAuthenticate()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			Assert.AreEqual(conn.UserCreds.UserName, "foo");
@@ -22,7 +22,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestFailAuthenticate()
 		{
-			UserCredentials creds = new UserCredentials("foo", "fail-auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "fail-auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Retries = 1;
@@ -38,7 +38,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(AuthenticationFailedException))]
 		public void TestAuthenticateFail()
 		{
-			UserCredentials creds = new UserCredentials("foo", "fail", "http://foo.com");
+			var creds = new UserCredentials("foo", "fail", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			Assert.AreEqual(conn.UserCreds.UserName, "foo");
@@ -49,7 +49,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestConnectionCheckMembers()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			Assert.AreEqual(conn.UserCreds.UserName, "foo");

@@ -8,18 +8,18 @@ namespace Rackspace.Cloudfiles
 	/// </summary>
 	public class CF_Connection : Connection
 	{
-		private Client _client;
-		private int _retires = 0;
-		private int _num_retries_attempted = 0;
+		private readonly Client _client;
+		private int _retires;
+		private int _num_retries_attempted;
 		private int _timeout = 5000;
 		private string _user_agent = "csharp-cloudfiles/3.0";
-		private UserCredentials _user_creds;
+		private readonly UserCredentials _user_creds;
 		/// <summary>
 		/// Gets the UserCredentials Object to dynamically update account connection information
 		/// </summary>
 		public override UserCredentials UserCreds
 		{
-			get { return this._user_creds; }
+			get { return _user_creds; }
 		}
 		/// <summary>
 		/// Gets a value indicating whether this instance has CDN.
@@ -29,7 +29,7 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public override bool HasCDN
 		{
-			get { return this._user_creds.CdnMangementUrl == null ? false : true; }
+			get { return _user_creds.CdnMangementUrl != null; }
 		}
 		/// <summary>
 		/// Gets or sets retries.
@@ -39,16 +39,16 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public override int Retries
 		{
-			get { return this._retires; }
-			set { this._retires = value; }
+			get { return _retires; }
+			set { _retires = value; }
 		}
 		/// <summary>
 		/// Gets or sets the timeout of the tcp connection.
 		/// </summary>
 		public override int Timeout
 		{
-			get { return this._timeout; }
-			set { this._timeout = value; }
+			get { return _timeout; }
+			set { _timeout = value; }
 		}
 		/// <summary>
 		/// Gets or sets the user agent.
@@ -58,8 +58,8 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public override string UserAgent
 		{
-			get { return this._user_agent; }
-			set { this._user_agent = value; }
+			get { return _user_agent; }
+			set { _user_agent = value; }
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Rackspace.Cloudfiles.CF_Connection"/> class.
@@ -69,8 +69,8 @@ namespace Rackspace.Cloudfiles
 		/// </param>
 		public CF_Connection (UserCredentials creds)
 		{
-			this._client = new CF_Client();
-			this._user_creds = creds;
+			_client = new CF_Client();
+			_user_creds = creds;
 		}
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Rackspace.Cloudfiles.CF_Connection"/> class.
@@ -83,15 +83,15 @@ namespace Rackspace.Cloudfiles
 		/// </param>
 		public CF_Connection(UserCredentials creds, Client client)
 		{
-			this._client = client;
-			this._user_creds = creds;
+			_client = client;
+			_user_creds = creds;
 		}
 		/// <summary>
 		/// Authenticates against the specified AuthUrl.
 		/// </summary>
 		public override void Authenticate()
 		{
-			this.Authenticate(false);
+			Authenticate(false);
 		}
 		/// <summary>
 		/// Authenticates against a specified AuthUrl you can also set if you would like to use Snet.
@@ -103,24 +103,24 @@ namespace Rackspace.Cloudfiles
 		{
 			try
 			{
-		        AuthResponse res = this._client.GetAuth(this._user_creds.AuthUrl.ToString(), this._user_creds.UserName, this._user_creds.ApiKey, new Dictionary<string, string>(), new Dictionary<string, string>(), snet);
-			    this._user_creds.StorageUrl =  new Uri(res.Headers["x-storage-url"]);
-			    this._user_creds.AuthToken = res.Headers["x-auth-token"];
+		        AuthResponse res = _client.GetAuth(_user_creds.AuthUrl.ToString(), _user_creds.UserName, _user_creds.ApiKey, new Dictionary<string, string>(), new Dictionary<string, string>(), snet);
+			    _user_creds.StorageUrl =  new Uri(res.Headers["x-storage-url"]);
+			    _user_creds.AuthToken = res.Headers["x-auth-token"];
 			    if(res.Headers.ContainsKey("x-cdn-management-url"))
 			    {
-			        this._user_creds.CdnMangementUrl = new Uri(res.Headers["x-cdn-management-url"]);
+			        _user_creds.CdnMangementUrl = new Uri(res.Headers["x-cdn-management-url"]);
 			    }
 			}
 			catch (ClientException)
 			{
-				if(this._num_retries_attempted <= this._retires)
+				if(_num_retries_attempted <= _retires)
 				{
-					++ this._num_retries_attempted;
-					this.Authenticate();
+					++ _num_retries_attempted;
+					Authenticate();
 				}
 				else
 				{
-					this._num_retries_attempted = 0;
+					_num_retries_attempted = 0;
 					throw new AuthenticationFailedException();
 				}
 			}

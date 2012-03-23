@@ -28,7 +28,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(ContainerNameException))]
 		public void TestContainerNameLengthValidateContainerName()
 		{
-			string a = "aaaaaaaaaa";
+			var a = "aaaaaaaaaa";
 			while(a.Length <= 256)
 			{
 				a += a;
@@ -62,7 +62,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(ObjectNameException))]
 		public void TestObjectNameLengthValidateContainerName()
 		{
-			string a = "aaaaaaaaaa";
+			var a = "aaaaaaaaaa";
 			while(a.Length <= 1024)
 			{
 				a += a;
@@ -72,12 +72,14 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestProcessMetadata()
 		{
-			Dictionary<string, string> metadata = new Dictionary<string, string>();
-			metadata.Add("X-Account-Meta-account", "account");
-			metadata.Add("X-Container-Meta-container", "container");
-			metadata.Add("X-Object-Meta-object", "object");
-			metadata.Add("x-foo-bar", "foo");
-			Dictionary<string, Dictionary<string, string>> ret =  Common.ProcessMetadata(metadata);
+			var metadata = new Dictionary<string, string>
+			                   {
+			                       {"X-Account-Meta-account", "account"},
+			                       {"X-Container-Meta-container", "container"},
+			                       {"X-Object-Meta-object", "object"},
+			                       {"x-foo-bar", "foo"}
+			                   };
+		    var ret =  Common.ProcessMetadata(metadata);
 			Assert.IsTrue(ret["metadata"]["account"] == "account");
 			Assert.IsTrue(ret["metadata"]["container"] == "container");
 			Assert.IsTrue(ret["metadata"]["object"] == "object");

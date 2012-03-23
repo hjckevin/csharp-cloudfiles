@@ -23,9 +23,9 @@ namespace Rackspace.Cloudfiles
 		}
 		public static Dictionary<string, Dictionary<string, string>> ProcessMetadata(Dictionary<string, string> headers)
 		{
-			Dictionary<string, string> pheaders = new Dictionary<string, string>();
-			Dictionary<string, string> metadata = new Dictionary<string, string>();
-			foreach (KeyValuePair<string, string> header in headers)
+			var pheaders = new Dictionary<string, string>();
+			var metadata = new Dictionary<string, string>();
+			foreach (var header in headers)
 			{
 		        if (header.Key.ToLower().Contains("x-account-meta-"))
 				{
@@ -33,7 +33,7 @@ namespace Rackspace.Cloudfiles
 				}
 				else if(header.Key.ToLower().Contains("x-container-meta-"))
 				{
-					metadata.Add(header.Key.Remove(0, 17), header.Value);;
+					metadata.Add(header.Key.Remove(0, 17), header.Value);
 				}
 				else if(header.Key.ToLower().Contains("x-object-meta-"))
 				{
@@ -44,7 +44,7 @@ namespace Rackspace.Cloudfiles
 					pheaders.Add(header.Key.ToLower(), header.Value);
 				}
 		    }
-			Dictionary<string, Dictionary<string, string>> processed_headers = new Dictionary<string, Dictionary<string, string>>();
+			var processed_headers = new Dictionary<string, Dictionary<string, string>>();
 			processed_headers["headers"] = pheaders;
 			processed_headers["metadata"] = metadata;
 			return processed_headers;

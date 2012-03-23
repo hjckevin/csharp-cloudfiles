@@ -10,7 +10,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void CreateObject()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -20,7 +20,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestGetObject()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -31,7 +31,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestFailGetObject()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -44,7 +44,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(CloudFilesException))]
 		public void TestGetObjectFail()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -56,7 +56,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(TimeoutException))]
 		public void TestGetObjectFailTimeout()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -68,7 +68,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(ObjectNotFoundException))]
 		public void TestGetObjectFailNotFound()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -80,7 +80,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestGetObjectFailUnauthorized()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -92,7 +92,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestGetObjects()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -103,7 +103,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestFailGetObjects()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -116,7 +116,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(CloudFilesException))]
 		public void TestGetObjectsFail()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -128,7 +128,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(TimeoutException))]
 		public void TestGetObjectsFailTimeout()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -140,7 +140,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(ContainerNotFoundException))]
 		public void TestGetObjectsFailNotFound()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -152,7 +152,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestGetObjectsFailUnauthorized()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -164,7 +164,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestGetObjectList()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -175,7 +175,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestFailGetObjectList()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -188,7 +188,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(CloudFilesException))]
 		public void TestGetObjectListFail()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -200,7 +200,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(TimeoutException))]
 		public void TestGetObjectListFailTimeout()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -212,7 +212,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(ContainerNotFoundException))]
 		public void TestGetObjectListFailNotFound()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -224,7 +224,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestGetObjectListFailUnauthorized()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -236,7 +236,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestDeleteObject()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -247,7 +247,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestFailDeleteObject()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -260,7 +260,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(CloudFilesException))]
 		public void TestDeleteObjectFail()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -272,7 +272,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(TimeoutException))]
 		public void TestDeleteObjectFailTimeout()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -284,7 +284,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(ObjectNotFoundException))]
 		public void TestDeleteObjectFailNotFound()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -296,7 +296,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestDeleteObjectFailUnauthorized()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -308,7 +308,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestAddMetadata()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -319,7 +319,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestFailAddMetadata()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -332,7 +332,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(CloudFilesException))]
 		public void TestAddMetadataFail()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -344,7 +344,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(TimeoutException))]
 		public void TestAddMetadataFailTimeout()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -356,7 +356,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(ObjectNotFoundException))]
 		public void TestAddMetadataFailNotFound()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -368,7 +368,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestAddMetadataFailUnauthorized()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -380,7 +380,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestAddHeaders()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -391,7 +391,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestFailAddHeaders()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -404,7 +404,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(CloudFilesException))]
 		public void TestAddHeadersFail()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -416,7 +416,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(TimeoutException))]
 		public void TestAddHeadersFailTimeout()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -428,7 +428,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(ObjectNotFoundException))]
 		public void TestAddHeadersFailNotFound()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -440,7 +440,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestAddHeadersFailUnauthorized()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -452,7 +452,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestAddCDNHeaders()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -463,7 +463,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestFailAddCDNHeaders()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -476,7 +476,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(CloudFilesException))]
 		public void TestAddCDNHeadersFail()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -488,7 +488,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(TimeoutException))]
 		public void TestAddCDNHeadersFailTimeout()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -500,7 +500,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(CDNNotEnabledException))]
 		public void TestAddCDNHeadersFailNotFound()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -512,7 +512,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestAddCDNHeadersFailUnauthorized()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -524,7 +524,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestMakePublic()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -535,7 +535,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestFailMakePublic()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -548,7 +548,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(CloudFilesException))]
 		public void TestMakePublicFail()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -560,7 +560,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(TimeoutException))]
 		public void TestMakePublicFailTimeout()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -572,7 +572,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestMakePublicFailUnauthorized()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -584,7 +584,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestMakePrivate()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -595,7 +595,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
 		public void TestFailMakePrivate()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -608,7 +608,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(CloudFilesException))]
 		public void TestMakePrivateFail()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -620,7 +620,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[ExpectedException(typeof(TimeoutException))]
 		public void TestMakePrivateFailTimeout()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -632,7 +632,7 @@ namespace Rackspace.Cloudfiles.Tests
 	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestMakePrivateFailUnauthorized()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
@@ -643,7 +643,7 @@ namespace Rackspace.Cloudfiles.Tests
 		[Test]
         public void TestMembers()
 		{
-			UserCredentials creds = new UserCredentials("foo", "auth", "http://foo.com");
+			var creds = new UserCredentials("foo", "auth", "http://foo.com");
 			Client client = new FakeClient();
 			Connection conn = new CF_Connection(creds, client);
 			conn.Authenticate();
