@@ -3,8 +3,9 @@
 ## v3.0 (2012-2-21)
  * Major Release Depricated Connection class and moved it to Rackspace.Cloudfiles.Depricated namespace
  * Added CF_Connection and updated CF_Account CF_Container and CF_Object to align with other APIs
- * Added new HTTP client based of swift-client
+ * Added new HTTP client based off swift-client
  * Updated UserCredentials object to support adding cached credentials
+ 
 ## v2.0.0.9 (2011-9-23)
 #### New Features
  * Update README

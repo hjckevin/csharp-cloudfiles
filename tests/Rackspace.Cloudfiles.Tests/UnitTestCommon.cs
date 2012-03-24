@@ -13,19 +13,16 @@ namespace Rackspace.Cloudfiles.Tests
 			Common.ValidateContainerName("foo");
 		}
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestEmptyValidateContainerName()
 		{
-			Common.ValidateContainerName("");
+			Assert.Throws<ArgumentNullException>(() => Common.ValidateContainerName(""));
 		}
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestNullValidateContainerName()
 		{
-			Common.ValidateContainerName(null);
+			Assert.Throws<ArgumentNullException>(() => Common.ValidateContainerName(null));
 		}
 		[Test]
-		[ExpectedException(typeof(ContainerNameException))]
 		public void TestContainerNameLengthValidateContainerName()
 		{
 			var a = "aaaaaaaaaa";
@@ -33,13 +30,12 @@ namespace Rackspace.Cloudfiles.Tests
 			{
 				a += a;
 			}
-			Common.ValidateContainerName(a);
+            Assert.Throws<ContainerNameException>(() => Common.ValidateContainerName(a));
 		}
 		[Test]
-		[ExpectedException(typeof(ContainerNameException))]
 		public void TestContainerWithSlashValidateContainerName()
 		{
-			Common.ValidateContainerName("/");
+			Assert.Throws<ContainerNameException>(() => Common.ValidateContainerName("/"));
 		}
 		[Test]
 		public void TestValidateObjectName()
@@ -47,19 +43,16 @@ namespace Rackspace.Cloudfiles.Tests
 			Common.ValidateObjectName("foo");
 		}
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestEmptyValidateObjectName()
 		{
-			Common.ValidateObjectName("");
+			Assert.Throws<ArgumentNullException>(() => Common.ValidateObjectName(""));
 		}
 		[Test]
-		[ExpectedException(typeof(ArgumentNullException))]
 		public void TestNullValidateObjectName()
 		{
-			Common.ValidateObjectName(null);
+            Assert.Throws<ArgumentNullException>(() => Common.ValidateObjectName(null));
 		}
 		[Test]
-		[ExpectedException(typeof(ObjectNameException))]
 		public void TestObjectNameLengthValidateContainerName()
 		{
 			var a = "aaaaaaaaaa";
@@ -67,7 +60,7 @@ namespace Rackspace.Cloudfiles.Tests
 			{
 				a += a;
 			}
-			Common.ValidateObjectName(a);
+            Assert.Throws<ObjectNameException>(() => Common.ValidateObjectName(a));
 		}
 		[Test]
 		public void TestProcessMetadata()

@@ -46,7 +46,7 @@ namespace Rackspace.Cloudfiles.Tests
         }
 
         [Test]
-        [ExpectedException(typeof (CloudFilesException))]
+        [Category("OnlyWorkWithMono")]
         public void TestSaveToFileFail()
         {
             var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -55,15 +55,14 @@ namespace Rackspace.Cloudfiles.Tests
             conn.Authenticate();
             conn.UserCreds.AuthToken = "fail";
             Container container = new CF_Container(conn, client, "foo");
-            container.GetObject("foo");
+            Assert.Throws<CloudFilesException>(() => container.GetObject("foo"));
             StorageObject obj = new CF_Object(conn, container, client, "foo");
             string file_name = Path.GetTempFileName();
-            obj.SaveToFile(file_name, true);
+            Assert.Throws<CloudFilesException>(() => obj.SaveToFile(file_name, true));
             File.Delete(file_name);
         }
 
         [Test]
-        [ExpectedException(typeof (TimeoutException))]
         public void TestGetObjectFailTimeout()
         {
             var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -72,15 +71,10 @@ namespace Rackspace.Cloudfiles.Tests
             conn.Authenticate();
             conn.UserCreds.AuthToken = "fail-timeout";
             Container container = new CF_Container(conn, client, "foo");
-            container.GetObject("foo");
-            StorageObject obj = new CF_Object(conn, container, client, "foo");
-            string file_name = Path.GetTempFileName();
-            obj.SaveToFile(file_name, true);
-            File.Delete(file_name);
+            Assert.Throws<TimeoutException>(() => container.GetObject("foo"));
         }
 
         [Test]
-        [ExpectedException(typeof (ObjectNotFoundException))]
         public void TestGetObjectFailNotFound()
         {
             var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -89,15 +83,10 @@ namespace Rackspace.Cloudfiles.Tests
             conn.Authenticate();
             conn.UserCreds.AuthToken = "fail-not-found";
             Container container = new CF_Container(conn, client, "foo");
-            container.GetObject("foo");
-            StorageObject obj = new CF_Object(conn, container, client, "foo");
-            string file_name = Path.GetTempFileName();
-            obj.SaveToFile(file_name, true);
-            File.Delete(file_name);
+            Assert.Throws<ObjectNotFoundException>(() => container.GetObject("foo"));
         }
 
         [Test]
-        [ExpectedException(typeof (UnauthorizedException))]
         public void TestGetObjectFailUnauthorized()
         {
             var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -106,14 +95,9 @@ namespace Rackspace.Cloudfiles.Tests
             conn.Authenticate();
             conn.UserCreds.AuthToken = "fail-unauthorized";
             Container container = new CF_Container(conn, client, "foo");
-            container.GetObject("foo");
-            StorageObject obj = new CF_Object(conn, container, client, "foo");
-            string file_name = Path.GetTempFileName();
-            obj.SaveToFile(file_name, true);
-            File.Delete(file_name);
+            Assert.Throws<UnauthorizedException>(() => container.GetObject("foo"));
         }
 
-//
         [Test]
         public void TestWrite()
         {
@@ -153,11 +137,10 @@ namespace Rackspace.Cloudfiles.Tests
             Container container = new CF_Container(conn, client, "foo");
             container.GetObject("foo");
             StorageObject obj = new CF_Object(conn, container, client, "foo");
-            obj.Write(new MemoryStream());
+            Assert.Throws<CloudFilesException>(() => obj.Write(new MemoryStream()));
         }
 
         [Test]
-        [ExpectedException(typeof (TimeoutException))]
         public void TestWriteFailTimeout()
         {
             var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -166,13 +149,10 @@ namespace Rackspace.Cloudfiles.Tests
             conn.Authenticate();
             conn.UserCreds.AuthToken = "fail-timeout";
             Container container = new CF_Container(conn, client, "foo");
-            container.GetObject("foo");
-            StorageObject obj = new CF_Object(conn, container, client, "foo");
-            obj.Write(new MemoryStream());
+            Assert.Throws<TimeoutException>(() => container.GetObject("foo"));
         }
 
         [Test]
-        [ExpectedException(typeof (ObjectNotFoundException))]
         public void TestWriteFailNotFound()
         {
             var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -181,13 +161,10 @@ namespace Rackspace.Cloudfiles.Tests
             conn.Authenticate();
             conn.UserCreds.AuthToken = "fail-not-found";
             Container container = new CF_Container(conn, client, "foo");
-            container.GetObject("foo");
-            StorageObject obj = new CF_Object(conn, container, client, "foo");
-            obj.Write(new MemoryStream());
+            Assert.Throws<ObjectNotFoundException>(() => container.GetObject("foo"));
         }
 
         [Test]
-        [ExpectedException(typeof (UnauthorizedException))]
         public void TestWriteFailUnauthorized()
         {
             var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -196,13 +173,10 @@ namespace Rackspace.Cloudfiles.Tests
             conn.Authenticate();
             conn.UserCreds.AuthToken = "fail-unauthorized";
             Container container = new CF_Container(conn, client, "foo");
-            container.GetObject("foo");
-            StorageObject obj = new CF_Object(conn, container, client, "foo");
-            obj.Write(new MemoryStream());
+            Assert.Throws<UnauthorizedException>(() => container.GetObject("foo"));
         }
 
         [Test]
-        [ExpectedException(typeof (InvalidETagException))]
         public void TestWriteFailEtag()
         {
             var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -213,7 +187,7 @@ namespace Rackspace.Cloudfiles.Tests
             Container container = new CF_Container(conn, client, "foo");
             container.GetObject("foo");
             StorageObject obj = new CF_Object(conn, container, client, "foo");
-            obj.Write(new MemoryStream());
+            Assert.Throws<InvalidETagException>(() => obj.Write(new MemoryStream()));
         }
     }
 }

@@ -35,7 +35,6 @@ namespace Rackspace.Cloudfiles.Tests
 			Assert.AreEqual(conn.UserCreds.AuthToken, "foo");
 		}
 		[Test]
-		[ExpectedException(typeof(AuthenticationFailedException))]
 		public void TestAuthenticateFail()
 		{
 			var creds = new UserCredentials("foo", "fail", "http://foo.com");
@@ -44,7 +43,7 @@ namespace Rackspace.Cloudfiles.Tests
 			Assert.AreEqual(conn.UserCreds.UserName, "foo");
 			Assert.AreEqual(conn.UserCreds.AuthUrl, "http://foo.com/");
 			Assert.AreEqual(conn.UserCreds.ApiKey, "fail");
-			conn.Authenticate();
+			Assert.Throws<AuthenticationFailedException>(conn.Authenticate);
 		}
 		[Test]
 		public void TestConnectionCheckMembers()

@@ -41,7 +41,6 @@ namespace Rackspace.Cloudfiles.Tests
 			Assert.AreSame(container.GetObject("foo").GetType(), typeof(CF_Object));
 		}
 		[Test]
-		[ExpectedException(typeof(CloudFilesException))]
 		public void TestGetObjectFail()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -50,10 +49,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObject("foo");
+			Assert.Throws<CloudFilesException>(() => container.GetObject("foo"));
 		}
 		[Test]
-		[ExpectedException(typeof(TimeoutException))]
 		public void TestGetObjectFailTimeout()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -62,10 +60,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-timeout";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObject("foo");
+            Assert.Throws<TimeoutException>(() => container.GetObject("foo"));
 		}
 		[Test]
-	    [ExpectedException(typeof(ObjectNotFoundException))]
 		public void TestGetObjectFailNotFound()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -74,10 +71,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-not-found";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObject("foo");
+            Assert.Throws<ObjectNotFoundException>(() => container.GetObject("foo"));
 		}
 		[Test]
-	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestGetObjectFailUnauthorized()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -86,9 +82,8 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-unauthorized";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObject("foo");
+            Assert.Throws<UnauthorizedException>(() => container.GetObject("foo"));
 		}
-//
 		[Test]
 		public void TestGetObjects()
 		{
@@ -113,7 +108,6 @@ namespace Rackspace.Cloudfiles.Tests
 			Assert.AreSame(container.GetObjects().GetType(), typeof(List<StorageObject>));
 		}
 		[Test]
-		[ExpectedException(typeof(CloudFilesException))]
 		public void TestGetObjectsFail()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -122,10 +116,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObjects();
+			Assert.Throws<CloudFilesException>(() => container.GetObjects());
 		}
 		[Test]
-		[ExpectedException(typeof(TimeoutException))]
 		public void TestGetObjectsFailTimeout()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -134,10 +127,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-timeout";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObjects();
+            Assert.Throws<TimeoutException>(() => container.GetObjects());
 		}
 		[Test]
-	    [ExpectedException(typeof(ContainerNotFoundException))]
 		public void TestGetObjectsFailNotFound()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -146,10 +138,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-not-found";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObjects();
+            Assert.Throws<ContainerNotFoundException>(() => container.GetObjects());
 		}
 		[Test]
-	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestGetObjectsFailUnauthorized()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -158,9 +149,8 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-unauthorized";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObjects();
+            Assert.Throws<UnauthorizedException>(() => container.GetObjects());
 		}
-//
 		[Test]
 		public void TestGetObjectList()
 		{
@@ -185,7 +175,6 @@ namespace Rackspace.Cloudfiles.Tests
 			Assert.AreSame(container.GetObjectList().GetType(), typeof(List<Dictionary<string, string>>));
 		}
 		[Test]
-		[ExpectedException(typeof(CloudFilesException))]
 		public void TestGetObjectListFail()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -194,10 +183,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObjectList();
+			Assert.Throws<CloudFilesException>(() => container.GetObjectList());
 		}
 		[Test]
-		[ExpectedException(typeof(TimeoutException))]
 		public void TestGetObjectListFailTimeout()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -206,10 +194,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-timeout";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObjectList();
+            Assert.Throws<TimeoutException>(() => container.GetObjectList());
 		}
 		[Test]
-	    [ExpectedException(typeof(ContainerNotFoundException))]
 		public void TestGetObjectListFailNotFound()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -218,10 +205,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-not-found";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObjectList();
+            Assert.Throws<ContainerNotFoundException>(() => container.GetObjectList());
 		}
 		[Test]
-	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestGetObjectListFailUnauthorized()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -230,9 +216,8 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-unauthorized";
 			Container container = new CF_Container(conn, client, "foo");
-			container.GetObjectList();
+            Assert.Throws<UnauthorizedException>(() => container.GetObjectList());
 		}
-//
 		[Test]
 		public void TestDeleteObject()
 		{
@@ -257,7 +242,6 @@ namespace Rackspace.Cloudfiles.Tests
 			container.DeleteObject("foo");
 		}
 		[Test]
-		[ExpectedException(typeof(CloudFilesException))]
 		public void TestDeleteObjectFail()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -266,10 +250,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail";
 			Container container = new CF_Container(conn, client, "foo");
-			container.DeleteObject("foo");
+			Assert.Throws<CloudFilesException>(() => container.DeleteObject("foo"));
 		}
 		[Test]
-		[ExpectedException(typeof(TimeoutException))]
 		public void TestDeleteObjectFailTimeout()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -278,10 +261,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-timeout";
 			Container container = new CF_Container(conn, client, "foo");
-			container.DeleteObject("foo");
+            Assert.Throws<TimeoutException>(() => container.DeleteObject("foo"));
 		}
 		[Test]
-	    [ExpectedException(typeof(ObjectNotFoundException))]
 		public void TestDeleteObjectFailNotFound()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -290,10 +272,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-not-found";
 			Container container = new CF_Container(conn, client, "foo");
-			container.DeleteObject("foo");
+            Assert.Throws<ObjectNotFoundException>(() => container.DeleteObject("foo"));
 		}
 		[Test]
-	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestDeleteObjectFailUnauthorized()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -302,9 +283,8 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-unauthorized";
 			Container container = new CF_Container(conn, client, "foo");
-			container.DeleteObject("foo");
+            Assert.Throws<UnauthorizedException>(() => container.DeleteObject("foo"));
 		}
-//
 		[Test]
 		public void TestAddMetadata()
 		{
@@ -329,7 +309,6 @@ namespace Rackspace.Cloudfiles.Tests
 			container.AddMetadata(new Dictionary<string, string>());
 		}
 		[Test]
-		[ExpectedException(typeof(CloudFilesException))]
 		public void TestAddMetadataFail()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -338,10 +317,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddMetadata(new Dictionary<string, string>());
+            Assert.Throws<CloudFilesException>(() => container.AddMetadata(new Dictionary<string, string>()));
 		}
 		[Test]
-		[ExpectedException(typeof(TimeoutException))]
 		public void TestAddMetadataFailTimeout()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -350,10 +328,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-timeout";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddMetadata(new Dictionary<string, string>());
+            Assert.Throws<TimeoutException>(() => container.AddMetadata(new Dictionary<string, string>()));
 		}
 		[Test]
-	    [ExpectedException(typeof(ObjectNotFoundException))]
 		public void TestAddMetadataFailNotFound()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -362,10 +339,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-not-found";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddMetadata(new Dictionary<string, string>());
+            Assert.Throws<ObjectNotFoundException>(() => container.AddMetadata(new Dictionary<string, string>()));
 		}
 		[Test]
-	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestAddMetadataFailUnauthorized()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -374,9 +350,8 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-unauthorized";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddMetadata(new Dictionary<string, string>());
+            Assert.Throws<UnauthorizedException>(() => container.AddMetadata(new Dictionary<string, string>()));
 		}
-//
 		[Test]
 		public void TestAddHeaders()
 		{
@@ -401,7 +376,6 @@ namespace Rackspace.Cloudfiles.Tests
 			container.AddHeaders(new Dictionary<string, string>());
 		}
 		[Test]
-		[ExpectedException(typeof(CloudFilesException))]
 		public void TestAddHeadersFail()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -410,10 +384,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddHeaders(new Dictionary<string, string>());
+            Assert.Throws<CloudFilesException>(() => container.AddHeaders(new Dictionary<string, string>()));
 		}
 		[Test]
-		[ExpectedException(typeof(TimeoutException))]
 		public void TestAddHeadersFailTimeout()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -422,10 +395,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-timeout";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddHeaders(new Dictionary<string, string>());
+            Assert.Throws<TimeoutException>(() => container.AddHeaders(new Dictionary<string, string>()));
 		}
 		[Test]
-	    [ExpectedException(typeof(ObjectNotFoundException))]
 		public void TestAddHeadersFailNotFound()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -434,10 +406,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-not-found";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddHeaders(new Dictionary<string, string>());
+            Assert.Throws<ObjectNotFoundException>(() => container.AddHeaders(new Dictionary<string, string>()));
 		}
 		[Test]
-	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestAddHeadersFailUnauthorized()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -446,9 +417,8 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-unauthorized";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddHeaders(new Dictionary<string, string>());
+            Assert.Throws<UnauthorizedException>(() => container.AddHeaders(new Dictionary<string, string>()));
 		}
-//
 		[Test]
 		public void TestAddCDNHeaders()
 		{
@@ -473,7 +443,6 @@ namespace Rackspace.Cloudfiles.Tests
 			container.AddCdnHeaders(new Dictionary<string, string>());
 		}
 		[Test]
-		[ExpectedException(typeof(CloudFilesException))]
 		public void TestAddCDNHeadersFail()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -482,10 +451,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddCdnHeaders(new Dictionary<string, string>());
+            Assert.Throws<CloudFilesException>(() => container.AddCdnHeaders(new Dictionary<string, string>()));
 		}
 		[Test]
-		[ExpectedException(typeof(TimeoutException))]
 		public void TestAddCDNHeadersFailTimeout()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -494,10 +462,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-timeout";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddCdnHeaders(new Dictionary<string, string>());
+            Assert.Throws<TimeoutException>(() => container.AddCdnHeaders(new Dictionary<string, string>()));
 		}
 		[Test]
-	    [ExpectedException(typeof(CDNNotEnabledException))]
 		public void TestAddCDNHeadersFailNotFound()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -506,10 +473,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-not-found";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddCdnHeaders(new Dictionary<string, string>());
+            Assert.Throws<CDNNotEnabledException>(() => container.AddCdnHeaders(new Dictionary<string, string>()));
 		}
 		[Test]
-	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestAddCDNHeadersFailUnauthorized()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -518,9 +484,8 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-unauthorized";
 			Container container = new CF_Container(conn, client, "foo");
-			container.AddCdnHeaders(new Dictionary<string, string>());
+            Assert.Throws<UnauthorizedException>(() => container.AddCdnHeaders(new Dictionary<string, string>()));
 		}
-//
 		[Test]
 		public void TestMakePublic()
 		{
@@ -545,7 +510,6 @@ namespace Rackspace.Cloudfiles.Tests
 			container.MakePublic(999, false);
 		}
 		[Test]
-		[ExpectedException(typeof(CloudFilesException))]
 		public void TestMakePublicFail()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -554,10 +518,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail";
 			Container container = new CF_Container(conn, client, "foo");
-			container.MakePublic(999, false);
+            Assert.Throws<CloudFilesException>(() => container.MakePublic(999, false));
 		}
 		[Test]
-		[ExpectedException(typeof(TimeoutException))]
 		public void TestMakePublicFailTimeout()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -566,10 +529,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-timeout";
 			Container container = new CF_Container(conn, client, "foo");
-			container.MakePublic(999, false);
+            Assert.Throws<TimeoutException>(() => container.MakePublic(999, false));
 		}
 		[Test]
-	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestMakePublicFailUnauthorized()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -578,9 +540,8 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-unauthorized";
 			Container container = new CF_Container(conn, client, "foo");
-			container.MakePublic(999, false);
+            Assert.Throws<UnauthorizedException>(() => container.MakePublic(999, false));
 		}
-//
 		[Test]
 		public void TestMakePrivate()
 		{
@@ -605,7 +566,6 @@ namespace Rackspace.Cloudfiles.Tests
 			container.MakePrivate();
 		}
 		[Test]
-		[ExpectedException(typeof(CloudFilesException))]
 		public void TestMakePrivateFail()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -614,10 +574,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail";
 			Container container = new CF_Container(conn, client, "foo");
-			container.MakePrivate();
+            Assert.Throws<CloudFilesException>(container.MakePrivate);
 		}
 		[Test]
-		[ExpectedException(typeof(TimeoutException))]
 		public void TestMakePrivateFailTimeout()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -626,10 +585,9 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-timeout";
 			Container container = new CF_Container(conn, client, "foo");
-			container.MakePrivate();
+            Assert.Throws<TimeoutException>(container.MakePrivate);
 		}
 		[Test]
-	    [ExpectedException(typeof(UnauthorizedException))]
 		public void TestMakePrivateFailUnauthorized()
 		{
 			var creds = new UserCredentials("foo", "auth", "http://foo.com");
@@ -638,7 +596,7 @@ namespace Rackspace.Cloudfiles.Tests
 			conn.Authenticate();
 			conn.UserCreds.AuthToken = "fail-unauthorized";
 			Container container = new CF_Container(conn, client, "foo");
-			container.MakePrivate();
+            Assert.Throws<UnauthorizedException>(container.MakePrivate);
 		}
 		[Test]
         public void TestMembers()

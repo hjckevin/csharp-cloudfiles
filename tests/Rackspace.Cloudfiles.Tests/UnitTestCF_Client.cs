@@ -25,12 +25,11 @@ namespace Rackspace.Cloudfiles.Tests
 			Assert.AreEqual(res.Status, 200);
 		}
 		[Test]
-		[ExpectedException(typeof(ClientException))]
 		public void TestGetCDNAccountFail()
 		{
 			Client client = new CF_Client(new FakeHttpRequestFactory());
 			var headers  = new Dictionary<string, string> {{"request-type", "cdn-account-fail"}};
-		    client.GetCDNAccount("foo", "foo", headers, new Dictionary<string, string>(), false);
+		    Assert.Throws<ClientException>(() => client.GetCDNAccount("foo", "foo", headers, new Dictionary<string, string>(), false));
 		}
 	}
     public class FakeHttpRequestFactory : IHttpRequestFactory
