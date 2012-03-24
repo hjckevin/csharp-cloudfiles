@@ -17,7 +17,7 @@ namespace Rackspace.Cloudfiles
 		/// <summary>
 		/// Gets the UserCredentials Object to dynamically update account connection information
 		/// </summary>
-		public override UserCredentials UserCreds
+		public UserCredentials UserCreds
 		{
 			get { return _user_creds; }
 		}
@@ -27,7 +27,7 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// <c>true</c> if this instance has CDN; otherwise, <c>false</c>.
 		/// </value>
-		public override bool HasCDN
+		public bool HasCDN
 		{
 			get { return _user_creds.CdnMangementUrl != null; }
 		}
@@ -37,7 +37,7 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// Number of times to retry defaults to zero
 		/// </value>
-		public override int Retries
+		public int Retries
 		{
 			get { return _retires; }
 			set { _retires = value; }
@@ -45,7 +45,7 @@ namespace Rackspace.Cloudfiles
 		/// <summary>
 		/// Gets or sets the timeout of the tcp connection.
 		/// </summary>
-		public override int Timeout
+		public int Timeout
 		{
 			get { return _timeout; }
 			set { _timeout = value; }
@@ -56,7 +56,7 @@ namespace Rackspace.Cloudfiles
 		/// <value>
 		/// The user agent.
 		/// </value>
-		public override string UserAgent
+		public string UserAgent
 		{
 			get { return _user_agent; }
 			set { _user_agent = value; }
@@ -89,7 +89,7 @@ namespace Rackspace.Cloudfiles
 		/// <summary>
 		/// Authenticates against the specified AuthUrl.
 		/// </summary>
-		public override void Authenticate()
+		public void Authenticate()
 		{
 			Authenticate(false);
 		}
@@ -99,7 +99,7 @@ namespace Rackspace.Cloudfiles
 		/// <param name="snet">
 		/// A <see cref="System.Boolean"/>
 		/// </param>
-		public override void Authenticate(bool snet)
+		public void Authenticate(bool snet)
 		{
 			try
 			{
@@ -126,14 +126,14 @@ namespace Rackspace.Cloudfiles
 			}
 		}
 	}
-	public abstract class Connection
+	public interface Connection
 	{
-		public abstract void Authenticate();
-		public abstract void Authenticate(bool snet);
-		public abstract bool HasCDN { get; }
-		public abstract UserCredentials UserCreds { get; }
-		public abstract int Retries { get; set; }
-		public abstract int Timeout { get; set; }
-		public abstract string UserAgent { get; set; }
+		void Authenticate();
+		void Authenticate(bool snet);
+		bool HasCDN { get; }
+		UserCredentials UserCreds { get; }
+		int Retries { get; set; }
+		int Timeout { get; set; }
+		string UserAgent { get; set; }
 	}
 }

@@ -1093,7 +1093,7 @@ namespace Rackspace.Cloudfiles
 			}
 			if (ttl > 1577836800 || ttl < 900)
 			{
-				throw new TTLLengthException("TTL range must be 900 to 1577836800 seconds TTL: " + ttl.ToString());
+				throw new TTLLengthException("TTL range must be 900 to 1577836800 seconds TTL: " + ttl.ToString(CultureInfo.InvariantCulture));
 			}
 			var headers = new Dictionary<string, string> {{"x-ttl",ttl.ToString(CultureInfo.InvariantCulture)}};
 			AddCdnHeaders(headers);

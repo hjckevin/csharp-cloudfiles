@@ -319,6 +319,18 @@ namespace Rackspace.Cloudfiles.Tests
 			Container container = new CF_Container(_conn, _client, "foo");
             Assert.Throws<CDNNotEnabledException>(() => container.AddCdnHeaders(new Dictionary<string, string>()));
 		}
+        [Test]
+        public void TestTTLLengthIsTooShort()
+        {
+            var container = new CF_Container(_conn, _client, "foo");
+            Assert.Throws<TTLLengthException>(() => container.SetTTL(800));
+        }
+        [Test]
+        public void TestTTLLengthIsTooLong()
+        {
+            var container = new CF_Container(_conn, _client, "foo");
+            Assert.Throws<TTLLengthException>(() => container.SetTTL(1577836801));
+        }
 		[Test]
 		public void TestAddCDNHeadersFailUnauthorized()
 		{
