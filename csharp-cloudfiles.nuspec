@@ -2,7 +2,7 @@
   <package xmlns='http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd'>
     <metadata>
       <id>csharp-cloudfiles</id>
-      <version>3.0.2.8</version>
+      <version>3.0.2.9</version>
       <title>csharp-cloudfiles</title>
       <authors>Jason Meridth,Conrad Weidenkeller</authors>
       <description>C# .NET API for Rackspace Cloud Files Cloud Storage</description>

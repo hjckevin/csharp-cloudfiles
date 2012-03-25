@@ -754,7 +754,7 @@ namespace Rackspace.Cloudfiles
 			var headers = new Dictionary<string, string>();
 			foreach (KeyValuePair<string, string> m in metadata)
 			{
-				if (m.Key.Contains("x-contaner-meta-"))
+				if (m.Key.Contains("x-container-meta-"))
 				{
 					headers.Add(m.Key, m.Value);
 				}
