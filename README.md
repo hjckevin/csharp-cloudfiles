@@ -1,5 +1,9 @@
 # Rackspace Cloud Files CSharp API
 
+## NuGet
+
+![Install-Pacakage csharp-cloudfiles](https://s3.amazonaws.com/github_readme_images/nuget-csharp-cloudfiles.PNG)
+
 ## Description
 
 This is a .NET/C# interface into the [Rackspace CloudFiles](http://www.rackspacecloud.com/cloud_hosting_products/files) service. 
@@ -7,9 +11,14 @@ Cloud Files is a reliable, scalable and affordable web-based storage hosting for
 Cloud Files is the first and only cloud service that leverages a tier one CDN provider to create such an easy and complete storage-to-delivery 
 solution for media content.
 
-## NuGet
+## QUESTIONS
 
-![Install-Pacakage csharp-cloudfiles](https://s3.amazonaws.com/github_readme_images/nuget-csharp-cloudfiles.PNG)
+The [mailing list](http://groups.google.com/group/csharp-cloudfiles)
+
+## ISSUES
+
+Please read the [wiki](http://wiki.github.com/rackspace/csharp-cloudfiles/) about what information is best to help people fix your issues, 
+then create an issue on the [issues tab](http://github.com/rackspace/csharp-cloudfiles/issues).
 
 ## Contributing
 
@@ -21,19 +30,6 @@ solution for media content.
    We have to do this because one of the primary maintainers is using Mono (Linux) to develop this library.
 
 3. [Fork](http://help.github.com/fork-a-repo/) the repository, clone, code, push, and then issue a [pull request](http://help.github.com/send-pull-requests/)
-
-## Issues vs Inquiries/Questions
-
-Please put issues on Github and ask questions/inquiries on the mailing list
-
-## Mailing List
-
-The [mailing list](http://groups.google.com/group/csharp-cloudfiles)
-
-## Creating Issues
-
-Please read the [wiki](http://wiki.github.com/rackspace/csharp-cloudfiles/) about what information is best to help people fix your issues, 
-then create an issue on the [issues tab](http://github.com/rackspace/csharp-cloudfiles/issues).
 
 ## Getting dll and using in your project
 
