@@ -2,6 +2,8 @@
 
 ## NuGet
 
+To install csharp-cloudfiles, run the following command in the [Package Manager Console](http://docs.nuget.org/docs/start-here/using-the-package-manager-console)
+
 ![Install-Pacakage csharp-cloudfiles](https://s3.amazonaws.com/github_readme_images/nuget-csharp-cloudfiles.PNG)
 
 ## Description
