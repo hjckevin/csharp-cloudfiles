@@ -239,10 +239,6 @@ namespace Rackspace.Cloudfiles
 				_etag = _headers[Constants.Headers.Etag];
 				_content_length = long.Parse(_headers[Constants.Headers.ContentLength]);
 				_content_type = _headers[Constants.Headers.ContentLength];
-				if (_headers.ContainsKey(Constants.Headers.ObjectDeleteAt))
-				{
-					_delete_at = long.Parse(_headers[Constants.Headers.ObjectDeleteAt]);
-				}
 				_reload_properties = false;
 				return res;
 			}
