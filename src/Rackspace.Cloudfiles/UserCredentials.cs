@@ -21,7 +21,7 @@ namespace Rackspace.Cloudfiles
 		    AuthToken = null;
 		    StorageUrl = null;
 		    CdnMangementUrl = null;
-		    AuthUrl = new Uri("https://auth.api.rackspacecloud.com/v1.0");
+		    AuthUrl = new Uri(Constants.Urls.UsAuthUrl);
 	        UserName = username;
 		    ApiKey = api_key;
 		}
@@ -85,7 +85,11 @@ namespace Rackspace.Cloudfiles
 		/// </summary>
 		public void UkAuth()
 		{
-			AuthUrl = new Uri("https://lon.auth.api.rackspacecloud.com/v1.0");
+			AuthUrl = new Uri(Constants.Urls.UkAuthUrl);
+		}
+		public void UsAuth()
+		{
+			AuthUrl = new Uri(Constants.Urls.UsAuthUrl);
 		}
 		public string UserName { get; set; }
 		public string ApiKey { get; set; }

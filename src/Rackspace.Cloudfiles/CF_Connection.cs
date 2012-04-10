@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using OpenStack.Swift;
+using Rackspace.Cloudfiles.Constants;
 namespace Rackspace.Cloudfiles
 {
 	/// <summary>
@@ -11,8 +12,8 @@ namespace Rackspace.Cloudfiles
 		private readonly Client _client;
 		private int _retires;
 		private int _num_retries_attempted;
-		private int _timeout = 5000;
-		private string _user_agent = "csharp-cloudfiles/3.0";
+		private int _timeout = Constants.Misc.DefaultTimeout;
+		private string _user_agent = Constants.Misc.DefaultUserAgent;
 		private readonly UserCredentials _user_creds;
 		/// <summary>
 		/// Gets the UserCredentials Object to dynamically update account connection information
@@ -104,11 +105,11 @@ namespace Rackspace.Cloudfiles
 			try
 			{
 		        AuthResponse res = _client.GetAuth(_user_creds.AuthUrl.ToString(), _user_creds.UserName, _user_creds.ApiKey, new Dictionary<string, string>(), new Dictionary<string, string>(), snet);
-			    _user_creds.StorageUrl =  new Uri(res.Headers["x-storage-url"]);
-			    _user_creds.AuthToken = res.Headers["x-auth-token"];
-			    if(res.Headers.ContainsKey("x-cdn-management-url"))
+			    _user_creds.StorageUrl =  new Uri(res.Headers[Constants.Headers.StorageUrl]);
+			    _user_creds.AuthToken = res.Headers[Constants.Headers.AuthToken];
+			    if(res.Headers.ContainsKey(Constants.Headers.CdnManagementUrl))
 			    {
-			        _user_creds.CdnMangementUrl = new Uri(res.Headers["x-cdn-management-url"]);
+			        _user_creds.CdnMangementUrl = new Uri(res.Headers[Constants.Headers.CdnManagementUrl]);
 			    }
 			}
 			catch (ClientException)

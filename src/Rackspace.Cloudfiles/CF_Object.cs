@@ -12,16 +12,16 @@ namespace Rackspace.Cloudfiles
 	/// </summary>
 	public class CF_Object : StorageObject
 	{
-        private readonly Client _client;
-        private readonly Container _cont;
+        private Client _client;
+        private Container _cont;
         private int _retires;
         private int _num_retries_attempted;
-        private readonly Connection _conn;
+        private Connection _conn;
         private bool _reload_properties = true;
-        private readonly string _name;
-        private readonly string _etag;
-        private readonly string _content_type;
-        private const long _content_length = -1;
+        private string _name;
+        private string _etag;
+        private string _content_type;
+        private long _content_length = -1;
         private Dictionary<string, string> _headers;
         private Dictionary<string, string> _metadata;
 
@@ -133,7 +133,7 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public string Etag
 		{
-			get { return _reload_properties ? _head_object().Headers["etag"] : _etag; }
+			get { return _reload_properties ? _head_object().Headers[Constants.Headers.Etag] : _etag; }
 		}
 		/// <summary>
 		/// Gets the Content type.
@@ -143,7 +143,7 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public string ContentType
 		{
-			get { return _reload_properties ? _head_object().Headers["content-type"] : _content_type; }
+			get { return _reload_properties ? _head_object().Headers[Constants.Headers.ContentType] : _content_type; }
 		}
 		/// <summary>
 		/// Gets the content length.
@@ -153,7 +153,7 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public long  ContentLength
 		{
-			get { return _reload_properties ? long.Parse(_head_object().Headers["content-length"]) : _content_length; }
+			get { return _reload_properties ? long.Parse(_head_object().Headers[Constants.Headers.ContentLength]) : _content_length; }
 		}
 		/// <summary>
 		/// Gets the headers.
@@ -163,7 +163,7 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public Dictionary<string, string> Headers
 		{
-			get { return _reload_properties ? Common.ProcessMetadata(_head_object().Headers)["headers"] : _headers; }
+			get { return _reload_properties ? Common.ProcessMetadata(_head_object().Headers)[Constants.Misc.ProcessedHeadersHeaderKey] : _headers; }
 		}
 		/// <summary>
 		/// Gets the metadata.
@@ -173,7 +173,7 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public Dictionary<string, string> Metadata
 		{
-			get { return _reload_properties ? Common.ProcessMetadata(_head_object().Headers)["metadata"] : _metadata; }
+			get { return _reload_properties ? Common.ProcessMetadata(_head_object().Headers)[Constants.Misc.ProcessedHeadersMetadataKey] : _metadata; }
 		}
 		/// <summary>
 		/// Gets the storage URL.
@@ -228,14 +228,21 @@ namespace Rackspace.Cloudfiles
 		private ObjectResponse _head_object()
 		{
 		    var headers = new Dictionary<string, string>();
-		    headers["user-agent"] = _conn.UserAgent;
+		    headers[Constants.Headers.UserAgent] = _conn.UserAgent;
 		    _client.Timeout = _conn.Timeout;
 		    try
 		    {
 			    var res = _client.HeadObject(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, _cont.Name, Name, headers, new Dictionary<string, string>());
 				var processed_headers = Common.ProcessMetadata(res.Headers);
-				_headers = processed_headers["headers"];
-				_metadata = processed_headers["metadata"];
+				_headers = processed_headers[Constants.Misc.ProcessedHeadersHeaderKey];
+				_metadata = processed_headers[Constants.Misc.ProcessedHeadersMetadataKey];
+				_etag = _headers[Constants.Headers.Etag];
+				_content_length = long.Parse(_headers[Constants.Headers.ContentLength]);
+				_content_type = _headers[Constants.Headers.ContentLength];
+				if (_headers.ContainsKey(Constants.Headers.ObjectDeleteAt))
+				{
+					_delete_at = long.Parse(_headers[Constants.Headers.ObjectDeleteAt]);
+				}
 				_reload_properties = false;
 				return res;
 			}
@@ -243,7 +250,7 @@ namespace Rackspace.Cloudfiles
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires) 
 					    {
 						    ++ _num_retries_attempted;
@@ -253,7 +260,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -264,8 +271,8 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 404:
-					     throw new ContainerNotFoundException();
+				    case Constants.StatusCodes.NotFound:
+					     throw new ObjectNotFoundException();
 				    default:
 				        if (_num_retries_attempted < _retires)
 					    {
@@ -309,7 +316,7 @@ namespace Rackspace.Cloudfiles
 				throw new ArgumentNullException();
 			}
             var headers = new Dictionary<string, string>();
-			headers["user-agent"] = _conn.UserAgent;
+			headers[Constants.Headers.UserAgent] = _conn.UserAgent;
 			_client.Timeout = _conn.Timeout;
 			Stream save_to = File.OpenWrite(path);
 			var buffer = new byte[ChunkSize];
@@ -335,7 +342,7 @@ namespace Rackspace.Cloudfiles
 					    sbuilder.Append(b.ToString("x2").ToLower());
 				    }
 					var converted_md5 = sbuilder.ToString();
-					if (converted_md5 != res.Headers["etag"].ToLower())
+					if (converted_md5 != res.Headers[Constants.Headers.Etag].ToLower())
 					{
 						File.Delete(path);
 						throw new InvalidETagException();
@@ -346,7 +353,7 @@ namespace Rackspace.Cloudfiles
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted <= _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -355,7 +362,7 @@ namespace Rackspace.Cloudfiles
 						    break;
 					    }
 				        throw new TimeoutException();
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -365,8 +372,8 @@ namespace Rackspace.Cloudfiles
 						    break;
 					    }
 				        throw new UnauthorizedException();
-				    case 404:
-					    throw new ContainerNotFoundException();
+				    case Constants.StatusCodes.NotFound:
+					    throw new ObjectNotFoundException();
 				    default:
 				        if (_num_retries_attempted < _retires)
 					    {
@@ -435,17 +442,18 @@ namespace Rackspace.Cloudfiles
 			{
 				throw new ArgumentNullException();
 			}
-		    headers["user-agent"] = _conn.UserAgent;
+		    headers[Constants.Headers.UserAgent] = _conn.UserAgent;
 			_client.Timeout = _conn.Timeout;
 		    try
 		    {
 			    _client.PutObject(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, _cont.Name, Name, data, headers, new Dictionary<string, string>());
+				_reload_properties = true;
 			}
 			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -456,7 +464,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -468,7 +476,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 422:
+				    case Constants.StatusCodes.UnprocessableEntity:
 					    throw new InvalidETagException();
 				    default:
 				        if (_num_retries_attempted < _retires)
@@ -497,7 +505,7 @@ namespace Rackspace.Cloudfiles
 		public Stream Read()
 		{
 			var headers = new Dictionary<string, string>();
-		    headers["user-agent"] = _conn.UserAgent;
+		    headers[Constants.Headers.UserAgent] = _conn.UserAgent;
 			_client.Timeout = _conn.Timeout;
 			try
 			{
@@ -507,7 +515,7 @@ namespace Rackspace.Cloudfiles
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -517,7 +525,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -545,6 +553,64 @@ namespace Rackspace.Cloudfiles
 				_num_retries_attempted = 0;
 			}
 		}
+		public void SyncHeaders(Dictionary<string, string> headers)
+		{
+			if (headers == null)
+			{
+				throw new ArgumentNullException();
+			}
+		    headers[Constants.Headers.UserAgent] = _conn.UserAgent;
+			_client.Timeout = _conn.Timeout;
+			try
+			{
+			    _client.PostObject(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, _cont.Name, _name, headers, new Dictionary<string, string>());
+				_reload_properties = true;
+			}
+		    catch (ClientException e)
+			{
+				switch (e.Status)
+				{
+				    case Constants.StatusCodes.Timeout:
+				        if (_num_retries_attempted < _retires)
+					    {
+						    ++ _num_retries_attempted;
+						    SyncHeaders(headers);
+						    break;
+					    }
+					    else
+					    {
+						    throw new TimeoutException();
+					    }
+				    case Constants.StatusCodes.Unauthorized:
+					    if (_num_retries_attempted < _retires)
+					    {
+						    ++ _num_retries_attempted;
+						    _conn.Authenticate();
+						    SyncHeaders(headers);
+						    break;
+					    }
+					    else
+					    {
+						    throw new UnauthorizedException();
+					    }
+				    default:
+				        if (_num_retries_attempted < _retires)
+					    {
+						    ++ _num_retries_attempted;
+						    SyncHeaders(headers);
+						    break;
+					    }
+					    else
+					    {
+						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
+					    }
+			    }
+		    }
+			finally
+			{
+				_num_retries_attempted = 0;
+			}
+		}
 		/// <summary>
 		/// Syncs Metadata
 		/// </summary>
@@ -560,65 +626,16 @@ namespace Rackspace.Cloudfiles
 			var headers = new Dictionary<string, string>();
 			foreach (KeyValuePair<string, string> m in metadata)
 			{
-				if (m.Key.Contains("x-object-meta-"))
+				if (m.Key.Contains(Constants.Headers.ObjectMetaDataPrefix))
 				{
 					headers.Add(m.Key, m.Value);
 				}
 				else
 				{
-					headers.Add("x-object-meta-" + m.Key, m.Value);
+					headers.Add(Constants.Headers.ObjectMetaDataPrefix + m.Key, m.Value);
 				}
 			}
-		    headers["user-agent"] = _conn.UserAgent;
-			_client.Timeout = _conn.Timeout;
-			try
-			{
-			    _client.PostObject(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, _cont.Name, _name, headers, new Dictionary<string, string>());
-			}
-		    catch (ClientException e)
-			{
-				switch (e.Status)
-				{
-				    case -1:
-				        if (_num_retries_attempted < _retires)
-					    {
-						    ++ _num_retries_attempted;
-						    SyncMetadata(metadata);
-						    break;
-					    }
-					    else
-					    {
-						    throw new TimeoutException();
-					    }
-				    case 401:
-					    if (_num_retries_attempted < _retires)
-					    {
-						    ++ _num_retries_attempted;
-						    _conn.Authenticate();
-						    SyncMetadata(metadata);
-						    break;
-					    }
-					    else
-					    {
-						    throw new UnauthorizedException();
-					    }
-				    default:
-				        if (_num_retries_attempted < _retires)
-					    {
-						    ++ _num_retries_attempted;
-						    SyncMetadata(metadata);
-						    break;
-					    }
-					    else
-					    {
-						    throw new CloudFilesException("Error: " + e.Status.ToString(CultureInfo.InvariantCulture));
-					    }
-			    }
-		    }
-			finally
-			{
-				_num_retries_attempted = 0;
-			}
+            SyncHeaders(headers);
 		}
 		/// <summary>
 		/// Purges object from cdn.
@@ -667,9 +684,9 @@ namespace Rackspace.Cloudfiles
 			var headers = new Dictionary<string, string>();
 			if (email.Length > 0)
 			{
-			    headers["x-purge-email"] = email;
+			    headers[Constants.Headers.CdnPurgeEmail] = email;
 			}
-		    headers["user-agent"] = _conn.UserAgent;
+		    headers[Constants.Headers.UserAgent] = _conn.UserAgent;
 			_client.Timeout = _conn.Timeout;
 			try
 			{
@@ -679,7 +696,7 @@ namespace Rackspace.Cloudfiles
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -690,7 +707,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -744,6 +761,7 @@ namespace Rackspace.Cloudfiles
 		void Write(Stream data, Dictionary<string, string> headers);
 		Stream Read();
 		void SyncMetadata(Dictionary<string, string> metadata);
+        void SyncHeaders(Dictionary<string, string> headers);
 		void PurgeFromCdn();
 		void PurgeFromCdn(string[] emails);
 		void PurgeFromCdn(string email);

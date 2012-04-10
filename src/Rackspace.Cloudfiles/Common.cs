@@ -27,15 +27,15 @@ namespace Rackspace.Cloudfiles
 			var metadata = new Dictionary<string, string>();
 			foreach (var header in headers)
 			{
-		        if (header.Key.ToLower().Contains("x-account-meta-"))
+		        if (header.Key.ToLower().Contains(Constants.Headers.AccountMetaDataPrefix))
 				{
 					metadata.Add(header.Key.Remove(0, 15), header.Value);
 				}
-				else if(header.Key.ToLower().Contains("x-container-meta-"))
+				else if(header.Key.ToLower().Contains(Constants.Headers.ContainerMetaDataPrefix))
 				{
 					metadata.Add(header.Key.Remove(0, 17), header.Value);
 				}
-				else if(header.Key.ToLower().Contains("x-object-meta-"))
+				else if(header.Key.ToLower().Contains(Constants.Headers.ObjectMetaDataPrefix))
 				{
 					metadata.Add(header.Key.Remove(0, 14), header.Value);
 				}
@@ -45,8 +45,8 @@ namespace Rackspace.Cloudfiles
 				}
 		    }
 			var processed_headers = new Dictionary<string, Dictionary<string, string>>();
-			processed_headers["headers"] = pheaders;
-			processed_headers["metadata"] = metadata;
+			processed_headers[Constants.Misc.ProcessedHeadersHeaderKey] = pheaders;
+			processed_headers[Constants.Misc.ProcessedHeadersMetadataKey] = metadata;
 			return processed_headers;
 		}
 	}

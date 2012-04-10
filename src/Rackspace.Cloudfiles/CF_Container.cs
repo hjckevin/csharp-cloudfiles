@@ -14,7 +14,7 @@ namespace Rackspace.Cloudfiles
         private int _retires;
         private int _num_retries_attempted;
         private bool _reload_properties = true;
-	    private const bool _reload_cdn_properties = true;
+	    private bool _reload_cdn_properties = true;
 	    private bool _cdn_log_retention;
         private bool _cdn_enabled;
         private Uri _cdn_uri;
@@ -82,7 +82,7 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public Dictionary<string, string> Headers
 		{
-			get { return _reload_properties ? Common.ProcessMetadata(_head_container().Headers)["headers"] : _headers; }
+			get { return _reload_properties ? Common.ProcessMetadata(_head_container().Headers)[Constants.Misc.ProcessedHeadersHeaderKey] : _headers; }
 		}
 		/// <summary>
 		/// Gets the cdn headers.
@@ -102,7 +102,7 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public Dictionary<string, string> Metadata
 		{
-			get { return _reload_properties ? Common.ProcessMetadata(_head_container().Headers)["metadata"] : _metadata; }
+			get { return _reload_properties ? Common.ProcessMetadata(_head_container().Headers)[Constants.Misc.ProcessedHeadersHeaderKey] : _metadata; }
 		}
 		/// <summary>
 		/// Gets the object count.
@@ -112,7 +112,7 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public long ObjectCount
 		{
-			get { return _reload_properties ? long.Parse(_head_container().Headers["x-container-object-count"]) : _object_count; }
+			get { return _reload_properties ? long.Parse(_head_container().Headers[Constants.Headers.ContainerObjectCount]) : _object_count; }
 		}
 		/// <summary>
 		/// Gets the bytes used.
@@ -122,7 +122,7 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public long BytesUsed
 		{
-			get { return _reload_properties ? long.Parse(_head_container().Headers["x-container-bytes-used"]) : _bytes_used; }
+			get { return _reload_properties ? long.Parse(_head_container().Headers[Constants.Headers.ContainerBytesUsed]) : _bytes_used; }
 		}
 		/// <summary>
 		/// Gets the TT.
@@ -217,16 +217,16 @@ namespace Rackspace.Cloudfiles
 		}
 		private ContainerResponse _head_container()
 		{
-			var headers = new Dictionary<string, string> {{"user-agent", _conn.UserAgent}};
+			var headers = new Dictionary<string, string> {{Constants.Headers.UserAgent, _conn.UserAgent}};
 		    _client.Timeout = _conn.Timeout;
 		    try
 		    {
 			    var res = _client.HeadContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, Name, headers, new Dictionary<string, string>());
-				_object_count = long.Parse(res.Headers["x-container-object-count"]);
-				_bytes_used = long.Parse(res.Headers["x-container-bytes-used"]);
+				_object_count = long.Parse(res.Headers[Constants.Headers.ContainerObjectCount]);
+				_bytes_used = long.Parse(res.Headers[Constants.Headers.ContainerBytesUsed]);
 				var processed_headers = Common.ProcessMetadata(res.Headers);
-				_headers = processed_headers["headers"];
-				_metadata = processed_headers["metadata"];
+				_headers = processed_headers[Constants.Misc.ProcessedHeadersHeaderKey];
+				_metadata = processed_headers[Constants.Misc.ProcessedHeadersMetadataKey];
 				_reload_properties = false;
 				return res;
 			}
@@ -234,7 +234,7 @@ namespace Rackspace.Cloudfiles
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -244,7 +244,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -255,7 +255,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 404:
+				    case Constants.StatusCodes.NotFound:
 					     throw new ContainerNotFoundException();
 				    default:
 				        if (_num_retries_attempted < _retires)
@@ -280,16 +280,17 @@ namespace Rackspace.Cloudfiles
 			{
 				if (_conn.HasCDN)
 				{
-				    var headers = new Dictionary<string, string> {{"user-agent", _conn.UserAgent}};
+				    var headers = new Dictionary<string, string> {{Constants.Headers.UserAgent, _conn.UserAgent}};
 				    _client.Timeout = _conn.Timeout;
 			        var res = _client.HeadContainer(_conn.UserCreds.CdnMangementUrl.ToString(), _conn.UserCreds.AuthToken, Name, headers, new Dictionary<string, string>());
-				    _cdn_uri = new Uri(res.Headers["x-cdn-uri"]);
-				    _cdn_ssl_uri = new Uri(res.Headers["x-cdn-ssl-uri"]);
-				    _cdn_streaming_uri = new Uri(res.Headers["x-cdn-streaming-uri"]);
-					_ttl = long.Parse(res.Headers["x-ttl"]);
-					_cdn_enabled = bool.Parse(res.Headers["x-cdn-enabled"]);
-					_cdn_log_retention = bool.Parse(res.Headers["x-log-retention"]);
+				    _cdn_uri = new Uri(res.Headers[Constants.Headers.CdnUri]);
+				    _cdn_ssl_uri = new Uri(res.Headers[Constants.Headers.CdnSslUri]);
+				    _cdn_streaming_uri = new Uri(res.Headers[Constants.Headers.CdnStreamingUri]);
+					_ttl = long.Parse(res.Headers[Constants.Headers.CdnTTL]);
+					_cdn_enabled = bool.Parse(res.Headers[Constants.Headers.CdnEnabled]);
+					_cdn_log_retention = bool.Parse(res.Headers[Constants.Headers.CdnLogRetention]);
 					_cdn_headers = res.Headers;
+					_reload_cdn_properties = false;
 					return true;
 				}
 				else
@@ -301,7 +302,7 @@ namespace Rackspace.Cloudfiles
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -311,7 +312,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -322,7 +323,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 404:
+				    case Constants.StatusCodes.NotFound:
 					    return false;
 				    default:
 				        if (_num_retries_attempted < _retires)
@@ -378,15 +379,16 @@ namespace Rackspace.Cloudfiles
 				throw new ArgumentNullException();
 			}
 			Common.ValidateObjectName(object_name);
+			var headers = new Dictionary<string, string> {{Constants.Headers.UserAgent, _conn.UserAgent}};
 			try
 			{
-			    _client.HeadObject(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, Name, object_name, _headers, new Dictionary<string, string>());
+			    _client.HeadObject(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, Name, object_name, headers, new Dictionary<string, string>());
 			}
 			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -396,7 +398,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -407,7 +409,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 404:
+				    case Constants.StatusCodes.NotFound:
 					    throw new ObjectNotFoundException();
 				    default:
 				        if (_num_retries_attempted < _retires)
@@ -482,23 +484,23 @@ namespace Rackspace.Cloudfiles
 				throw new ArgumentNullException();
 			}
 			_client.Timeout = _conn.Timeout;
-            var headers = new Dictionary<string, string> {{ "user-agent", _conn.UserAgent}};
+            var headers = new Dictionary<string, string> {{ Constants.Headers.UserAgent, _conn.UserAgent}};
 			var queryp = new Dictionary<string, string>();
 			foreach (var q in query)
 			{
 				switch (q.Key)
 				{
 				    case ObjectQuery.Limit:
-					    queryp.Add("limit", q.Value);
+					    queryp.Add(Constants.Query.Limit, q.Value);
 					    break;
 				    case ObjectQuery.Marker:
-					    queryp.Add("marker", q.Value);
+					    queryp.Add(Constants.Query.Marker, q.Value);
 			            break;
 				    case ObjectQuery.Prefix:
-					    queryp.Add("prefix", q.Value);
+					    queryp.Add(Constants.Query.Prefix, q.Value);
 					    break;
 				    case ObjectQuery.Delimiter:
-					    queryp.Add("delimiter", q.Value);
+					    queryp.Add(Constants.Query.Delimiter, q.Value);
 					    break;
 				}
 			}
@@ -510,7 +512,7 @@ namespace Rackspace.Cloudfiles
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -520,7 +522,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -531,7 +533,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 404:
+				    case Constants.StatusCodes.NotFound:
 					    throw new ContainerNotFoundException();
 				    default:
 				        if (_num_retries_attempted < _retires)
@@ -605,23 +607,23 @@ namespace Rackspace.Cloudfiles
 				throw new ArgumentNullException();
 			}
 			_client.Timeout = _conn.Timeout;
-            var headers = new Dictionary<string, string> { { "user-agent", _conn.UserAgent } };
+            var headers = new Dictionary<string, string> { { Constants.Headers.UserAgent, _conn.UserAgent } };
 			var queryp = new Dictionary<string, string>();
 			foreach (var q in query)
 			{
 				switch (q.Key)
 				{
 				    case ObjectQuery.Limit:
-					    queryp.Add("limit", q.Value);
+					    queryp.Add(Constants.Query.Limit, q.Value);
 					    break;
 				    case ObjectQuery.Marker:
-					    queryp.Add("marker", q.Value);
+					    queryp.Add(Constants.Query.Marker, q.Value);
 			            break;
 				    case ObjectQuery.Prefix:
-					    queryp.Add("prefix", q.Value);
+					    queryp.Add(Constants.Query.Prefix, q.Value);
 					    break;
 				    case ObjectQuery.Delimiter:
-					    queryp.Add("delimiter", q.Value);
+					    queryp.Add(Constants.Query.Delimiter, q.Value);
 					    break;
 				}
 			}
@@ -633,7 +635,7 @@ namespace Rackspace.Cloudfiles
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -643,7 +645,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -654,7 +656,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 404:
+				    case Constants.StatusCodes.NotFound:
 					    throw new ContainerNotFoundException();
 				    default:
 				        if (_num_retries_attempted < _retires)
@@ -682,7 +684,7 @@ namespace Rackspace.Cloudfiles
 		public void DeleteObject(string object_name)
 		{
 			Common.ValidateObjectName(object_name);
-			var headers = new Dictionary<string, string> {{ "user-agent", _conn.UserAgent }};
+			var headers = new Dictionary<string, string> {{ Constants.Headers.UserAgent, _conn.UserAgent }};
 			_client.Timeout = _conn.Timeout;
 			try
 			{
@@ -693,7 +695,7 @@ namespace Rackspace.Cloudfiles
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -704,7 +706,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -716,7 +718,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 404:
+				    case Constants.StatusCodes.NotFound:
 					    throw new ObjectNotFoundException();
 				    default:
 				        if (_num_retries_attempted < _retires)
@@ -754,13 +756,13 @@ namespace Rackspace.Cloudfiles
 			var headers = new Dictionary<string, string>();
 			foreach (KeyValuePair<string, string> m in metadata)
 			{
-				if (m.Key.Contains("x-container-meta-"))
+				if (m.Key.Contains(Constants.Headers.ContainerMetaDataPrefix))
 				{
 					headers.Add(m.Key, m.Value);
 				}
 				else
 				{
-					headers.Add("x-container-meta-" + m.Key, m.Value);
+					headers.Add(Constants.Headers.ContainerMetaDataPrefix + m.Key, m.Value);
 				}
 			}
 			AddHeaders(headers);
@@ -778,7 +780,7 @@ namespace Rackspace.Cloudfiles
 				throw new ArgumentNullException();
 			}
 		    _client.Timeout = _conn.Timeout;
-			headers["user-agent"] = _conn.UserAgent;
+			headers[Constants.Headers.UserAgent] = _conn.UserAgent;
 			try
 			{
 			    _client.PostContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, Name, headers, new Dictionary<string, string>());
@@ -788,7 +790,7 @@ namespace Rackspace.Cloudfiles
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -799,7 +801,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -811,7 +813,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 404:
+				    case Constants.StatusCodes.NotFound:
 					    throw new ObjectNotFoundException();
 				    default:
 				        if (_num_retries_attempted < _retires)
@@ -848,17 +850,17 @@ namespace Rackspace.Cloudfiles
 				throw new CDNNotEnabledException();
 			}
 		    _client.Timeout = _conn.Timeout;
-			headers["user-agent"] = _conn.UserAgent;
+			headers[Constants.Headers.UserAgent] = _conn.UserAgent;
 			try
 			{
 			    _client.PostContainer(_conn.UserCreds.CdnMangementUrl.ToString(), _conn.UserCreds.AuthToken.ToString(), Name, headers, new Dictionary<string, string>());
-				_reload_properties = true;
+				_reload_cdn_properties = true;
 			}
 			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -869,7 +871,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -881,7 +883,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 404:
+				    case Constants.StatusCodes.NotFound:
 					    throw new CDNNotEnabledException();
 				    default:
 				        if (_num_retries_attempted < _retires)
@@ -954,9 +956,9 @@ namespace Rackspace.Cloudfiles
 		    _client.Timeout = _conn.Timeout;
 			var headers = new Dictionary<string, string>
                 {
-                    {"user-agent", _conn.UserAgent},
-                    {"x-ttl", ttl.ToString(CultureInfo.InvariantCulture)},
-                    {"x-log-retention", log_retention.ToString(CultureInfo.InvariantCulture)}
+                    {Constants.Headers.UserAgent, _conn.UserAgent},
+                    {Constants.Headers.CdnTTL, ttl.ToString(CultureInfo.InvariantCulture)},
+                    {Constants.Headers.CdnLogRetention, log_retention.ToString(CultureInfo.InvariantCulture)}
                 };
 		    try
 			{
@@ -964,12 +966,13 @@ namespace Rackspace.Cloudfiles
 				_ttl = ttl;
 				_cdn_log_retention = log_retention;
 				_cdn_enabled = true;
+				_reload_cdn_properties = true;
 			}
 			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -980,7 +983,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -1024,19 +1027,20 @@ namespace Rackspace.Cloudfiles
 		    _client.Timeout = _conn.Timeout;
 			var headers = new Dictionary<string, string>
 			                  {
-			                      {"user-agent", _conn.UserAgent},
-                                  {"x-cdn-enabled", "false"}
+			                      {Constants.Headers.UserAgent, _conn.UserAgent},
+                                  {Constants.Headers.CdnEnabled, "false"}
 			                  };
 		    try
 			{
 			    _client.PostContainer(_conn.UserCreds.CdnMangementUrl.ToString(), _conn.UserCreds.AuthToken.ToString(), Name, headers, new Dictionary<string, string>());
 				_cdn_enabled = false;
+				_reload_cdn_properties = true;
 			}
 			catch (ClientException e)
 			{
 				switch (e.Status)
 				{
-				    case -1:
+				    case Constants.StatusCodes.Timeout:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -1047,7 +1051,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new TimeoutException();
 					    }
-				    case 401:
+				    case Constants.StatusCodes.Unauthorized:
 					    if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
@@ -1059,7 +1063,7 @@ namespace Rackspace.Cloudfiles
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case 404:
+				    case Constants.StatusCodes.NotFound:
 					    throw new CDNNotEnabledException();
 				    default:
 				        if (_num_retries_attempted < _retires)
@@ -1095,9 +1099,8 @@ namespace Rackspace.Cloudfiles
 			{
 				throw new TTLLengthException("TTL range must be 900 to 1577836800 seconds TTL: " + ttl.ToString(CultureInfo.InvariantCulture));
 			}
-			var headers = new Dictionary<string, string> {{"x-ttl",ttl.ToString(CultureInfo.InvariantCulture)}};
+			var headers = new Dictionary<string, string> {{Constants.Headers.CdnTTL,ttl.ToString(CultureInfo.InvariantCulture)}};
 			AddCdnHeaders(headers);
-
 		}
 		/// <summary>
 		/// Sets CDN log retention.
@@ -1115,7 +1118,7 @@ namespace Rackspace.Cloudfiles
 			{
 				throw new CDNNotEnabledException();
 			}
-            var headers = new Dictionary<string, string> {{"x-log-retention",log_retention.ToString(CultureInfo.InvariantCulture)}};
+            var headers = new Dictionary<string, string> {{Constants.Headers.CdnLogRetention,log_retention.ToString(CultureInfo.InvariantCulture)}};
 			AddCdnHeaders(headers);
 		}
 	}
