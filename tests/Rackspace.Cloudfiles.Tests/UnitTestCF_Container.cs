@@ -415,6 +415,11 @@ namespace Rackspace.Cloudfiles.Tests
 		{
 			_conn.UserCreds.AuthToken = "head-container";
 			Container container = new CF_Container(_conn, _client, "foo");
+			Assert.AreEqual(container.WebListingEnabled, true);
+			Assert.AreEqual(container.WebIndex, "foo");
+			Assert.AreEqual(container.WebCSS, "foo");
+			Assert.AreEqual(container.WebError, "foo");
+			Assert.AreEqual(container.ObjectVersionLocation, "foo");
 			Assert.AreEqual(container.BytesUsed, 1);
 			Assert.AreEqual(container.ObjectCount, 1);
 			Assert.AreEqual(container.Metadata["foo"], "foo");

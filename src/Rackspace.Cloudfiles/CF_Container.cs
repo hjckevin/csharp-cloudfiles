@@ -10,24 +10,29 @@ namespace Rackspace.Cloudfiles
 	/// </summary>
 	public class CF_Container : Container
 	{
-        private readonly string _name;
-        private int _retires;
-        private int _num_retries_attempted;
+        private string _name = null;
+		private string _web_index = null;
+		private string _web_css = null;
+		private string _web_error = null;
+		private string _versions_location = null;
+        private int _retires = 0;
+        private int _num_retries_attempted = 0;
         private bool _reload_properties = true;
 	    private bool _reload_cdn_properties = true;
-	    private bool _cdn_log_retention;
-        private bool _cdn_enabled;
-        private Uri _cdn_uri;
-        private Uri _cdn_ssl_uri;
-        private Uri _cdn_streaming_uri;
-        private Dictionary<string, string> _metadata;
-        private Dictionary<string, string> _headers;
-        private Dictionary<string, string> _cdn_headers;
+	    private bool _cdn_log_retention = false;
+        private bool _cdn_enabled = false;
+		private bool _web_listing_enabled = false;
+        private Uri _cdn_uri = null;
+        private Uri _cdn_ssl_uri = null;
+        private Uri _cdn_streaming_uri = null;
+        private Dictionary<string, string> _metadata = new Dictionary<string, string>();
+        private Dictionary<string, string> _headers = new Dictionary<string, string>();
+        private Dictionary<string, string> _cdn_headers = new Dictionary<string, string>();
         private long _object_count = -1;
         private long _bytes_used = -1;
         private long _ttl = -1;
-        private readonly Client _client;
-        private readonly Connection _conn;
+        private Client _client;
+        private Connection _conn;
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Rackspace.Cloudfiles.CF_Container"/> class.
 		/// </summary>
@@ -75,6 +80,62 @@ namespace Rackspace.Cloudfiles
 			get { return _name; }
 		}
 		/// <summary>
+		/// Gets the destination container for object versioning.
+		/// </summary>
+		/// <value>
+		/// The destination container for object versioning.
+		/// </value>
+		public string ObjectVersionLocation
+		{
+			get 
+			{
+				_check_reload();
+				return _versions_location;
+			}
+		}
+		/// <summary>
+		/// The Web Index for the container.
+		/// </summary>
+		/// <value>
+		/// The web Index for the container..
+		/// </value>
+		public string WebIndex
+		{
+			get 
+			{ 
+		        _check_reload();
+				return _web_index;
+			}		
+		}
+		/// <summary>
+		/// Gets the Web Error Prefix for the container.
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
+		public string WebError
+		{
+			get 
+			{
+		        _check_reload();
+				return _web_error; 
+			}		
+		}
+		/// <summary>
+		/// Gets the Web CSS for the container.
+		/// </summary>
+		/// <value>
+		/// The name.
+		/// </value>
+		public string WebCSS
+		{
+			get 
+			{
+		        _check_reload();
+				return _web_css; 
+			}		
+		}
+		/// <summary>
 		/// Gets Raw headers.
 		/// </summary>
 		/// <value>
@@ -82,7 +143,11 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public Dictionary<string, string> Headers
 		{
-			get { return _reload_properties ? Common.ProcessMetadata(_head_container().Headers)[Constants.Misc.ProcessedHeadersHeaderKey] : _headers; }
+			get 
+			{
+			    _check_reload();
+				return _headers; 
+			}
 		}
 		/// <summary>
 		/// Gets the cdn headers.
@@ -92,7 +157,11 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public Dictionary<string, string> CdnHeaders
 		{
-			get { return (_head_cdn_container() ? _cdn_headers : null); }
+			get 
+			{
+			    _check_reload_cdn();
+				return _cdn_headers;
+			}
 		}
 		/// <summary>
 		/// Gets the metadata.
@@ -102,7 +171,11 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public Dictionary<string, string> Metadata
 		{
-			get { return _reload_properties ? Common.ProcessMetadata(_head_container().Headers)[Constants.Misc.ProcessedHeadersHeaderKey] : _metadata; }
+			get 
+			{ 
+				_check_reload();
+				return _metadata;
+			}
 		}
 		/// <summary>
 		/// Gets the object count.
@@ -112,7 +185,11 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public long ObjectCount
 		{
-			get { return _reload_properties ? long.Parse(_head_container().Headers[Constants.Headers.ContainerObjectCount]) : _object_count; }
+			get 
+			{
+				_check_reload();
+				return _object_count; 
+			}
 		}
 		/// <summary>
 		/// Gets the bytes used.
@@ -122,7 +199,11 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public long BytesUsed
 		{
-			get { return _reload_properties ? long.Parse(_head_container().Headers[Constants.Headers.ContainerBytesUsed]) : _bytes_used; }
+			get
+			{ 
+				_check_reload();
+				return _bytes_used; 
+			}
 		}
 		/// <summary>
 		/// Gets the TT.
@@ -132,7 +213,11 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public long TTL
 		{
-			get { return (_head_cdn_container() ? _ttl : -1); }
+			get
+			{
+				_check_reload_cdn();
+				return _ttl;
+			}
 		}
 		/// <summary>
 		/// Gets or sets the retries.
@@ -173,7 +258,11 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public Uri CdnUri
 		{
-			get { return (_head_cdn_container() ? _cdn_uri : null); }
+			get 
+			{
+				_check_reload_cdn();
+				return _cdn_uri; 
+			}
 		}
 		/// <summary>
 		/// Gets the cdn ssl URI.
@@ -183,7 +272,11 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public Uri CdnSslUri
 		{
-			get { return (_head_cdn_container() ? _cdn_ssl_uri : null); }
+			get 
+			{ 
+				_check_reload_cdn();
+				return _cdn_ssl_uri; 
+			}
 		}
 		/// <summary>
 		/// Gets the cdn streaming URI.
@@ -193,7 +286,11 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public Uri CdnStreamingUri
 		{
-			get { return (_head_cdn_container() ? _cdn_streaming_uri : null); }
+			get 
+			{
+				_check_reload_cdn();
+				return _cdn_streaming_uri;
+			}
 		}
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Rackspace.Cloudfiles.CF_Container"/> cdn enabled.
@@ -203,7 +300,11 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public bool CdnEnabled
 		{
-			get { return (_head_cdn_container() && _cdn_enabled); }
+			get
+			{
+				_check_reload_cdn();
+				return _cdn_enabled; 
+			}
 		}
 		/// <summary>
 		/// Gets a value indicating whether this <see cref="Rackspace.Cloudfiles.CF_Container"/> cdn log retention.
@@ -213,22 +314,79 @@ namespace Rackspace.Cloudfiles
 		/// </value>
 		public bool CdnLogRetention
 		{
-			get { return (_head_cdn_container() && _cdn_log_retention); }
+			get 
+			{
+				_check_reload_cdn();
+				return _cdn_log_retention;
+			}
 		}
-		private ContainerResponse _head_container()
+		/// <summary>
+		/// Get a the Web Listing status on this container.
+		/// </summary>
+		/// <value>
+		/// .
+		/// </value>
+		public bool WebListingEnabled
+		{
+			get 
+			{    
+				_check_reload(); 
+				return _web_listing_enabled; 
+			}
+		}
+		private void _check_reload()
+		{
+			if (_reload_properties)
+			{
+				_head_container();
+			}
+		}
+		private void _check_reload_cdn()
+		{
+			if(_reload_cdn_properties)
+			{
+				_head_cdn_container();
+			}
+		}
+		private void _head_container()
 		{
 			var headers = new Dictionary<string, string> {{Constants.Headers.UserAgent, _conn.UserAgent}};
 		    _client.Timeout = _conn.Timeout;
 		    try
 		    {
-			    var res = _client.HeadContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, Name, headers, new Dictionary<string, string>());
-				_object_count = long.Parse(res.Headers[Constants.Headers.ContainerObjectCount]);
-				_bytes_used = long.Parse(res.Headers[Constants.Headers.ContainerBytesUsed]);
+			    var res = _client.HeadContainer(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, _name, headers, new Dictionary<string, string>());
+				if (res.Headers.ContainsKey(Constants.Headers.ContainerObjectCount))
+				{
+				    _object_count = long.Parse(res.Headers[Constants.Headers.ContainerObjectCount]);
+				}
+				if (res.Headers.ContainsKey(Constants.Headers.ContainerBytesUsed))
+				{
+				    _bytes_used = long.Parse(res.Headers[Constants.Headers.ContainerBytesUsed]);
+				}
+				if (res.Headers.ContainsKey(Constants.Headers.WebIndex))
+				{
+					_web_index = res.Headers[Constants.Headers.WebIndex];
+				}
+				if (res.Headers.ContainsKey(Constants.Headers.WebError))
+				{
+					_web_error = res.Headers[Constants.Headers.WebError];
+				}
+				if (res.Headers.ContainsKey(Constants.Headers.WebListings))
+				{
+					_web_listing_enabled = bool.Parse(res.Headers[Constants.Headers.WebListings]);
+				}
+				if (res.Headers.ContainsKey(Constants.Headers.WebListingsCSS))
+				{
+				    _web_css = res.Headers[Constants.Headers.WebListingsCSS];
+				}
+				if (res.Headers.ContainsKey(Constants.Headers.VersionsLocation))
+				{
+					_versions_location = res.Headers[Constants.Headers.VersionsLocation];
+				}
 				var processed_headers = Common.ProcessMetadata(res.Headers);
 				_headers = processed_headers[Constants.Misc.ProcessedHeadersHeaderKey];
 				_metadata = processed_headers[Constants.Misc.ProcessedHeadersMetadataKey];
 				_reload_properties = false;
-				return res;
 			}
 			catch (ClientException e)
 			{
@@ -238,7 +396,8 @@ namespace Rackspace.Cloudfiles
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
-						    return _head_container();
+						    _head_container();
+						    break;
 					    }
 					    else
 					    {
@@ -249,7 +408,8 @@ namespace Rackspace.Cloudfiles
 					    {
 						    ++ _num_retries_attempted;
 						    _conn.Authenticate();
-						    return _head_container();
+						    _head_container();
+						    break;
 					    }
 					    else
 					    {
@@ -261,7 +421,8 @@ namespace Rackspace.Cloudfiles
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
-						    return _head_container();
+						    _head_container();
+						    break;
 					    }
 					    else
 					    {
@@ -274,7 +435,7 @@ namespace Rackspace.Cloudfiles
 				_num_retries_attempted = 0;
 			}
 		}
-		private bool _head_cdn_container()
+		private void _head_cdn_container()
 		{
 		    try
 			{
@@ -283,19 +444,32 @@ namespace Rackspace.Cloudfiles
 				    var headers = new Dictionary<string, string> {{Constants.Headers.UserAgent, _conn.UserAgent}};
 				    _client.Timeout = _conn.Timeout;
 			        var res = _client.HeadContainer(_conn.UserCreds.CdnMangementUrl.ToString(), _conn.UserCreds.AuthToken, Name, headers, new Dictionary<string, string>());
-				    _cdn_uri = new Uri(res.Headers[Constants.Headers.CdnUri]);
-				    _cdn_ssl_uri = new Uri(res.Headers[Constants.Headers.CdnSslUri]);
-				    _cdn_streaming_uri = new Uri(res.Headers[Constants.Headers.CdnStreamingUri]);
-					_ttl = long.Parse(res.Headers[Constants.Headers.CdnTTL]);
-					_cdn_enabled = bool.Parse(res.Headers[Constants.Headers.CdnEnabled]);
-					_cdn_log_retention = bool.Parse(res.Headers[Constants.Headers.CdnLogRetention]);
+					if (res.Headers.ContainsKey(Constants.Headers.CdnUri))
+				    {
+				        _cdn_uri = new Uri(res.Headers[Constants.Headers.CdnUri]);
+					}
+					if (res.Headers.ContainsKey(Constants.Headers.CdnSslUri))
+				    {
+				        _cdn_ssl_uri = new Uri(res.Headers[Constants.Headers.CdnSslUri]);
+					}
+					if (res.Headers.ContainsKey(Constants.Headers.CdnStreamingUri))
+				    {
+				        _cdn_streaming_uri = new Uri(res.Headers[Constants.Headers.CdnStreamingUri]);
+					}
+					if (res.Headers.ContainsKey(Constants.Headers.CdnTTL))
+					{
+					    _ttl = long.Parse(res.Headers[Constants.Headers.CdnTTL]);
+					}
+					if (res.Headers.ContainsKey(Constants.Headers.CdnEnabled))
+					{
+					    _cdn_enabled = bool.Parse(res.Headers[Constants.Headers.CdnEnabled]);
+					}
+					if (res.Headers.ContainsKey(Constants.Headers.CdnLogRetention))
+					{
+					    _cdn_log_retention = bool.Parse(res.Headers[Constants.Headers.CdnLogRetention]);
+					}
 					_cdn_headers = res.Headers;
 					_reload_cdn_properties = false;
-					return true;
-				}
-				else
-				{
-					return false;
 				}
 			}
 			catch (ClientException e)
@@ -306,7 +480,8 @@ namespace Rackspace.Cloudfiles
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
-						    return _head_cdn_container();
+						    _head_cdn_container();
+						    break;
 					    }
 					    else
 					    {
@@ -317,19 +492,19 @@ namespace Rackspace.Cloudfiles
 					    {
 						    ++ _num_retries_attempted;
 						    _conn.Authenticate();
-						    return _head_cdn_container();
+						    _head_cdn_container();
+						    break;
 					    }
 					    else
 					    {
 						    throw new UnauthorizedException();
 					    }
-				    case Constants.StatusCodes.NotFound:
-					    return false;
 				    default:
 				        if (_num_retries_attempted < _retires)
 					    {
 						    ++ _num_retries_attempted;
-						    return _head_cdn_container();
+						    _head_cdn_container();
+						    break;
 					    }
 					    else
 					    {
@@ -341,6 +516,14 @@ namespace Rackspace.Cloudfiles
 			{
 				_num_retries_attempted = 0;
 			}
+		}
+		/// <summary>
+		/// Reload all metadata for the Container.
+		/// </summary>
+		public void ReloadMetadata()
+		{
+			_head_container();
+			_head_cdn_container();
 		}
 		/// <summary>
 		/// Creates the object.
@@ -382,7 +565,8 @@ namespace Rackspace.Cloudfiles
 			var headers = new Dictionary<string, string> {{Constants.Headers.UserAgent, _conn.UserAgent}};
 			try
 			{
-			    _client.HeadObject(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, Name, object_name, headers, new Dictionary<string, string>());
+				Console.WriteLine(" " + _conn.UserCreds.AuthToken);
+				_client.HeadObject(_conn.UserCreds.StorageUrl.ToString(), _conn.UserCreds.AuthToken, _name, object_name, headers, new Dictionary<string, string>()); 
 			}
 			catch (ClientException e)
 			{
@@ -904,6 +1088,80 @@ namespace Rackspace.Cloudfiles
 			}
 		}
 		/// <summary>
+		/// Add Static web headers.
+		/// </summary>
+		public void EnableStaticWeb(string index, string error, string css, bool listing)
+		{
+			var headers = new Dictionary<string, string>{
+			                                                {Constants.Headers.WebIndex, index},
+				                                            {Constants.Headers.WebError, error},
+				                                            {Constants.Headers.WebListingsCSS, css},
+				                                            {Constants.Headers.WebListings, listing.ToString()}
+			                                            };
+			AddHeaders(headers);
+		}
+		/// <summary>
+		/// Add Static web headers.
+		/// </summary>
+		public void EnableStaticWeb(string index, string error , bool listing)
+		{
+			var headers = new Dictionary<string, string>{
+			                                                {Constants.Headers.WebIndex, index},
+				                                            {Constants.Headers.WebError, error},
+				                                            {Constants.Headers.WebListings, listing.ToString()}
+			                                            };
+			AddHeaders(headers);
+		}
+		/// <summary>
+		/// Add Static web headers.
+		/// </summary>
+		public void EnableStaticWeb(string css, bool listing)
+		{
+			var headers = new Dictionary<string, string>{
+				                                            {Constants.Headers.WebListingsCSS, css},
+				                                            {Constants.Headers.WebListings, listing.ToString()}
+			                                            };
+			AddHeaders(headers);
+		}
+		/// <summary>
+		/// Add Static web headers.
+		/// </summary>
+        public void EnableStaticWeb(string index, string error)
+		{
+			var headers = new Dictionary<string, string>{
+			                                                {Constants.Headers.WebIndex, index},
+				                                            {Constants.Headers.WebError, error}
+			                                            };
+			AddHeaders(headers);
+		}
+		/// <summary>
+		/// Turn off static web functionality.
+		/// </summary>
+		public void DisableStaticWeb()
+		{
+			var headers = new Dictionary<string, string>{
+			                                                {Constants.Headers.WebIndex, ""},
+				                                            {Constants.Headers.WebError, ""},
+				                                            {Constants.Headers.WebListingsCSS, ""},
+				                                            {Constants.Headers.WebListings, ""}
+			                                            };
+			AddHeaders(headers);
+		}
+		/// <summary>
+		/// Enable object versioning.
+		/// </summary>
+		public void EnableObjectVersioning(string container)
+		{
+			AddHeaders(new Dictionary<string, string>{{Constants.Headers.VersionsLocation, container}});
+		}
+		/// <summary>
+		/// Turn off object versioning.
+		/// </summary>
+		public void DisableObjectVersioning()
+		{
+			AddHeaders(new Dictionary<string, string>{{Constants.Headers.VersionsLocation, ""}});
+		}
+		/// <summary>
 		/// Makes the container public.
 		/// </summary>
 		public void MakePublic()
@@ -1125,6 +1383,10 @@ namespace Rackspace.Cloudfiles
 	public interface Container
 	{
 		string Name { get; }
+		string ObjectVersionLocation { get; }
+		string WebIndex { get; }
+		string WebError { get; }
+		string WebCSS { get; }
 		Dictionary<string, string> Headers { get; }
 		Dictionary<string, string> CdnHeaders { get; }
 		Dictionary<string, string> Metadata { get; }
@@ -1139,6 +1401,7 @@ namespace Rackspace.Cloudfiles
 		Uri CdnStreamingUri { get; }
 		bool CdnEnabled { get; }
 		bool CdnLogRetention { get; }
+		bool WebListingEnabled { get; }
 	    StorageObject CreateObject(string object_name);
 		StorageObject GetObject(string object_name);
 		List<StorageObject> GetObjects();
@@ -1153,6 +1416,13 @@ namespace Rackspace.Cloudfiles
 		void AddMetadata(Dictionary<string, string> metadata);
 		void AddHeaders(Dictionary<string, string> headers);
 		void AddCdnHeaders(Dictionary<string, string> headers);
+		void EnableStaticWeb(string index, string error, string css, bool listing);
+		void EnableStaticWeb(string index, string error , bool listing);
+		void EnableStaticWeb(string css, bool listing);
+        void EnableStaticWeb(string index, string error);
+		void DisableStaticWeb();
+		void EnableObjectVersioning(string container);
+		void DisableObjectVersioning();
 		void MakePublic();
 		void MakePublic(long ttl);
 		void MakePublic(bool log_retention);

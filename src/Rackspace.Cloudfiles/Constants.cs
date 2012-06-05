@@ -17,6 +17,11 @@ namespace Rackspace.Cloudfiles.Constants
 		public const string ContainerMetaDataPrefix = "x-container-meta-";
 		public const string ContainerBytesUsed = "x-container-bytes-used";
 		public const string ContainerObjectCount = "x-container-object-count";
+		public const string WebIndex = "x-container-meta-web-index";
+		public const string WebError = "x-container-meta-web-error";
+		public const string WebListings = "x-container-meta-web-listings";
+		public const string WebListingsCSS = "x-container-meta-web-listings-css";
+		public const string VersionsLocation = "x-versions-location";
 		//CDN Container Constants
 		public const string CdnUri = "x-cdn-uri";
 		public const string CdnSslUri = "x-cdn-ssl-uri";
@@ -38,7 +43,7 @@ namespace Rackspace.Cloudfiles.Constants
 	}
 	public static class Misc
 	{
-		public const string DefaultUserAgent = "csharp-cloudfiles/3.0.3.0";
+		public const string DefaultUserAgent = "csharp-cloudfiles/3.0.3.1";
 		public const int DefaultTimeout = 60 * 60 * 1000;
 		public const string ProcessedHeadersMetadataKey = "metadata";
 		public const string ProcessedHeadersHeaderKey = "headers";

@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Rackspace.Cloudfiles</RootNamespace>
     <AssemblyName>Rackspace.Cloudfiles</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,8 +33,7 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
     <Reference Include="System.Xml" />
-    <Reference Include="OpenStack.Swift, Version=1.0.2.0, Culture=neutral, PublicKeyToken=null">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="OpenStack.Swift">
       <HintPath>..\packages\csharp-swift.1.0.2\lib\net40\OpenStack.Swift.dll</HintPath>
     </Reference>
   </ItemGroup>
@@ -44,7 +42,6 @@
     <Compile Include="CF_Account.cs" />
     <Compile Include="CF_Container.cs" />
     <Compile Include="CF_Object.cs" />
-    <Compile Include="Connection.cs" />
     <Compile Include="CF_Connection.cs" />
     <Compile Include="CF_Client.cs" />
     <Compile Include="Common.cs" />

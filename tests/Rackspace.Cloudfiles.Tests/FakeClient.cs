@@ -197,6 +197,11 @@ namespace Rackspace.Cloudfiles.Tests
 					    _retries = 0;
 					    rheaders = new Dictionary<string, string>
 					                   {
+					                       {"x-versions-location", "foo"},
+						                   {"x-container-meta-web-index", "foo"},
+						                   {"x-container-meta-web-listings-css", "foo"},
+						                   {"x-container-meta-web-error", "foo"},
+						                   {"x-container-meta-web-listings", "true"},
 					                       {"x-container-object-count", "1"},
 					                       {"x-container-bytes-used", "1"},
 					                       {"x-container-meta-foo", "foo"}
@@ -244,6 +249,11 @@ namespace Rackspace.Cloudfiles.Tests
 			    default:
 					var jheaders = new Dictionary<string, string>
 					                   {
+					                       {"x-versions-location", "foo"},
+						                   {"x-container-meta-web-index", "foo"},
+						                   {"x-container-meta-web-listings-css", "foo"},
+						                   {"x-container-meta-web-error", "foo"},
+						                   {"x-container-meta-web-listings", "true"},
 					                       {"x-container-object-count", "1"},
 					                       {"x-container-bytes-used", "1"},
 					                       {"x-container-meta-foo", "foo"}
