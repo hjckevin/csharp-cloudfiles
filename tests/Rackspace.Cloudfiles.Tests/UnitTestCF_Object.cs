@@ -149,5 +149,23 @@ namespace Rackspace.Cloudfiles.Tests
             StorageObject obj = new CF_Object(_conn, container, _client, "foo");
             Assert.Throws<InvalidETagException>(() => obj.Write(new MemoryStream()));
         }
+
+        [Test]
+        public void TestCdnManagementUrlIsCorrect()
+        {
+            _conn.UserCreds.CdnMangementUrl = new Uri("http://cdnmanagementurl.com");
+            Container container = new CF_Container(_conn, _client, "foo_container");
+            StorageObject obj = new CF_Object(_conn, container, _client, "foo_object");
+            Assert.That(obj.CdnManagementUrl, Is.EqualTo(new Uri("http://cdnmanagementurl.com/foo_container/foo_object")));
+        }
+        
+        [Test]
+        public void TestStorageUrlIsCorrect()
+        {
+            _conn.UserCreds.StorageUrl = new Uri("http://storageurl.com");
+            Container container = new CF_Container(_conn, _client, "foo_container");
+            StorageObject obj = new CF_Object(_conn, container, _client, "foo_object");
+            Assert.That(obj.StorageUrl, Is.EqualTo(new Uri("http://storageurl.com/foo_container/foo_object")));
+        }
     }
 }
