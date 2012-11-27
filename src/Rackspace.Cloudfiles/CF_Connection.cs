@@ -1,5 +1,11 @@
 using System;
 using System.Collections.Generic;
+
+using System.Json;
+using System.Net;
+using System.IO;
+using System.Web.Script.Serialization;
+
 using OpenStack.Swift;
 using Rackspace.Cloudfiles.Constants;
 namespace Rackspace.Cloudfiles
@@ -126,15 +132,123 @@ namespace Rackspace.Cloudfiles
 				}
 			}
 		}
+
+
+        ///<summary>
+        /// Authentication for keystone + swift
+        /// </summary>
+        /// 
+        public void AuthenticateForKeystone()
+        {
+            String[] strArr = _user_creds.UserName.Split(':');
+
+            var auth = new Auth()
+            {
+                auth = new Tenant()
+                {
+                    tenantName = strArr[0],
+                    passwordCredentials = new UserCred()
+                    {
+                        username = strArr[1],
+                        password = _user_creds.ApiKey
+                    }
+                }
+            };
+
+            var jsonSer= new JavaScriptSerializer();
+            var jsonStr = jsonSer.Serialize(auth);
+            byte[] authData = System.Text.Encoding.ASCII.GetBytes(jsonStr);
+
+            try
+            {
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(_user_creds.AuthUrl);
+                request.Method = "POST";
+                request.ContentType = "application/json";
+                request.ContentLength = authData.Length;
+                request.GetRequestStream().Write(authData, 0, authData.Length);
+
+                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+                int statusCode = (int)response.StatusCode;
+                if (statusCode >= 200 && statusCode < 300)
+                {
+                    StreamReader reader = new StreamReader(response.GetResponseStream(),
+                        System.Text.Encoding.GetEncoding("UTF-8"));
+                    String responseStr = reader.ReadToEnd();
+
+                    var serializer = new JavaScriptSerializer();
+                    var jsonDict = (Dictionary<string, object>)serializer.DeserializeObject(responseStr);
+                    var jsonAccess = (Dictionary<string, object>)jsonDict["access"];
+
+                    var jsonSerciceCatalog = (object[])jsonAccess["serviceCatalog"];
+                    foreach (var objServiceCatalog in jsonSerciceCatalog)
+                    {
+                        var jsonTemp = (Dictionary<string, object>)objServiceCatalog;
+                        if (jsonTemp["type"].Equals("object-store"))
+                        {
+                            var jsonEndPoints = (object[])jsonTemp["endpoints"];
+                            foreach (var objEndPoints in jsonEndPoints)
+                            {
+                                var jsonTemp2 = (Dictionary<string, object>)objEndPoints;
+                                var objStorageURL = new object();
+                                jsonTemp2.TryGetValue("publicURL", out objStorageURL);
+
+                                this._user_creds.StorageUrl = new Uri(objStorageURL.ToString());
+                            }
+                        }
+                    }
+
+                    var jsonToken = (Dictionary<string, object>)jsonAccess["token"];
+                    var objTokenId = new object();
+                    jsonToken.TryGetValue("id", out objTokenId);
+
+                    this._user_creds.AuthToken = objTokenId.ToString();
+
+                }                
+            }
+            catch (ClientException)
+            {
+                if (_num_retries_attempted <= _retires)
+                {
+                    ++_num_retries_attempted;
+                    AuthenticateForKeystone();
+                }
+                else
+                {
+                    _num_retries_attempted = 0;
+                    throw new AuthenticationFailedException();
+                }
+            }
+
+        }
+
+        
 	}
 	public interface Connection
 	{
 		void Authenticate();
 		void Authenticate(bool snet);
+        void AuthenticateForKeystone();
 		bool HasCDN { get; }
 		UserCredentials UserCreds { get; }
 		int Retries { get; set; }
 		int Timeout { get; set; }
 		string UserAgent { get; set; }
 	}
+
+    public class UserCred
+    {
+        public string username { get; set; }
+        public string password { get; set; }
+    }
+
+    public class Tenant
+    {
+        public string tenantName { get; set; }
+        public UserCred passwordCredentials { get; set; }
+    }
+
+    public class Auth
+    {
+        public Tenant auth { get; set; }
+    }
 }
